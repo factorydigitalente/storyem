@@ -308,6 +308,31 @@ input:checked + .slider:before { transform: translateX(20px); }
   .debug-btn { font-size: 0.8em; }
 }
 
+/* ロゴエリアのレスポンシブ調整 */
+#global-logo div {
+  width: 100%;           /* 親要素いっぱいに広げる */
+  max-width: 500px;      /* PCでも広がりすぎないよう制限 */
+  margin: 0 auto;        /* 中央寄せ */
+  box-sizing: border-box; 
+  padding: 0 10px;       /* 画面端の微調整 */
+}
+
+#global-logo img {
+  height: auto;          /* アスペクト比を維持 */
+  flex-shrink: 1;        /* 画面が狭い時に縮小を許可する */
+  min-width: 0;          /* flex子要素の縮小を妨げないためのマジックコード */
+}
+
+/* スマホ用の個別調整 */
+@media (max-width: 480px) {
+  #global-logo img:first-child {
+    max-width: 60%; /* STORYEMロゴを少し優先的に大きく */
+  }
+  #global-logo img:last-child {
+    max-width: 30%; /* FDEロゴをバランスよく配置 */
+  }
+}
+
 </style>
 </head>
 <body>
