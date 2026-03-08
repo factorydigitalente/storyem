@@ -33,10 +33,12 @@ h1 {
 }
 
 h1 img {
-  max-width: 200px; /* ヘッダーロゴのサイズ調整 */
+  /* ヘッダーロゴは画面幅の70%まで許容しつつ、最大280pxに制限 */
+  max-width: 280px;
+  width: 70%;
   height: auto;
-  /* ロゴに黒いぼかし影を付けて背景から浮かせる */
   filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
+  display: block; /* 余計な隙間を消去 */
 }
 
 button {
@@ -180,10 +182,21 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
 /* --- 4. ヘッダー・メニュー・BGM --- */
 .header-container {
   display: flex;
-  justify-content: space-between; /* ロゴは左、UIは右へ */
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 15px;
+  /* 縦並びにする。HTML上の順序を逆転させ、UIを上に、ロゴを下に配置 */
+  flex-direction: column-reverse; 
+  align-items: flex-end; /* 右上のUIを基準に右寄せ */
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.header-container h1 {
+  width: 100%;       /* ロゴ（タイトル）を横幅いっぱいに解放 */
+  text-align: left;  /* タイトル自体は左寄せに戻す */
+}
+
+.header-right-ui {
+  /* 右上に配置されるように調整 */
+  margin-left: auto;
 }
 
 /* 右側に集約された操作系（BGMレバーとメニュー） */
