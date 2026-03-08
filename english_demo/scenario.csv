@@ -1,0 +1,15 @@
+id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
+1,normal,"You step into the Underground Sealed Cave.\n\nThe passage splits into three paths: a paved road to the left, a dark path straight ahead, and a bright corridor to the right.","Go left → 2, Go straight → 11, Go right → 3",,,,,bgm/bgm1.mp3,img/bgi1.png,
+2,battle,"You proceed along the paved road to the left.\nPart of the floor turns out to be a switch, and when you accidentally step on it, an iron automaton embedded in the wall activates.",Break it and proceed,Automaton,6,6,3,bgm/bgm_battle.mp3,img/bgi2.png,
+3,normal,You proceed down the bright corridor to the right.\nYou find a storage box left on a shelf in the wall.,"Open it → 31, Ignore it → 4",,,,,bgm/bgm1.mp3,img/bgi3.png,
+31,normal,Inside is dried meat!\nYou gain 1 Food.,Proceed ahead → 4,,,,,bgm/bgm_peace.mp3,img/bgi31.png,food+1
+4,normal,A distorted sealing script is carved into the door ahead.\nThis place seems relatively safe.,"Push the sealing letters with force → 5, Read the seal → 5",,,,,bgm/bgm_peace.mp3,img/bgi4.png,eat
+5,normal,"You enter the central chamber of the Sealed Cave.\nAt that moment, a massive shadow drops down from the ceiling.",Take a stance → 6,,,,,bgm/bgm2.mp3,img/bgi5.png,
+6,battle,The guardian of the seal—an ogre nearly 3 meters tall—blocks your path.,Defeat the guardian,Ogre Guardian,7,7,7,bgm/bgm_battle.mp3,img/bgi6.png,
+7,normal,"The guardian collapses, and an altar appears beyond it.\nIt seems you have a moment to catch your breath. You may eat as much as you like.","Examine the altar → 8, Watch your surroundings → 9",,,,,bgm/bgm_peace.mp3,img/bgi7.png,!eat
+8,normal,The orb upon the altar glows faintly.,"Touch it → 10, Ignore it → 10",,,,,,img/bgi8.png,
+9,normal,A remaining device suddenly activates behind you!\nPale blue lightning races through the corridor.,"Attempt to dodge → 91, Attempt to force your way through → 92",,,,,bgm/bgm_battle.mp3,img/bgi9.png,
+91,normal,You slip beneath the lightning at the last moment!\nThe device sparks and falls silent.,Proceed ahead → 10,,,,,bgm/bgm_peace.mp3,img/bgi91.png,
+92,normal,"You force your way through, but the lightning burns your shoulder!\nYou grimace in pain.",Endure the pain and proceed → 10,,,,,bgm/bgm_battle.mp3,img/bgi92.png,hp-5
+10,end,"The Sealed Cave returns to silence.\n\nYou seal the cave once more and begin the journey home.\n\nAs long as you live, peace will likely endure.",The End,,,,,bgm/bgm_title.mp3,img/bgi10.png,
+11,normal,"When you take the dark path in the middle, you arrive at a familiar place.\nIsn’t this the entrance where you started?\nExhausted from the futile effort, you lose 4 Stamina.",Look around → 1,,,,,bgm/bgm2.mp3,img/bgi11.png,!hp-4
