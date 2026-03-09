@@ -358,50 +358,60 @@ input:checked + .slider:before { transform: translateX(20px); }
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.9); /* ほぼ真っ黒な背景 */
-  z-index: 9999; /* 最前面 */
-  display: flex;
+  background: rgba(0, 0, 0, 0.95); /* 濃いめの背景 */
+  z-index: 10000; /* 確実に全ての上に */
+  display: none; /* 初期状態 */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px); /* 背景をぼかすとおしゃれ */
+  backdrop-filter: blur(8px);
+  cursor: pointer; /* 画面全体が押せる合図 */
 }
 
 .overlay-content {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10001;
+  pointer-events: none; /* 重要：ロゴなどがクリックを邪魔しないようにする */
 }
 
 .overlay-logo {
   max-width: 250px;
-  margin-bottom: 30px;
+  width: 70%;
+  height: auto;
+  margin-bottom: 40px;
   animation: pulse 2s infinite ease-in-out;
 }
 
 #actual-start-btn {
-  padding: 15px 40px;
-  font-size: 1.5em;
+  pointer-events: auto; /* ボタンだけはクリックに反応させる */
+  padding: 20px 50px;
+  font-size: 1.4em;
   font-weight: bold;
-  background: #2ecc71; /* 鮮やかな緑 */
+  background: #2ecc71;
   color: white;
-  border: none;
-  box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+  border: 2px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(46, 204, 113, 0.6);
+  cursor: pointer;
+  transition: transform 0.1s;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
+#actual-start-btn:active {
+  transform: scale(0.95); /* 押した感を出す */
 }
 
 </style>
 </head>
 <body>
 
-<div id="start-overlay" style="display:none;">
+<div id="start-overlay" onclick="initAudioAndStart()">
   <div class="overlay-content">
     <img src="storyem_logo.png" alt="STORYEM" class="overlay-logo">
-    <button id="actual-start-btn" onclick="initAudioAndStart()">
+    <button id="actual-start-btn">
       CLICK TO START<br>
-      <span style="font-size: 0.6em; font-weight: normal;">START 開始する</span>
+      <span style="font-size: 0.6em; font-weight: normal;">開始する</span>
     </button>
   </div>
 </div>
