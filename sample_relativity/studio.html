@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
+<!-- STORYEM（ストリーム） -->
+<!-- ver20260308 -->
+<!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
+<!-- このゲームエンジン及び、サンプルゲーム内の画像と使用楽曲の著作権は全て、ファクトリー・デジタル・エンターテインメントおよび矢崎大信が有します。 -->
+<!-- 上記の著作権者に無断で、サンプルゲーム内の画像と使用楽曲を出版・放送・演奏・複製・公開に使用することを禁じます。 -->
+<!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
+<!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>STORYEM：GAMEBOOK studio - CSV生成アシスタント</title>
+<style>
+body { 
+    font-family: sans-serif; 
+    max-width: 600px; 
+    margin: 20px auto; 
+    padding: 20px; 
+    line-height: 1.6; 
+    background-color: #f9f9f9;
+    width: 90%; /* 画面幅が狭い時に左右にマージンを持たせる */
+}
+/* ロゴ用のスタイル */
+.studio-logo {
+    text-align: center;
+    margin: 20px 0;
+}
+.studio-logo img {
+    max-width: 200px;
+    height: auto;
+    /* 少し影をつけて浮かび上がらせる */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.title-header {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px 0;
+    /* 上下のラインで挟むことで「タイトル」であることを強調 */
+    border-top: 2px solid #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.title-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em;
+    line-height: 1.4;
+    border: none; /* 既存のborderルールがあればリセット */
+}
+
+.title-header .subtitle {
+    display: block;
+    font-size: 0.75em;
+    color: #666;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+textarea { 
+    width: 100%; 
+    height: 150px; 
+    margin-bottom: 10px; 
+    border: 2px solid #007bff; /* 縁取りを少し太くし、メインカラーの青に */
+    border-radius: 8px;       /* 角を少し丸くして柔らかい印象に */
+    padding: 15px; 
+    box-sizing: border-box; 
+    background-color: #ffffff; 
+    font-size: 1em;
+    line-height: 1.6;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); /* 内側に薄い影を入れて立体感を出す */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 入力中に枠線を強調する設定 */
+textarea:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0,123,255,0.25); /* ふんわり光るエフェクト */
+}
+textarea::placeholder {
+    color: #999;
+}
+textarea:hover {
+    border-color: #66b0ff; /* フォーカス時よりは薄い青 */
+}
+
+/* ルールボックスの基本スタイル */
+.rule-box { 
+    background: #f4f4f4; 
+    padding: 15px; 
+    border-radius: 5px; 
+    font-size: 0.9em; 
+    line-height: 1.4; 
+    color: #2d5a27; 
+    border: 1px inset #ddd; 
+    overflow: hidden; 
+    max-height: 120px; /* 約5〜6行分 */
+    transition: max-height 0.4s ease-out; /* 開閉アニメーション */
+    position: relative;
+}
+
+/* 展開時のスタイル */
+.rule-box.expanded {
+    max-height: 2500px; /* 十分な高さ */
+}
+
+/* 「続きを見る」ボタンのスタイル */
+.rule-toggle-btn {
+    display: block;
+    width: 100%;
+    background: #e7f1ff;
+    color: #007bff;
+    border: 1px solid #b3d7ff;
+    padding: 8px;
+    margin-top: -1px; /* ボックスの枠線と重ねて一体感を出す */
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.rule-toggle-btn:hover {
+    background: #dee2e6;
+}
+
+/* 共通のボタンベース */
+button { 
+    color: white; 
+    border: none; 
+    padding: 15px 20px; 
+    cursor: pointer; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    width: 100%; 
+    font-size: 1.1em; 
+    transition: 0.3s; 
+    margin-bottom: 10px; /* ボタン同士の間隔 */
+}
+
+/* ChatGPT用（従来の青） */
+.btn-chatgpt {
+    background: #007bff;
+}
+.btn-chatgpt:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Gemini用（少し鮮やかな青、またはGoogleカラー） */
+.btn-gemini {
+    background: linear-gradient(135deg, #1a73e8, #4285f4);
+}
+.btn-gemini:hover {
+    background: #1557b0;
+    transform: translateY(-2px);
+}
+
+h2 { text-align: center; color: #333; font-size: 1.4em; }
+
+.section-title { border-left: 5px solid #007bff; padding-left: 10px; margin-top: 30px; font-weight: bold; }
+
+#status { 
+    font-weight: bold; 
+    margin-top: 25px; 
+    text-align: center; 
+    color: #1a7a33; /* 成功のグリーン */
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+/* 言語切り替えナビゲーション */
+.lang-nav {
+    text-align: right;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.lang-nav a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lang-nav a:hover {
+    text-decoration: underline;
+}
+
+.lang-nav span {
+    color: #333;
+    font-weight: normal;
+}
+</style>
+</head>
+<body>
+<div class="lang-nav">
+    <a href="studio_eng.html">English(英語)</a> / <span>Japanese(日本語)</span>
+</div>
+
+<div class="studio-logo">
+    <img src="storyem_studio_logo.png" alt="STORYEM studio">
+</div>
+
+<div class="title-header">
+    <h2>STORYEM：GAMEBOOK studio<br>
+    <span class="subtitle">ストリーム：ゲームブックスタジオ<br>＜ルールCSV・シナリオCSV 生成アシスタント＞</span></h2>
+</div>
+
+<div class="section-title">【A】生成ルール（固定）</div>
+<br>
+※以下のルール文は固定で、変更はできません。<br>
+このルール文は、あなたが【B】に入力する物語の概要と結合され、AIに対して使用する命令文（プロンプト）の一部になります。<br>
+</p>
+
+
+<div class="rule-box" id="ruleBox">
+    ■以下がルールCSV（ゲーム全体の設定）のサンプルです。<br>
+    ttl,bg,max_hp,init_skill,init_luck,init_food<br>
+封印庫の冒険,picture_sealed.jpg,20,7,9,2<br>
+    <br>
+    ■以下がシナリオCSV（物語の内容）のサンプルです。<br>
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect<br>
+1,normal,"地下の封印庫に足を踏み入れた。通路は左、真ん中、右に分かれている。","左へ進む→2,真ん中へ進む→11,右へ進む→3",,,,,bgm_title.mp3,bgi1.jpg,<br>
+2,battle,"床が崩れ、鉄製の自動兵が起動する。","破壊して進む",オートマン,6,6,3,bgm_fog.mp3,bgi2.jpg,<br>
+3,normal,"棚に残された保存箱を見つけた。","開ける→31,無視する→4",,,,,bgm2.mp3,bgi3.jpg,<br>
+31,normal,"中には干し肉が入っていた！(食料が1増えた)","先に進む→4",,,,,bgm2.mp3,bgi3.jpg,food+1<br>
+4,normal,"奥の扉には歪んだ封印文字が刻まれている。ここは少し安全そうだ。","力で押す→5,封印を読む→5",,,,,bgm2.mp3,bgi4.jpg,eat<br>
+5,normal,"封印庫の中央室に入った瞬間、巨大な影が天井から降り立つ。","構えを取る→6",,,,,bgm2.mp3,bgi5.jpg,<br>
+6,battle,"封印の番人が立ちはだかる。","番人を倒す",番人オーガ,7,7,7,bgm_fog.mp3,,<br>
+7,normal,"番人は崩れ落ち、奥に祭壇が現れた。一息つく暇がありそうだ。いっぱい食べても構わない。","祭壇を調べる→8,周囲を警戒する→9",,,,,bgm2.mp3,bgi6.jpg,!eat<br>
+8,normal,"祭壇の宝珠が淡く光る。","触れる→10,無視する→10",,,,,,,bgi1.jpg,<br>
+9,normal,"背後から残存装置が作動した！青白い電光が通路を走る。","回避を試みる→91,強行突破を試みる→92",,,,,bgm_story.mp3,bgi1.jpg,<br>
+91,normal,"君は間一髪で電光を潜り抜けた！装置は火花を散らして沈黙した。","先へ進む→10",,,,,bgm_story.mp3,bgi1.jpg,<br>
+92,normal,"無理やり突破したが、電光が肩を焼いた！君は苦痛に顔を歪める。","痛みを堪えて進む→10",,,,,bgm_story.mp3,bgi1.jpg,hp-3<br>
+10,end,"封印庫は静寂を取り戻した。","おわり",,,,,bgm_title.mp3,bgi4.jpg,<br>
+11,normal,"真ん中の道を選んだ君は、そのまま闇の中を進むと、見覚えのある場所へ来た。最初の入り口ではないか！徒労のあまり、体力を5ポイント失う。","あたりを見回す→1",,,,,bgm_title.mp3,bgi4.jpg,!hp-5<br>
+<br>
+# 命令<br>
+以下の物語の概要をもとに、CSV出力ルールに従ってCSV形式でルールCSVとシナリオCSVを出力してください。<br>
+<br>
+# ルールCSVの出力ルール<br>
+項目名	内容<br>
+ttl	ゲームタイトル（画面上部に表示）<br>
+bg	初期背景画像ファイル名<br>
+max_hp	プレイヤー最大HP<br>
+init_skill	初期戦技<br>
+init_luck	初期幸運<br>
+init_food	初期食料<br>
+<br>
+・画像はHTMLと同じフォルダに置くものとし、ファイル名は拡張子を含めて正確に書くものとする<br>
+・数値は半角数字<br>
+・カンマ区切り<br>
+・1行目は必ず項目名<br>
+<br>
+# シナリオCSVの出力ルール<br>
+列	内容<br>
+id	パラグラフ番号（整数）<br>
+type	normal / battle / end<br>
+text	表示する文章<br>
+options	選択肢<br>
+e_name	敵の名前（battle時）<br>
+e_skill	敵の戦技<br>
+e_hp	敵HP<br>
+next	戦闘勝利後の移動先パラグラフID<br>
+bgm	BGMファイル名<br>
+bgi	背景画像ファイル名<br>
+effect	特殊効果<br>
+<br>
+▼type の種類<br>
+① normal：<br>
+通常シーン。<br>
+例：<br>
+1,normal,"通路は左右に分かれている。","左→2,右→3",,,,,bgm.mp3,room.jpg,<br>
+<br>
+② battle：戦闘シーン。<br>
+2,battle,"鉄の兵が襲いかかる。","戦う",オートマン,6,6,3,bgm_fight.mp3,battle.jpg,<br>
+<br>
+③ end：エンディング<br>
+10,end,"静寂が戻った。","おわり",,,,,bgm_title.mp3,,<br>
+<br>
+▼options（選択肢）の書き方<br>
+形式：　表示テキスト→移動先ID<br>
+複数ある場合：　左へ→2,右へ→3<br>
+<br>
+注意：<br>
+・「→」は全角矢印<br>
+・カンマで区切る<br>
+・移動先は必ず存在するID<br>
+<br>
+▼text の書き方<br>
+AIでの生成では改行をつけると事故につながるため、改行はしないこと。<br>
+手動でCSVを作成する場合は、「\n」を改行記号として使用できます。<br>
+<br>
+▼戦闘の仕組み<br>
+戦闘は、2d6 + 戦技　で判定されます。<br>
+勝利 → 敵に2ダメージ<br>
+敗北 → 自分に2ダメージ<br>
+幸運使用で増減<br>
+幸運は使うたび1減少<br>
+<br>
+▼effect（特殊効果）<br>
+特定のパラグラフに自動効果を付けられます。<br>
+効果によってHPが0になった場合は、その時点でゲームオーバーとなります。<br>
+<br>
+ステータス増減の形式（通常は初回訪問時のみ）：<br>
+hp+3<br>
+hp-2<br>
+food+1<br>
+luck-1<br>
+<br>
+先頭に「!」を付けると、訪れるたびに繰り返し効果が発動します：<br>
+!hp-2（罠など）<br>
+<br>
+例：以下の場合、同じidを訪れるたびにhp-2となります。<br>
+11,normal,"罠の道だ！","戻る→1",,,,,,,!hp-2<br>
+例：以下の場合、同じidを訪れても、2回目以降はfoodは増えません。<br>
+31,normal,"干し肉を見つけた。","進む→4",,,,,,,food+1<br>
+<br>
+食事ポイントとして「eat」を書くと、食料がある場合にHPを4回復できるボタンが表示されます。<br>
+「eat」は1度きり、「!eat」は食料がある限り何度でも使用可能です。<br>
+例：<br>
+4,normal,"ここは安全そうだ。食料を好きなだけ食べても構わない。","進む→5",,,,,,,!eat<br>
+<br>
+▼BGMについて<br>
+mp3ファイル名を書く<br>
+空欄なら停止<br>
+同じBGMなら切り替わらない<br>
+例：<br>
+bgm_fight.mp3<br>
+<br>
+▼背景画像（bgi）<br>
+そのパラグラフの専用背景<br>
+空欄ならルールCSVで指定した背景を使用<br>
+<br>
+★よくある記述ミス<br>
+・カンマ不足：列数が足りないと正常動作しません。<br>
+・IDの重複：同じIDは使わないこと。<br>
+・存在しないIDへ移動しないこと<br>
+・options内の矢印は必ず「→」を使う。「->」などは禁止。<br>
+<br>
+★その他<br>
+戦闘は少なめに。パラグラフ10個当たり2回がテンポ良い。<br>
+回復ポイントを作るとよい。<br>
+戦闘前後に eat を配置するとバランスが良い。<br>
+</div>
+
+<button type="button" class="rule-toggle-btn" id="toggleBtn" onclick="toggleRule()">
+    ▼ すべてを見てみる（サンプルと詳細ルール）
+</button>
+
+
+<div class="section-title">【B】ゲームブックとして作りたい物語の概要を入力してみましょう</div>
+
+<br>
+例：スライムが魔王を倒す物語。戦闘は高難度で。<br>
+例：真冬の放課後恋愛ものをパラグラフ20個程度で。<br>
+例：富士登山（五合目までバス、八合目で宿泊、ご来光、砂走りで下山、麓で温泉と懐石料理）を戦闘なしで。<br>
+例：四択の選択式クイズを３問。<br>
+例：爆笑！闇鍋パーティー<br>
+<br>
+<span style="color:#990000;">※生成AI側の規約に反しないよう、良識の範囲内で入力しましょう。</span>
+<br>
+<textarea id="storyB" placeholder="ここに物語のあらすじや設定を記入してください。"></textarea>
+
+<p>
+<strong>もしも以前作成したルールCSVとシナリオCSVがあれば、それらの中身を上記の入力欄に貼り付け、さらに指示を文章で追記することで、改訂版を作ることもできます。（物語を膨らませたい・難易度を上げたいなど）</strong>
+<br>
+<p>
+【A】の固定の生成ルールに、この【B】の入力内容が結合され、生成AIに対してそのまま使用できる長文の命令文（プロンプト）となります。<br>
+<br>
+以下のボタンを押すと、命令文をクリップボードにコピーした状態でAIが起動しますので、AI側のチャット欄に貼り付けてお使いください。
+</p>
+
+<button class="btn-chatgpt" onclick="copyAndOpen('chatgpt')">プロンプトをコピーして AI (ChatGPT) を起動</button>
+<button class="btn-gemini" onclick="copyAndOpen('gemini')">プロンプトをコピーして AI (Gemini) を起動</button>
+
+<p id="status"></p>
+
+<div class="studio-logo" style="margin-top: 50px; opacity: 1.0;">
+    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+    <img src="storyem_logo.png" alt="STORYEM LOGO" style="max-width: 350px;margin-right: 20px;">
+    <img src="fde_white.png" alt="Factory Digital Entertainment LOGO" style="max-width: 130px;">
+    <p style="font-size: 1em; color: #111;">© 2026 Factory Digital Entertainment</p>
+</div>
+
+<script>
+// --- ルール文章【A】をここに記述 ---
+const ruleA = `
+    ■以下がルールCSV（ゲーム全体の設定）のサンプルです。
+    ttl,bg,max_hp,init_skill,init_luck,init_food
+封印庫の冒険,picture_sealed.jpg,20,7,9,2
+
+    ■以下がシナリオCSV（物語の内容）のサンプルです。
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
+1,normal,"地下の封印庫に足を踏み入れた。通路は左、真ん中、右に分かれている。","左へ進む→2,真ん中へ進む→11,右へ進む→3",,,,,bgm_title.mp3,bgi1.jpg,
+2,battle,"床が崩れ、鉄製の自動兵が起動する。","破壊して進む",オートマン,6,6,3,bgm_fog.mp3,bgi2.jpg,
+3,normal,"棚に残された保存箱を見つけた。","開ける→31,無視する→4",,,,,bgm2.mp3,bgi3.jpg,
+31,normal,"中には干し肉が入っていた！(食料が1増えた)","先に進む→4",,,,,bgm2.mp3,bgi3.jpg,food+1
+4,normal,"奥の扉には歪んだ封印文字が刻まれている。\nここは少し安全そうだ。","力で押す→5,封印を読む→5",,,,,bgm2.mp3,bgi4.jpg,eat
+5,normal,"封印庫の中央室に入った瞬間、巨大な影が天井から降り立つ。","構えを取る→6",,,,,bgm2.mp3,bgi5.jpg,
+6,battle,"封印の番人が立ちはだかる。","番人を倒す",番人オーガ,7,7,7,bgm_fog.mp3,,
+7,normal,"番人は崩れ落ち、奥に祭壇が現れた。一息つく暇がありそうだ。","祭壇を調べる→8,周囲を警戒する→9",,,,,bgm2.mp3,bgi6.jpg,eat
+8,normal,"祭壇の宝珠が淡く光る。","触れる→10,無視する→10",,,,,,,bgi1.jpg,
+9,normal,"背後から残存装置が作動した！青白い電光が通路を走る。","回避を試みる→91,強行突破を試みる→92",,,,,bgm_story.mp3,bgi1.jpg,
+91,normal,"君は間一髪で電光を潜り抜けた！装置は火花を散らして沈黙した。","先へ進む→10",,,,,bgm_story.mp3,bgi1.jpg,
+92,normal,"無理やり突破したが、電光が肩を焼いた！君は苦痛に顔を歪める。","痛みを堪えて進む→10",,,,,bgm_story.mp3,bgi1.jpg,hp-3
+10,end,"封印庫は静寂を取り戻した。","おわり",,,,,bgm_title.mp3,bgi4.jpg,
+11,normal,"真ん中の道を選んだ君は、そのまま闇の中を進むと、見覚えのある場所へ来た。最初の入り口ではないか！徒労のあまり、体力を5ポイント失う。","あたりを見回す→1",,,,,bgm_title.mp3,bgi4.jpg,!hp-5
+
+# 命令
+以下の物語の概要をもとに、CSV出力ルールに従ってCSV形式でルールCSVとシナリオCSVを出力してください。
+解説や前置きは不要です。
+（まずルールCSVを出力し、空行を1行入れてからシナリオCSVを出力すること。それ以外の文章は一切出力しない。）
+
+# ルールCSVの出力ルール
+項目名	内容
+ttl	ゲームタイトル（画面上部に表示）
+bg	初期背景画像ファイル名
+max_hp	プレイヤー最大HP
+init_skill	初期戦技
+init_luck	初期幸運
+init_food	初期食料
+
+・画像はHTMLと同じフォルダに置くものとし、ファイル名は拡張子を含めて正確に書くものとする
+・数値は半角数字
+・カンマ区切り
+・1行目は必ず項目名
+
+# シナリオCSVの出力ルール
+列	内容
+id	パラグラフ番号（整数）
+type	normal / battle / end
+text	表示する文章
+options	選択肢
+e_name	敵の名前（battle時）
+e_skill	敵の戦技
+e_hp	敵HP
+next	戦闘勝利後の移動先パラグラフID
+bgm	BGMファイル名
+bgi	背景画像ファイル名
+effect	特殊効果
+
+▼type の種類
+① normal：
+通常シーン。
+例：
+1,normal,"通路は左右に分かれている。","左→2,右→3",,,,,bgm.mp3,room.jpg,
+
+② battle：戦闘シーン。
+2,battle,"鉄の兵が襲いかかる。","戦う",オートマン,6,6,3,bgm_fight.mp3,battle.jpg,
+
+③ end：エンディング
+10,end,"静寂が戻った。","おわり",,,,,bgm_title.mp3,,
+
+▼options（選択肢）の書き方
+形式：　表示テキスト→移動先ID
+複数ある場合：　左へ→2,右へ→3
+
+注意：
+・「→」は全角矢印
+・カンマで区切る
+・移動先は必ず存在するID
+
+▼text の書き方
+改行はしないこと。
+
+▼戦闘の仕組み
+戦闘は、2d6 + 戦技　で判定されます。
+勝利 → 敵に2ダメージ
+敗北 → 自分に2ダメージ
+幸運使用で増減
+幸運は使うたび1減少
+
+▼effect（特殊効果）
+特定のパラグラフに自動効果を付けられます。
+効果によってHPが0になった場合は、その時点でゲームオーバーとなります。
+
+ステータス増減の形式（通常は初回訪問時のみ）：
+hp+3
+hp-2
+food+1
+luck-1
+
+先頭に「!」を付けると、訪れるたびに繰り返し効果が発動します：
+!hp-2（罠など）
+
+例：以下の場合、同じidを訪れるたびにhp-2となります。
+11,normal,"罠の道だ！","戻る→1",,,,,,,!hp-2
+例：以下の場合、同じidを訪れても、2回目以降はfoodは増えません。
+31,normal,"干し肉を見つけた。","進む→4",,,,,,,food+1
+<br>
+食事ポイントとして「eat」を書くと、食料がある場合にHPを4回復できるボタンが表示されます。
+「eat」は1度きり、「!eat」は食料がある限り何度でも使用可能です。
+例：
+4,normal,"ここは安全そうだ。食料を好きなだけ食べても構わない。","進む→5",,,,,,,!eat
+
+▼BGMについて
+mp3ファイル名を書く
+空欄なら停止
+同じBGMなら切り替わらない
+例：
+bgm_fight.mp3
+
+▼背景画像（bgi）
+そのパラグラフの専用背景
+空欄ならルールCSVで指定した背景を使用
+
+★よくある記述ミス
+・カンマ不足：列数が足りないと正常動作しません。
+・IDの重複：同じIDは使わないこと。
+・存在しないIDへ移動しないこと
+・options内の矢印は必ず「→」を使う。「->」などは禁止。
+
+★その他
+戦闘は少なめに。パラグラフ10個当たり2回がテンポ良い。
+回復ポイントを作るとよい。
+戦闘前後に eat を配置するとバランスが良い。
+
+
+`; //const部分の終わり
+
+function copyAndOpen(targetAI) {
+    const storyB = document.getElementById('storyB').value;
+    if (!storyB) {
+        alert("ゲームブックとして作りたい物語の概要を記入してください。");
+        return;
+    }
+
+    const fullPrompt = `${ruleA}\n\n# 物語の概要\n${storyB}`;
+
+    // 1. まず先にURLを決定
+    const url = (targetAI === 'gemini') 
+        ? "https://gemini.google.com/" 
+        : "https://chatgpt.com/";
+
+    // 2. クリップボードにコピーを実行
+    navigator.clipboard.writeText(fullPrompt).then(() => {
+        // コピー成功時のメッセージ表示
+        const statusEl = document.getElementById('status');
+        const aiName = (targetAI === 'gemini') ? 'Gemini' : 'ChatGPT';
+        
+        statusEl.innerHTML = `✅ ${aiName} 用のプロンプトをコピーしました！<br>別タブで開いたチャット欄に貼り付けてください。`;
+        
+        // 3. 【重要】setTimeoutを使わず、このコンテキスト内で即座に開く
+        window.open(url, "_blank");
+    }).catch(err => {
+        // 万が一コピーに失敗した場合の処理
+        console.error('コピー失敗:', err);
+        alert("クリップボードへのコピーに失敗しました。手動でコピーしてください。");
+    });
+}
+
+function toggleRule() {
+    const box = document.getElementById('ruleBox');
+    const btn = document.getElementById('toggleBtn');
+    
+    if (box.classList.contains('expanded')) {
+        box.classList.remove('expanded');
+        btn.innerText = "▼ すべてを見てみる（サンプルと詳細ルール）";
+        // 閉じたときに画面が飛ぶのを防ぐため、少し上にスクロールさせるのもアリ
+    } else {
+        box.classList.add('expanded');
+        btn.innerText = "▲ 閉じる";
+    }
+}
+</script>
+</body>
+</html>
