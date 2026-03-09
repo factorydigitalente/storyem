@@ -1184,34 +1184,37 @@ window.addEventListener('load', async () => {
     const ruleRes = await fetch('rule.csv');
     const scenarioRes = await fetch('scenario.csv');
 
-    // サーバー上にファイルが存在し、かつ手動入力がまだ行われていない場合
     if (!scenarioData.length && ruleRes.ok && scenarioRes.ok) {
       const ruleText = await ruleRes.text();
       const scenarioText = await scenarioRes.text();
 
-      // ゲーム画面を表示状態にし、開始ボタンを設置する
+      // ゲームエリアを準備
       setUIMode('game');
-      const optDiv = document.getElementById("options");
+      const gameUI = document.getElementById("game-ui");
       const textDiv = document.getElementById("text");
+      const optDiv = document.getElementById("options");
 
-      textDiv.innerText = "Data loaded. Ready to start.\nデータが読み込まれました。開始準備完了です。";
-      optDiv.innerHTML = ""; // 念のためクリア
+      // UIを強制表示し、開始待ち状態にする
+      gameUI.style.display = "block";
+      textDiv.innerText = "Game data loaded from server.\nサーバーからデータを読み込みました。";
+      optDiv.innerHTML = "";
 
       const startBtn = document.createElement("button");
       startBtn.innerText = "Click to Game Start / ゲーム開始";
       
       startBtn.onclick = () => {
-        // ユーザー操作（クリック）内で初期化を行うことで、BGMの再生許可を得る
+        // ここで初めてデータを解析してゲームを開始する
         ruleData = parseRuleCSV(ruleText);
         applyRule(ruleData);
-        startGame(parseCSV(scenarioText));
-        console.log("Started after user interaction. ユーザー操作を経て開始しました。");
+        // シナリオをパースして startGame に渡す（これで showParagraph(1) が走る）
+        const parsedScenario = parseCSV(scenarioText);
+        startGame(parsedScenario);
       };
 
       optDiv.appendChild(startBtn);
     }
   } catch (err) {
-    console.log("Automatic load failed. Please use manual import.");
+    console.log("Automatic load failed.");
   }
 });
 
