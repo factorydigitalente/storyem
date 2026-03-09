@@ -310,7 +310,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   margin-top: 50px;
   margin-bottom: 30px;
   text-align: center;
-  pointer-events: none; /* クリックを貫通させる */
+  /* pointer-events: none; */ /* クリックを貫通させる */
 }
 
 #global-logo img { max-width: 320px; height: auto; }
@@ -344,6 +344,13 @@ input:checked + .slider:before { transform: translateX(20px); }
   #global-logo img:last-child {
     max-width: 30%; /* FDEロゴをバランスよく配置 */
   }
+}
+
+#global-logo a {
+  transition: opacity 0.2s;
+}
+#global-logo a:hover {
+  opacity: 0.7; /* ホバー時に少し薄くする */
 }
 
 </style>
@@ -438,8 +445,13 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div id="global-logo">
   <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 10px;">
-    <img src="storyem_logo.png" alt="STORYEM LOGO">
-    <img src="fde_black.png" style="max-width: 140px; alt="Factory Digital Entertainment LOGO">
+	<a href="https://note.com/cinema_compose/n/n2834755c31ac" target="_blank" rel="noopener noreferrer" style="display: inline-block;">
+	  <img src="storyem_logo.png" alt="STORYEM LOGO">
+	</a>
+
+	<a href="https://factorydigitalente.wixsite.com/cinemamusic" target="_blank" rel="noopener noreferrer" style="display: inline-block;">
+	  <img src="fde_black.png" style="max-width: 140px;" alt="Factory Digital Entertainment LOGO">
+	</a>
   </div>
   
   <p style="font-size: 1em; color: #fff;">© 2026 Factory Digital Entertainment</p>
@@ -471,20 +483,20 @@ let isBGMMuted = false;
 // =======================
 function validateCSV(text) {
   if (!text || text.trim() === "") {
-    alert("データが空です。");
+    alert("Data is empty. データが空です。");
     return false;
   }
 
   // 文字数制限（30万文字）
   if (text.length > 300000) {
-    alert("CSVサイズが大きすぎます（30万文字上限）");
+    alert("CSV size is too large (300,000 character limit) CSVサイズが大きすぎます（30万文字上限）");
     return false;
   }
 
   // 行数制限（2000行）
   const lines = text.split(/\r?\n/);
   if (lines.length > 2000) {
-    alert("段落数（行数）が多すぎます（2000行上限）");
+    alert("Too many paragraphs (lines) (2000 lines limit) 段落数（行数）が多すぎます（2000行上限）");
     return false;
   }
 
@@ -735,7 +747,7 @@ function showParagraph(id) {
           const optDiv = document.getElementById("options");
           optDiv.innerHTML = ""; 
           const retryBtn = document.createElement("button");
-          retryBtn.innerText = "最初からリトライ";
+          retryBtn.innerText = "Play Again /最初からリトライ";
           retryBtn.onclick = () => restartGame();
           optDiv.appendChild(retryBtn);
           
@@ -935,7 +947,7 @@ function startBattle(p) {
 
     if (player.hp <= 0) {
       document.getElementById("text").innerText = "You are exhausted... 力尽きた...";
-      optDiv.innerHTML = `<button onclick="restartGame()">Play Again 最初からリトライ</button>`;
+      optDiv.innerHTML = `<button onclick="restartGame()">Play Again /最初からリトライ</button>`;
     } else if (enemy.hp <= 0) {
       logDiv.innerText = turnMsg + "\nYou Win! 勝利した！";
       optDiv.innerHTML = `<button onclick="showParagraph(${p.battleNext})">Proceed to next 次へ進む</button>`;
@@ -1172,18 +1184,37 @@ window.addEventListener('load', async () => {
     const ruleRes = await fetch('rule.csv');
     const scenarioRes = await fetch('scenario.csv');
 
-    // 既に手動インポートで開始していない場合のみ自動読み込み
     if (!scenarioData.length && ruleRes.ok && scenarioRes.ok) {
       const ruleText = await ruleRes.text();
-      ruleData = parseRuleCSV(ruleText);
-      applyRule(ruleData);
-
       const scenarioText = await scenarioRes.text();
-      startGame(parseCSV(scenarioText));
-      console.log("Automatically started from a CSV file on the server. サーバー上のCSVファイルから自動開始しました。");
+
+      // ゲームエリアを準備
+      setUIMode('game');
+      const gameUI = document.getElementById("game-ui");
+      const textDiv = document.getElementById("text");
+      const optDiv = document.getElementById("options");
+
+      // UIを強制表示し、開始待ち状態にする
+      gameUI.style.display = "block";
+      textDiv.innerText = "Game data loaded from server.\nサーバーからデータを読み込みました。";
+      optDiv.innerHTML = "";
+
+      const startBtn = document.createElement("button");
+      startBtn.innerText = "Click to Game Start / ゲーム開始";
+      
+      startBtn.onclick = () => {
+        // ここで初めてデータを解析してゲームを開始する
+        ruleData = parseRuleCSV(ruleText);
+        applyRule(ruleData);
+        // シナリオをパースして startGame に渡す（これで showParagraph(1) が走る）
+        const parsedScenario = parseCSV(scenarioText);
+        startGame(parsedScenario);
+      };
+
+      optDiv.appendChild(startBtn);
     }
   } catch (err) {
-    console.log("The CSV file in the server was not automatically loaded. Please manually select your local CSV file. サーバー内のCSVファイルの自動読み込みは行われませんでした。お手元のローカルのCSVファイルを手動で選択してください。");
+    console.log("Automatic load failed.");
   }
 });
 
