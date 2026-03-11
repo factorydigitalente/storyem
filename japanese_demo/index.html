@@ -13,17 +13,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STORYEM：GAMEBOOK engine - ストリーム：ゲームブックエンジン</title>
 <style>
+/* --- 色テーマ変数定義 --- */
+:root {
+  /* 初期値はパターン1（黒系） */
+  --bg-gradient: linear-gradient(135deg, #444, #333);
+}
+
 /* --- 1. 基本レイアウト・全体設定 --- */
 body {
   font-family: sans-serif;
-  /* ダークグレーから黒に近いグレーへのグラデーション背景 */
-  background: linear-gradient(135deg, #444, #333);
+  background: var(--bg-gradient); /* 背景色は変数を使用 */
+  background-attachment: fixed; /* スクロールしても背景を固定 */
   color: #eee; /* 基本文字色：明るいグレー */
   padding: 12px; /* 画面端の余白 */
   line-height: 1.6; /* 行間を広げて読みやすく */
   max-width: 800px; /* PC閲覧時の最大幅 */
   margin: auto; /* 画面中央に配置 */
   font-size: 16px; /* 標準フォントサイズ */
+}
+
+/* --- 色テーマ切り替えボタンのスタイル --- */
+.theme-btn {
+  width: 30px;
+  height: 30px;
+  min-height: 0 !important; /* min-height をリセットして、ボタン全般の 48px 設定を上書きします */
+  aspect-ratio: 1 / 1; /* 正方形（正円） */
+  flex-shrink: 0;      /* 横から押し潰されるのを防止 */
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8); /* 少し透明感のある白縁 */
+  /* 色テーマボタン内の色 */
+  background: var(--next-theme-gradient, #fff) !important;
+  /* 背景をボーダーの内側に閉じ込めます */
+  background-clip: padding-box;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
+.theme-btn:active {
+  transform: scale(0.9); /* 押した時に少し凹む演出 */
 }
 
 h1 {
@@ -338,11 +374,24 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 /* スマホ用の個別調整 */
 @media (max-width: 480px) {
-  #global-logo img:first-child {
-    max-width: 60%; /* STORYEMロゴを少し優先的に大きく */
+  /* ロゴを包んでいる横並びの枠を調整 */
+  #global-logo > div {
+    gap: 10px !important;    /* ロゴ同士の隙間を狭くする */
+    padding: 0 5px !important;
   }
-  #global-logo img:last-child {
-    max-width: 30%; /* FDEロゴをバランスよく配置 */
+
+  /* 1つ目のロゴ（STORYEM） */
+  #global-logo a:first-child img {
+    width: 220px !important;  /* ％ではなく実数で指定 */
+    max-width: 65vw !important; /* 画面横幅の65%を上限にする */
+    height: auto !important;
+  }
+
+  /* 2つ目のロゴ（FDE） */
+  #global-logo a:last-child img {
+    width: 120px !important;   /* ％ではなく実数で指定 */
+    max-width: 30vw !important; /* 画面横幅の30%を上限にする */
+    height: auto !important;
   }
 }
 
@@ -363,6 +412,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </h1>
 
   <div class="header-right-ui">
+    <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
       <span class="bgm-label-text">♪</span>
       <label class="switch">
@@ -532,6 +582,11 @@ function applyRule(rule) {
     document.getElementById("game-area").style.backgroundImage =
       `url(${rule.bg})`;
   }
+
+  // 色テーマ設定の読み込み
+  // CSVの列名は 'theme' と想定。未記入や不正値は applyTheme 側でガード
+  const csvTheme = parseInt(rule.theme);
+  applyTheme(csvTheme || 1);
 
   // ===== プレイヤー初期化 =====
   maxHP = parseInt(rule.max_hp) || 20;
@@ -1113,11 +1168,15 @@ function handleBGM(newBGM) {
 }
 
 // ファイル読み込み：シナリオCSVファイル
-document.getElementById("scenario-file").addEventListener("change", (e) => {
-  // ルールCSVファイルが読み込まれているかチェック
+// 同名ファイル選択のバグ回避用
+document.getElementById("scenario-file").onclick = function() {
+  this.value = null; 
+};
+
+document.getElementById("scenario-file").onchange = function(e) {
+  // 安全装置：先にルールが読み込まれているかチェック
   if (Object.keys(ruleData).length === 0) {
     alert('Please select "📘 Rule CSV" first.\n先に「📘 ルールCSV」を選択してください。');
-    // 選択されたファイルをリセット
     e.target.value = ""; 
     return;
   }
@@ -1128,32 +1187,57 @@ document.getElementById("scenario-file").addEventListener("change", (e) => {
   const reader = new FileReader();
   reader.onload = (ev) => {
     // 読み込んだテキストにBOMがあれば除去
-    const cleanText = ev.target.result.replace(/^\ufeff/, "");
-    
-    // ★ファイル読み込み時にも共通バリデーションを実行！
+    const cleanText = ev.target.result.replace(/^\ufeff/, "").trim();
+    // バリデーション（サイズチェック等）
     if (!validateCSV(cleanText)) return;
 
-    startGame(parseCSV(cleanText));
-  };
+    // テキストエリアの末尾（ルールの下）にシナリオを追記する
+    const textarea = document.getElementById("csv-input");
+    textarea.value += cleanText;
 
+    // ゲームを開始
+    startGame(parseCSV(cleanText));
+    // ここで value = "" はしない！
+  };
   reader.readAsText(file);
-});
+};
+
 
 // ファイル読み込み：ルールCSVファイル
-document.getElementById("rule-file").addEventListener("change", (e) => {
+// ボタンが押された「瞬間」に内部値をリセットする（これで同名ファイルが選べるようになる）
+document.getElementById("rule-file").onclick = function() {
+  this.value = null; 
+};
+document.getElementById("rule-file").onchange = function(e) {
   const file = e.target.files[0];
   if (!file) return;
 
+  // テキストエリアを取得
+  const textarea = document.getElementById("csv-input");
+
+  // 【安全装置】入力欄が空でない場合は確認を出す
+  if (textarea.value.trim() !== "") {
+    const confirmOverwrite = confirm('The input field will be cleared and new data will be loaded. OK?\n入力欄の内容を破棄して、新しいデータを読み込みますか？');
+    if (!confirmOverwrite) {
+      return; // キャンセル時は何もしない（ファイル名は残る）
+    }
+  }
+
   const reader = new FileReader();
   reader.onload = (ev) => {
-    // 読み込んだテキストにBOMがあれば除去
-    const cleanText = ev.target.result.replace(/^\ufeff/, "");
+    // BOM（文字化けの原因）を除去して取得
+    const cleanText = ev.target.result.replace(/^\ufeff/, "").trim();
+    
+    // 内部データに反映
     ruleData = parseRuleCSV(cleanText);
     applyRule(ruleData);
-
+    // テキストエリアをリセットしてルールを表示。後に続くシナリオ用に改行を足しておく
+    textarea.value = cleanText + "\n\n";
+    // ここで value = "" はしない！
   };
   reader.readAsText(file);
-});
+};
+
 
 // ファイルメニューの表示・非表示を切り替える関数
 function toggleSelectors() {
@@ -1185,14 +1269,16 @@ window.addEventListener('load', async () => {
     const scenarioRes = await fetch('scenario.csv');
 
     if (!scenarioData.length && ruleRes.ok && scenarioRes.ok) {
-      const ruleText = await ruleRes.text();
-      const scenarioText = await scenarioRes.text();
+      // BOMがあれば除去してからトリム
+      const ruleText = (await ruleRes.text()).replace(/^\ufeff/, "").trim();
+      const scenarioText = (await scenarioRes.text()).replace(/^\ufeff/, "").trim();
 
-      // ゲームエリアを準備
+      // UIをゲーム画面へ切り替え
       setUIMode('game');
       const gameUI = document.getElementById("game-ui");
       const textDiv = document.getElementById("text");
       const optDiv = document.getElementById("options");
+      const textarea = document.getElementById("csv-input"); // テキストエリア
 
       // UIを強制表示し、開始待ち状態にする
       gameUI.style.display = "block";
@@ -1203,6 +1289,9 @@ window.addEventListener('load', async () => {
       startBtn.innerText = "Click to Game Start / ゲーム開始";
       
       startBtn.onclick = () => {
+        // ★重要：開始ボタンが押されたとき、テキストエリアに全ソースを反映する
+        textarea.value = ruleText + "\n\n" + scenarioText;
+
         // ここで初めてデータを解析してゲームを開始する
         ruleData = parseRuleCSV(ruleText);
         applyRule(ruleData);
@@ -1217,6 +1306,7 @@ window.addEventListener('load', async () => {
     console.log("Automatic load failed.");
   }
 });
+
 
 // =======================
 // 手動CSV貼り付けインポート機能
@@ -1327,8 +1417,8 @@ function isValidCSVLine(line) {
 // サンプルCSVをテキストエリアにセットする関数
 function setSampleCSV() {
   const textarea = document.getElementById("csv-input");
-  const sampleText = `ttl,bg,max_hp,init_skill,init_luck,init_food
-The Sealed Warehouse 封印庫の冒険,picture_sealed.jpg,20,7,9,2
+  const sampleText = `ttl,bg,max_hp,init_skill,init_luck,init_food,theme
+The Sealed Warehouse 封印庫の冒険,picture_sealed.jpg,20,7,9,2,3
 
 id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
 1,normal,"You step into the Underground Sealed Warehouse. The passage splits into three paths: a paved road to the left, a dark path straight ahead, and a bright corridor to the right.　地下の封印庫に足を踏み入れた。通路は左、真ん中、右に分かれている。","Go left 左へ進む→2,Go straight 真ん中へ進む→11,Go right 右へ進む→3",,,,,bgm_title.mp3,bgi1.jpg,
@@ -1362,7 +1452,46 @@ id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
   console.log("Reflected the sample CSV. サンプルCSVを反映しました。");
 }
 
+// --- 色テーマ管理用の変数と定義 ---
+let currentThemeIndex = 1; // 1: 黒, 2: 緑, 3: 茶
 
+const themes = {
+  1: "linear-gradient(135deg, #444, #333)",        // 1: 黒・グレー（無彩色）
+  2: "linear-gradient(135deg, #611f1f, #2b0a0a)", // 2: 赤（情熱・危機）
+  3: "linear-gradient(135deg, #635a2d, #2e2a14)", // 3: 黄・金（砂漠・財宝）
+  4: "linear-gradient(135deg, #2a4d2a, #152915)", // 4: 緑（森林・休息）
+  5: "linear-gradient(135deg, #1a2e1a, #0d1a0d)", // 5: 深緑（深い森・迷宮）
+  6: "linear-gradient(135deg, #1a3a5f, #0a182b)", // 6: 青（深海・夜）
+  7: "linear-gradient(135deg, #4b2c5e, #1f1129)", // 7: 紫（魔法・神秘）
+  8: "linear-gradient(135deg, #5d4037, #2b1d1a)", // 8: 茶（土・遺跡）
+  9: "linear-gradient(135deg, #3e2723, #1b0000)"  // 9: 濃茶（泥・腐敗）
+};
+
+// 色テーマを適用し、ボタンの「次」の色をセットする
+function applyTheme(index) {
+  // 範囲チェック（不正な値や未記入は1にする）
+  const totalThemes = Object.keys(themes).length;
+  const idx = (index >= 1 && index <= totalThemes) ? index : 1;
+  currentThemeIndex = idx;
+
+  // 画面全体の背景を適用
+  document.documentElement.style.setProperty('--bg-gradient', themes[idx]);
+
+  // 「次」の色をCSS変数としてルート（全体）にセット
+  // これにより、ボタンが後から読み込まれても自動的にこの色が適用されます
+  const nextIdx = (idx % totalThemes) + 1;
+  document.documentElement.style.setProperty('--next-theme-gradient', themes[nextIdx]);
+}
+
+// ボタンクリック時の処理（シンプルに！）
+function nextTheme() {
+  const totalThemes = Object.keys(themes).length; // 色テーマのconst themes内の総テーマ数を自動取得
+  const nextIdx = (currentThemeIndex % totalThemes) + 1;
+  applyTheme(nextIdx);
+}
+
+// 全ての読み込みが終わった最後に、強制的に今のテーマを再適用する
+window.addEventListener('load', () => applyTheme(currentThemeIndex));
 
 </script>
 </body>
