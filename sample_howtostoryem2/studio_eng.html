@@ -102,7 +102,7 @@ textarea:focus {
 }
 
 .rule-box.expanded {
-    max-height: 2500px;
+    max-height: none;
 }
 
 .rule-toggle-btn {
@@ -176,8 +176,8 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 
 <div class="rule-box" id="ruleBox">
     ■ Sample Rule CSV (General Settings):<br>
-    ttl,bg,max_hp,init_skill,init_luck,init_food<br>
-    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2<br>
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme<br>
+    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3<br>
     <br>
     ■ Sample Scenario CSV (Story Content):<br>
     id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect<br>
@@ -199,11 +199,24 @@ The rules below are fixed and will be combined with your story outline [B] to cr
     init_skill: Initial Skill level<br>
     init_luck: Initial Luck level<br>
     init_food: Initial Food count<br>
+    theme    Color Theme Number (Integer 1-9)<br>
     <br>
     - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.<br>
     - Use half-width alphanumeric characters for numbers.<br>
     - Comma-separated values.<br>
     - The first line must always be the column headers.<br>
+    <br>
+    ▼ Theme Selection (Color Themes)<br>
+	Please select one number from 1 to 9 that best matches the atmosphere of the story.<br>
+	1: Black/Gray (Standard, Inorganic, Achromatic)<br>
+	2: Red (Passion, Crisis, Flame)<br>
+	3: Yellow/Gold (Desert, Treasure, Noble)<br>
+	4: Green (Forest, Rest, Nature)<br>
+	5: Dark Green (Deep Forest, Labyrinth)<br>
+	6: Blue (Deep Sea, Night, Calm)<br>
+	7: Purple (Magic, Mystery, Poison)<br>
+	8: Brown (Earth, Ruins, Retro)<br>
+	9: Dark Brown (Mud, Decay, Despair)<br>
     <br>
     # Scenario CSV Output Rules<br>
     Column: Content<br>
@@ -263,6 +276,25 @@ The rules below are fixed and will be combined with your story outline [B] to cr
     <br>
     ▼ BGM<br>
     Enter the .mp3 filename. Leave blank to stop music.<br>
+	<br>
+	▼ Background Image (bgi)<br>
+	This is the specific background for the paragraph. <br>
+	If left blank, the default background specified in the Rule CSV will be used.<br>
+	<br>
+	★ Common Mistakes to Avoid<br>
+	- Missing Commas: The system will not function if the column count is incorrect. Every row MUST have the exact same number of columns (the same number of commas), even if the last column is empty.<br>
+	- Duplicate IDs: Do not use the same ID more than once.<br>
+	- Broken Links: Do not point options to an ID that does not exist.<br>
+	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.<br>
+	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.<br>
+	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".<br>
+	<br>
+	★ Additional Guidelines<br>
+	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.<br>
+	- Recovery: It is recommended to include recovery points. <br>
+	- Balance: Placing the "eat" effect before or after a battle helps balance the difficulty.<br>
+	- Theme: Please select the most appropriate "theme" number (1-9) based on the setting and atmosphere of the story. If you are unsure, use "1".<br>
+
 </div>
 
 <button type="button" class="rule-toggle-btn" id="toggleBtn" onclick="toggleRule()">
@@ -309,8 +341,8 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 <script>
 const ruleA = `
     ■ Sample Rule CSV (General Settings):
-    ttl,bg,max_hp,init_skill,init_luck,init_food
-    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme
+    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3
     
     ■ Sample Scenario CSV (Story Content):
     id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
@@ -332,11 +364,24 @@ const ruleA = `
     init_skill: Initial Skill level
     init_luck: Initial Luck level
     init_food: Initial Food count
+    theme    Color Theme Number (Integer 1-9)
     
     - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.
     - Use half-width alphanumeric characters for numbers.
     - Comma-separated values.
     - The first line must always be the column headers.
+    
+    ▼ Theme Selection (Color Themes)
+	Please select one number from 1 to 9 that best matches the atmosphere of the story.
+	1: Black/Gray (Standard, Inorganic, Achromatic)
+	2: Red (Passion, Crisis, Flame)
+	3: Yellow/Gold (Desert, Treasure, Noble)
+	4: Green (Forest, Rest, Nature)
+	5: Dark Green (Deep Forest, Labyrinth)
+	6: Blue (Deep Sea, Night, Calm)
+	7: Purple (Magic, Mystery, Poison)
+	8: Brown (Earth, Ruins, Retro)
+	9: Dark Brown (Mud, Decay, Despair)
     
     # Scenario CSV Output Rules
     Column: Content
@@ -396,6 +441,26 @@ const ruleA = `
     
     ▼ BGM
     Enter the .mp3 filename. Leave blank to stop music.
+
+	▼ Background Image (bgi)
+	This is the specific background for the paragraph. 
+	If left blank, the default background specified in the Rule CSV will be used.
+
+	★ Common Mistakes to Avoid
+	- Missing Commas: The system will not function if the column count is incorrect. Every row MUST have the exact same number of columns (the same number of commas), even if the last column is empty.
+	- Duplicate IDs: Do not use the same ID more than once.
+	- Broken Links: Do not point options to an ID that does not exist.
+	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.
+	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.
+	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".
+
+	★ Additional Guidelines
+	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.
+	- Recovery: It is recommended to include recovery points. 
+	- Balance: Placing the "eat" effect before or after a battle helps balance the difficulty.
+	- Theme: Please select the most appropriate "theme" number (1-9) based on the setting and atmosphere of the story. If you are unsure, use "1".
+
+
 `;
 
 function copyAndOpen(targetAI) {
