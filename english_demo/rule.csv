@@ -1,2 +1,2 @@
-ttl,bg,max_hp,init_skill,init_luck,init_food
-The Sealed Cave,picture_sealed.png,18,7,9,2
+ttl,bg,max_hp,init_skill,init_luck,init_food,theme
+The Sealed Cave,picture_sealed.png,18,7,9,2,3
