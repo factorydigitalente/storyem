@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>STORYEM: GAMEBOOK studio - CSV Generation Assistant</title>
+<style>
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    max-width: 600px; 
+    margin: 20px auto; 
+    padding: 20px; 
+    line-height: 1.6; 
+    background-color: #f9f9f9;
+}
+
+/* Language Navigation */
+.lang-nav {
+    text-align: right;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+.lang-nav a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.lang-nav a:hover {
+    text-decoration: underline;
+}
+.lang-nav span {
+    color: #333;
+    font-weight: normal;
+}
+
+/* Logo Styles */
+.studio-logo {
+    text-align: center;
+    margin: 20px 0;
+}
+.studio-logo img {
+    max-width: 200px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.title-header {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px 0;
+    border-top: 2px solid #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.title-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em;
+    line-height: 1.4;
+}
+
+.title-header .subtitle {
+    display: block;
+    font-size: 0.75em;
+    color: #666;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+textarea { 
+    width: 100%; 
+    height: 150px; 
+    margin-bottom: 10px; 
+    border: 2px solid #007bff; 
+    border-radius: 8px; 
+    padding: 15px; 
+    box-sizing: border-box; 
+    background-color: #ffffff; 
+    font-size: 1em;
+    line-height: 1.6;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0,123,255,0.25);
+}
+
+.rule-box { 
+    background: #f4f4f4; 
+    padding: 15px; 
+    border-radius: 5px; 
+    font-size: 0.9em; 
+    line-height: 1.4; 
+    color: #2d5a27; 
+    border: 1px inset #ddd; 
+    overflow: hidden; 
+    max-height: 120px; 
+    transition: max-height 0.4s ease-out; 
+    position: relative;
+}
+
+.rule-box.expanded {
+    max-height: none;
+}
+
+.rule-toggle-btn {
+    display: block;
+    width: 100%;
+    background: #e7f1ff;
+    color: #007bff;
+    border: 1px solid #b3d7ff;
+    padding: 8px;
+    margin-top: -1px;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.rule-toggle-btn:hover {
+    background: #dee2e6;
+}
+
+button { 
+    color: white; 
+    border: none; 
+    padding: 15px 20px; 
+    cursor: pointer; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    width: 100%; 
+    font-size: 1.1em; 
+    transition: 0.3s; 
+    margin-bottom: 10px; 
+}
+
+.btn-chatgpt { background: #007bff; }
+.btn-chatgpt:hover { background: #0056b3; transform: translateY(-2px); }
+
+.btn-gemini { background: #1a73e8; }
+.btn-gemini:hover { background: #1557b0; transform: translateY(-2px); }
+
+.section-title { border-left: 5px solid #007bff; padding-left: 10px; margin-top: 30px; font-weight: bold; }
+
+#status { 
+    font-weight: bold; 
+    margin-top: 25px; 
+    text-align: center; 
+    color: #1a7a33; 
+    font-size: 1.1em;
+}
+</style>
+</head>
+<body>
+
+<div class="lang-nav">
+    <span>English(英語)</span> / <a href="studio.html">Japanese(日本語)</a>
+</div>
+
+<div class="studio-logo">
+    <img src="storyem_studio_logo.png" alt="STORYEM studio">
+</div>
+
+<div class="title-header">
+    <h2>STORYEM: GAMEBOOK studio<br>
+    <span class="subtitle">&lt;Rule CSV & Scenario CSV Generation Assistant&gt;</span></h2>
+</div>
+
+<div class="section-title">[A] Generation Rules (Fixed)</div>
+<p>
+The rules below are fixed and will be combined with your story outline [B] to create a prompt for the AI.
+</p>
+
+<div class="rule-box" id="ruleBox">
+    ■ Sample Rule CSV (General Settings):<br>
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme<br>
+    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3<br>
+    <br>
+    ■ Sample Scenario CSV (Story Content):<br>
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect<br>
+    1,normal,"You entered the vault. Paths go left, center, and right.","Left→2,Center→11,Right→3",,,,,bgm_title.mp3,bgi1.jpg,<br>
+    2,battle,"An iron automaton activates!","Destroy it",Automaton,6,6,3,bgm_fog.mp3,bgi2.jpg,<br>
+    3,normal,"You found a box.","Open it→31,Ignore it→4",,,,,bgm2.mp3,bgi3.jpg,<br>
+    31,normal,"Dried meat found! (Food +1)","Proceed→4",,,,,bgm2.mp3,bgi3.jpg,food+1<br>
+    4,normal,"It's safe here. You can rest.","Move forward→5",,,,,bgm2.mp3,bgi4.jpg,eat<br>
+    10,end,"Silence returns to the vault.","END",,,,,bgm_title.mp3,bgi4.jpg,<br>
+    <br>
+    # Instructions<br>
+    Based on the following story outline, output both Rule CSV and Scenario CSV in CSV format according to the output rules.<br>
+    <br>
+    # Rule CSV Output Rules<br>
+    Column: Content<br>
+    ttl: Game Title (Displayed at the top of the screen)<br>
+    bg: Initial background image filename<br>
+    max_hp: Player's Maximum HP<br>
+    init_skill: Initial Skill level<br>
+    init_luck: Initial Luck level<br>
+    init_food: Initial Food count<br>
+    theme    Color Theme Number (Integer 1-9)<br>
+    <br>
+    - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.<br>
+    - Use half-width alphanumeric characters for numbers.<br>
+    - Comma-separated values.<br>
+    - The first line must always be the column headers.<br>
+    <br>
+    ▼ Theme Selection (Color Themes)<br>
+	Please select one number from 1 to 9 that best matches the atmosphere of the story.<br>
+	1: Black/Gray (Standard, Inorganic, Achromatic)<br>
+	2: Red (Passion, Crisis, Flame)<br>
+	3: Yellow/Gold (Desert, Treasure, Noble)<br>
+	4: Green (Forest, Rest, Nature)<br>
+	5: Dark Green (Deep Forest, Labyrinth)<br>
+	6: Blue (Deep Sea, Night, Calm)<br>
+	7: Purple (Magic, Mystery, Poison)<br>
+	8: Brown (Earth, Ruins, Retro)<br>
+	9: Dark Brown (Mud, Decay, Despair)<br>
+    <br>
+    # Scenario CSV Output Rules<br>
+    Column: Content<br>
+    id: Paragraph ID (Integer)<br>
+    type: normal / battle / end<br>
+    text: Text to be displayed<br>
+    options: Choices for the player<br>
+    e_name: Enemy name (for 'battle' type)<br>
+    e_skill: Enemy Skill level<br>
+    e_hp: Enemy HP<br>
+    next: Target paragraph ID after winning a battle<br>
+    bgm: BGM filename<br>
+    bgi: Paragraph-specific background image filename<br>
+    effect: Special effects/Automatic triggers<br>
+    <br>
+    # CSV Formatting Rules<br>
+    <br>
+    ▼ Types (type)<br>
+    1. normal: Standard scenes.<br>
+    Example: 1,normal,"The path splits.","Left→2,Right→3",,,,,bgm.mp3,room.jpg,<br>
+    <br>
+    2. battle: Combat scenes.<br>
+    Example: 2,battle,"An enemy attacks!","Fight",EnemyName,6,6,3,bgm_fight.mp3,battle.jpg,<br>
+    <br>
+    3. end: Ending scenes.<br>
+    Example: 10,end,"Game Over.","Finish",,,,,bgm_title.mp3,,<br>
+    <br>
+    ▼ Options (options)<br>
+    Format: Display Text→Target ID<br>
+    Multiple: Choice A→2,Choice B→3<br>
+    Note: Always use the full-width arrow "→". Target IDs must exist.<br>
+    <br>
+    ▼ Text (text)<br>
+    Do not use line breaks for AI generation. <br>
+    When editing manually, you can use "\n" for line breaks.<br>
+    <br>
+    ▼ Combat Mechanics<br>
+    Calculated as: 2d6 + Skill<br>
+    - Win → Deal 2 damage to enemy<br>
+    - Lose → Take 2 damage to self<br>
+    - Using Luck: Modifies damage, but Luck decreases by 1 per use.<br>
+    <br>
+    ▼ Special Effects (effect)<br>
+    Adds automatic effects to paragraphs. If HP reaches 0, it's Game Over.<br>
+    <br>
+    Status Changes (Triggers on first visit):<br>
+    - hp+3, hp-2, food+1, luck-1<br>
+    <br>
+    Repeatable Effects (Add "!" prefix):<br>
+    - !hp-2 (e.g., for traps or environmental damage)<br>
+    Example: 11,normal,"A trap!","Go back→1",,,,,,,!hp-2<br>
+    <br>
+    Healing / Eating:<br>
+    - "eat": One-time meal point. Restores 4 HP (consumes 1 food).<br>
+    - "!eat": Repeatable meal point.<br>
+    Example: 4,normal,"A safe place to eat.","Proceed→5",,,,,,,!eat<br>
+    <br>
+    ▼ BGM<br>
+    Enter the .mp3 filename. Leave blank to stop music.<br>
+	<br>
+	▼ Background Image (bgi)<br>
+	This is the specific background for the paragraph. <br>
+	If left blank, the default background specified in the Rule CSV will be used.<br>
+	<br>
+	★ Common Mistakes to Avoid<br>
+	- Missing Commas: The system will not function if the column count is incorrect. Every row MUST have the exact same number of columns (the same number of commas), even if the last column is empty.<br>
+	- Duplicate IDs: Do not use the same ID more than once.<br>
+	- Broken Links: Do not point options to an ID that does not exist.<br>
+	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.<br>
+	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.<br>
+	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".<br>
+	<br>
+	★ Additional Guidelines<br>
+	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.<br>
+	- Recovery: It is recommended to include recovery points. <br>
+	- Balance: Placing the "eat" effect before or after a battle helps balance the difficulty.<br>
+	- Theme: Please select the most appropriate "theme" number (1-9) based on the setting and atmosphere of the story. If you are unsure, use "1".<br>
+
+</div>
+
+<button type="button" class="rule-toggle-btn" id="toggleBtn" onclick="toggleRule()">
+    ▼ View All (Samples and Detailed Rules)
+</button>
+
+<div class="section-title">[B] Enter your story outline</div>
+<br>
+<p>Examples of what you can create:</p>
+<ul style="font-size: 0.9em; color: #555; padding-left: 20px;">
+    <li>A brave slime's journey to defeat the Demon King (High difficulty).</li>
+    <li>A snowy high school romance (Approx. 20 paragraphs).</li>
+    <li>Hiking Ben Nevis: From the bus ride to a sunrise summit and pub dinner (No combat).</li>
+    <li>A 3-question multiple-choice trivia quiz.</li>
+    <li>"The Hilarious Mystery Potluck": A chaotic party with secret ingredients.</li>
+</ul>
+<span style="color:#990000;">* Please ensure your content complies with the AI's safety guidelines.</span>
+<br>
+<textarea id="storyB" placeholder="Enter your story plot and settings here..."></textarea>
+
+<p>
+<strong>If you have a previously created Rule CSV or Scenario CSV, you can paste it here and add instructions like "Make this harder" or "Expand the story" to generate a revised version.</strong>
+</p>
+
+<p style="font-size: 0.9em; line-height: 1.5; color: #333; background: #fffde7; padding: 10px; border: 1px dashed #ffd600; border-radius: 5px;">
+    The fixed rules in <strong>[A]</strong> will be combined with your input in <strong>[B]</strong> to create a comprehensive prompt for the AI.
+    <br><br>
+    Clicking a button below will <strong>copy the prompt to your clipboard</strong> and launch the AI service. 
+    Simply <strong>paste it</strong> into the AI's chat box to start!
+</p>
+
+<button class="btn-chatgpt" onclick="copyAndOpen('chatgpt')">Copy Prompt & Open ChatGPT</button>
+<button class="btn-gemini" onclick="copyAndOpen('gemini')">Copy Prompt & Open Gemini</button>
+
+<p id="status"></p>
+
+<div class="studio-logo" style="margin-top: 50px; opacity: 1.0;">
+    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+    <img src="storyem_logo.png" alt="STORYEM LOGO" style="max-width: 350px;margin-right: 20px;">
+    <img src="fde_white.png" alt="Factory Digital Entertainment LOGO" style="max-width: 130px;">
+    <p style="font-size: 1em; color: #111;">© 2026 Factory Digital Entertainment</p>
+</div>
+
+<script>
+const ruleA = `
+    ■ Sample Rule CSV (General Settings):
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme
+    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3
+    
+    ■ Sample Scenario CSV (Story Content):
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
+    1,normal,"You entered the vault. Paths go left, center, and right.","Left→2,Center→11,Right→3",,,,,bgm_title.mp3,bgi1.jpg,
+    2,battle,"An iron automaton activates!","Destroy it",Automaton,6,6,3,bgm_fog.mp3,bgi2.jpg,
+    3,normal,"You found a box.","Open it→31,Ignore it→4",,,,,bgm2.mp3,bgi3.jpg,
+    31,normal,"Dried meat found! (Food +1)","Proceed→4",,,,,bgm2.mp3,bgi3.jpg,food+1
+    4,normal,"It's safe here. You can rest.","Move forward→5",,,,,bgm2.mp3,bgi4.jpg,eat
+    10,end,"Silence returns to the vault.","END",,,,,bgm_title.mp3,bgi4.jpg,
+    
+    # Instructions
+    Based on the following story outline, output both Rule CSV and Scenario CSV in CSV format according to the output rules.
+    
+    # Rule CSV Output Rules
+    Column: Content
+    ttl: Game Title (Displayed at the top of the screen)
+    bg: Initial background image filename
+    max_hp: Player's Maximum HP
+    init_skill: Initial Skill level
+    init_luck: Initial Luck level
+    init_food: Initial Food count
+    theme    Color Theme Number (Integer 1-9)
+    
+    - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.
+    - Use half-width alphanumeric characters for numbers.
+    - Comma-separated values.
+    - The first line must always be the column headers.
+    
+    ▼ Theme Selection (Color Themes)
+	Please select one number from 1 to 9 that best matches the atmosphere of the story.
+	1: Black/Gray (Standard, Inorganic, Achromatic)
+	2: Red (Passion, Crisis, Flame)
+	3: Yellow/Gold (Desert, Treasure, Noble)
+	4: Green (Forest, Rest, Nature)
+	5: Dark Green (Deep Forest, Labyrinth)
+	6: Blue (Deep Sea, Night, Calm)
+	7: Purple (Magic, Mystery, Poison)
+	8: Brown (Earth, Ruins, Retro)
+	9: Dark Brown (Mud, Decay, Despair)
+    
+    # Scenario CSV Output Rules
+    Column: Content
+    id: Paragraph ID (Integer)
+    type: normal / battle / end
+    text: Text to be displayed
+    options: Choices for the player
+    e_name: Enemy name (for 'battle' type)
+    e_skill: Enemy Skill level
+    e_hp: Enemy HP
+    next: Target paragraph ID after winning a battle
+    bgm: BGM filename
+    bgi: Paragraph-specific background image filename
+    effect: Special effects/Automatic triggers
+    
+    # CSV Formatting Rules
+    
+    ▼ Types (type)
+    1. normal: Standard scenes.
+    Example: 1,normal,"The path splits.","Left→2,Right→3",,,,,bgm.mp3,room.jpg,
+    
+    2. battle: Combat scenes.
+    Example: 2,battle,"An enemy attacks!","Fight",EnemyName,6,6,3,bgm_fight.mp3,battle.jpg,
+    
+    3. end: Ending scenes.
+    Example: 10,end,"Game Over.","Finish",,,,,bgm_title.mp3,,
+    
+    ▼ Options (options)
+    Format: Display Text→Target ID
+    Multiple: Choice A→2,Choice B→3
+    Note: Always use the full-width arrow "→". Target IDs must exist.
+    
+    ▼ Text (text)
+    Do not use line breaks for AI generation. 
+    When editing manually, you can use "\n" for line breaks.
+    
+    ▼ Combat Mechanics
+    Calculated as: 2d6 + Skill
+    - Win → Deal 2 damage to enemy
+    - Lose → Take 2 damage to self
+    - Using Luck: Modifies damage, but Luck decreases by 1 per use.
+    
+    ▼ Special Effects (effect)
+    Adds automatic effects to paragraphs. If HP reaches 0, it's Game Over.
+    
+    Status Changes (Triggers on first visit):
+    - hp+3, hp-2, food+1, luck-1
+    
+    Repeatable Effects (Add "!" prefix):
+    - !hp-2 (e.g., for traps or environmental damage)
+    Example: 11,normal,"A trap!","Go back→1",,,,,,,!hp-2
+    
+    Healing / Eating:
+    - "eat": One-time meal point. Restores 4 HP (consumes 1 food).
+    - "!eat": Repeatable meal point.
+    Example: 4,normal,"A safe place to eat.","Proceed→5",,,,,,,!eat
+    
+    ▼ BGM
+    Enter the .mp3 filename. Leave blank to stop music.
+
+	▼ Background Image (bgi)
+	This is the specific background for the paragraph. 
+	If left blank, the default background specified in the Rule CSV will be used.
+
+	★ Common Mistakes to Avoid
+	- Missing Commas: The system will not function if the column count is incorrect. Every row MUST have the exact same number of columns (the same number of commas), even if the last column is empty.
+	- Duplicate IDs: Do not use the same ID more than once.
+	- Broken Links: Do not point options to an ID that does not exist.
+	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.
+	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.
+	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".
+
+	★ Additional Guidelines
+	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.
+	- Recovery: It is recommended to include recovery points. 
+	- Balance: Placing the "eat" effect before or after a battle helps balance the difficulty.
+	- Theme: Please select the most appropriate "theme" number (1-9) based on the setting and atmosphere of the story. If you are unsure, use "1".
+
+
+`;
+
+function copyAndOpen(targetAI) {
+    const storyB = document.getElementById('storyB').value;
+    if (!storyB) {
+        alert("Please enter the story outline.");
+        return;
+    }
+
+    const fullPrompt = `${ruleA}\n\n# Story Outline\n${storyB}`;
+    const url = (targetAI === 'gemini') ? "https://gemini.google.com/" : "https://chatgpt.com/";
+
+    navigator.clipboard.writeText(fullPrompt).then(() => {
+        const statusEl = document.getElementById('status');
+        const aiName = (targetAI === 'gemini') ? 'Gemini' : 'ChatGPT';
+        statusEl.innerHTML = `✅ Prompt copied for ${aiName}!<br>Please paste it into the AI chat window.`;
+        window.open(url, "_blank");
+    }).catch(err => {
+        alert("Failed to copy. Please copy manually.");
+    });
+}
+
+function toggleRule() {
+    const box = document.getElementById('ruleBox');
+    const btn = document.getElementById('toggleBtn');
+    if (box.classList.contains('expanded')) {
+        box.classList.remove('expanded');
+        btn.innerText = "▼ View All (Samples and Detailed Rules)";
+    } else {
+        box.classList.add('expanded');
+        btn.innerText = "▲ Close";
+    }
+}
+</script>
+</body>
+</html>
