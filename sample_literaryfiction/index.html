@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
 <!-- STORYEM（ストリーム） -->
-<!-- ver20260308 -->
+<!-- ver20260313 -->
 <!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
 <!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
 <!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
@@ -412,6 +412,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </h1>
 
   <div class="header-right-ui">
+    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="margin-right: 5px;">🖼️ 背景</button>
     <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
       <span class="bgm-label-text">♪</span>
@@ -422,7 +423,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     </div>
 
     <div id="file-menu">
-      <button onclick="toggleSelectors()" class="debug-btn">▼📁 menu</button>
+      <button id="menu-btn" onclick="toggleSelectors()" class="debug-btn">▼📁 menu</button>
     </div>
   </div>
 </div>
@@ -482,8 +483,13 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div id="game-area">
   <div id="game-ui" style="display:none;">
     <div id="status"></div>
+    <!-- 画像表示可能領域 -->
+    <div id="img-container-top" style="display:none; margin-bottom:15px;"></div> 
     <!-- 文章表示 -->
     <div id="text"></div>
+    <!-- 画像表示可能領域 -->
+    <div id="img-container-mid" style="display:none; margin:15px 0;"></div>
+    <!-- 選択肢表示 -->
     <div id="options"></div>
     <!-- 戦闘表示 -->
     <div id="log" class="log-battle"></div>
@@ -513,6 +519,9 @@ let player = {};
 let maxHP = 0;
 let ruleData = {};
 let scenarioData = [];
+
+let imgDisplayMode = 0; // 0:背景, 1:上, 2:中, 3:消
+const imgModeLabels = ["🖼️ 背景", "🖼️ 上部", "🖼️ 中間", "🖼️ 非表示"];
 
 // =======================
 // BGM管理（常に1つだけ使う）
@@ -697,7 +706,7 @@ function startGame(paragraphs) {
 function forceCloseMenu() {
   const controls = document.getElementById("file-controls");
   const studio = document.getElementById("studio-import");
-  const btn = document.querySelector(".debug-btn");
+  const btn = document.getElementById("menu-btn");
 
   if (controls) controls.style.display = "none";
   if (studio) studio.style.display = "none";
@@ -740,12 +749,34 @@ function showParagraph(id) {
   handleBGM(p.bgm);
 
   // --- 背景画像の設定 ---
-  // bgi列から読み込む
   const gameArea = document.getElementById("game-area");
-  if (p.bgi && p.bgi.trim() !== "") {
-    gameArea.style.backgroundImage = `url(${p.bgi})`;
-  } else if (ruleData.bg) {
-    gameArea.style.backgroundImage = `url(${ruleData.bg})`;
+  const imgTop = document.getElementById("img-container-top");
+  const imgMid = document.getElementById("img-container-mid");
+
+  // 全て初期化
+  gameArea.style.backgroundImage = "none";
+  imgTop.style.display = "none";
+  imgMid.style.display = "none";
+  imgTop.innerHTML = "";
+  imgMid.innerHTML = "";
+
+  const targetImg = (p.bgi && p.bgi.trim() !== "") ? p.bgi : ruleData.bg; //bgi列から読み込む
+
+  if (targetImg && imgDisplayMode !== 3) {
+    if (imgDisplayMode === 0) {
+      // 背景モード
+      gameArea.style.backgroundImage = `url(${targetImg})`;
+    } else {
+      // 挿入モード (innerHTMLを使うことで既存の要素構造を壊さない)
+      const imgHtml = `<img src="${targetImg}" style="width:100%; height:auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.5);">`;
+      if (imgDisplayMode === 1) {
+        imgTop.innerHTML = imgHtml;
+        imgTop.style.display = "block";
+      } else if (imgDisplayMode === 2) {
+        imgMid.innerHTML = imgHtml;
+        imgMid.style.display = "block";
+      }
+    }
   }
 
   // --- effect列による自動処理（!による再発動に対応） ---
@@ -1243,7 +1274,7 @@ document.getElementById("rule-file").onchange = function(e) {
 function toggleSelectors() {
   const controls = document.getElementById("file-controls"); // ファイル選択
   const studio = document.getElementById("studio-import"); // 貼り付け枠
-  const btn = document.querySelector(".debug-btn");
+  const btn = document.getElementById("menu-btn");
 
   // 現在の状態を確認（一つ目の要素が非表示かどうかで判定）
   const isCurrentlyHidden = (controls.style.display === "none");
@@ -1492,6 +1523,20 @@ function nextTheme() {
 
 // 全ての読み込みが終わった最後に、強制的に今のテーマを再適用する
 window.addEventListener('load', () => applyTheme(currentThemeIndex));
+
+// 画像表示モード切り替え
+function nextImgMode() {
+  imgDisplayMode = (imgDisplayMode + 1) % 4;
+  document.getElementById("img-mode-toggle").innerText = imgModeLabels[imgDisplayMode];
+  
+  // 現在の画面を安全に更新
+  const currentText = document.getElementById("text").innerText;
+  if (currentText && currentText.length > 0) {
+    // 最後に表示したパラグラフIDを探して再描画
+    const idMatch = document.querySelector(".paragraph-id")?.innerText.match(/\d+/);
+    if (idMatch) showParagraph(parseInt(idMatch[0]));
+  }
+}
 
 </script>
 </body>
