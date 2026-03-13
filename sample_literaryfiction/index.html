@@ -131,6 +131,7 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   animation: fadeInText 0.5s ease-out; /* テキスト出現時のアニメ適用 */
+  transition: font-size 0.2s ease-out, font-family 0.2s ease-out; /* フォント設定が切り替わったとき、0.2秒かけて変化させる */
 }
 
 /* 文章が下からふわっと出てくるアニメーション */
@@ -231,17 +232,15 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   text-align: left;  /* タイトル自体は左寄せに戻す */
 }
 
-.header-right-ui {
-  /* 右上に配置されるように調整 */
-  margin-left: auto;
-}
-
 /* 右側に集約された操作系（BGMレバーとメニュー） */
 .header-right-ui {
   display: flex;
+  flex-wrap: wrap;      /* 重要：幅が足りない時に自動で改行する */
+  justify-content: flex-end; /* 右側に寄せる */
   align-items: center;
-  gap: 10px;
+  gap: 5px; /* ボタン同士の隙間（marginを個別に書かなくて済む） */
   margin-left: auto;
+  max-width: 100%;      /* 画面からはみ出さない */
 }
 
 /* BGM切り替え部分の囲み枠 */
@@ -413,8 +412,9 @@ input:checked + .slider:before { transform: translateX(20px); }
   </h1>
 
   <div class="header-right-ui">
-    <button id="font-size-toggle" class="debug-btn" onclick="nextFontSize()" style="margin-right: 5px; min-width: 46px;">A+</button>
-    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="margin-right: 5px;">🖼️ 背景</button>
+    <button id="font-size-toggle" class="debug-btn" onclick="nextFontSize()" style="min-width: 46px;">A+</button>
+    <button id="font-style-toggle" class="debug-btn" onclick="nextFontStyle()" style="min-width: 42px;">Aa</button>
+    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="min-width: 52px;">🖼️ B</button>
     <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
       <span class="bgm-label-text">♪</span>
@@ -425,7 +425,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     </div>
 
     <div id="file-menu">
-      <button id="menu-btn" onclick="toggleSelectors()" class="debug-btn">▼📁 menu</button>
+      <button id="menu-btn" onclick="toggleSelectors()" class="debug-btn">▼📁</button>
     </div>
   </div>
 </div>
@@ -528,8 +528,8 @@ const fontSizes = ["13px","16px", "20px", "24px"];
 const fontSizeLabels = ["A-", "A", "A+", "A++"]; // サイズが大きくなることを示す視覚的ラベル
 
 // 画像切り替え設定
-let imgDisplayMode = 0; // 0:背景, 1:上, 2:中, 3:なし
-const imgModeLabels = ["🖼️ 背景", "🖼️ 上部", "🖼️ 中間", "🖼️ なし"];
+let imgDisplayMode = 0; // 0:背景, 1:上部, 2:中間, 3:なし
+const imgModeLabels = ["🖼️ B", "🖼️ T", "🖼️ M", "🖼️ X"];
 
 // =======================
 // BGM管理（常に1つだけ使う）
@@ -720,7 +720,7 @@ function forceCloseMenu() {
   if (studio) studio.style.display = "none";
 
   if (btn) {
-    btn.innerText = "▼📁 menu";
+    btn.innerText = "▼📁";
     btn.style.opacity = "0.6";
     btn.style.backgroundColor = "#333";
   }
@@ -1296,7 +1296,7 @@ function toggleSelectors() {
 
   // ボタンの見た目を更新
   if (btn) {
-    btn.innerText = isCurrentlyHidden ? "▲📁 menu" : "▼📁 menu";
+    btn.innerText = isCurrentlyHidden ? "▲📁" : "▼📁";
     btn.style.opacity = isCurrentlyHidden ? "1.0" : "0.6";
   }
 }
@@ -1561,6 +1561,32 @@ function nextFontSize() {
   if (fontBtn) {
     // ボタンの表示を更新
     fontBtn.innerText = fontSizeLabels[fontSizeMode];
+  }
+}
+
+// フォントスタイル (0: Sans-serif系, 1: Serif系)
+let fontStyleMode = 0; 
+const fontFamilies = [
+  // Sans: ゴシック/黑体
+  "sans-serif, 'Microsoft YaHei', 'SimHei', 'Arial'", 
+  // Serif: 明朝/宋体
+  "serif, 'SimSun', 'STSong', 'Times New Roman'"
+];
+const fontStyleLabels = ["Aa", "Aa"]; //["Font:Sans", "Font:Serif"]とすれば見た目を区別できるが一旦統一
+
+function nextFontStyle() {
+  fontStyleMode = (fontStyleMode + 1) % 2;
+  const textDiv = document.getElementById("text");
+  const styleBtn = document.getElementById("font-style-toggle");
+  
+  if (textDiv) {
+    // 既存のサイズ設定などは維持したまま、フォント系統だけを上書き
+    textDiv.style.fontFamily = fontFamilies[fontStyleMode];
+  }
+  
+  if (styleBtn) {
+    // ボタンのテキストを更新
+    styleBtn.innerText = fontStyleLabels[fontStyleMode];
   }
 }
 
