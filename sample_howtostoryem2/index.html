@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
 <!-- STORYEM（ストリーム） -->
-<!-- ver20260308 -->
+<!-- ver20260313 -->
 <!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
 <!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
 <!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
@@ -119,7 +119,8 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   margin-bottom: 20px; 
   white-space: pre-wrap; /* 改行をそのまま反映 */
   min-height: 100px; 
-  font-size: 1.1em; 
+  font-size: 16px;
+  transition: font-size 0.2s ease-out; /* サイズ変更を滑らかに */
   color: #fff;
   /* 文字に影を付けて可読性を向上 */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
@@ -130,6 +131,7 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   animation: fadeInText 0.5s ease-out; /* テキスト出現時のアニメ適用 */
+  transition: font-size 0.2s ease-out, font-family 0.2s ease-out; /* フォント設定が切り替わったとき、0.2秒かけて変化させる */
 }
 
 /* 文章が下からふわっと出てくるアニメーション */
@@ -230,17 +232,15 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   text-align: left;  /* タイトル自体は左寄せに戻す */
 }
 
-.header-right-ui {
-  /* 右上に配置されるように調整 */
-  margin-left: auto;
-}
-
 /* 右側に集約された操作系（BGMレバーとメニュー） */
 .header-right-ui {
   display: flex;
+  flex-wrap: wrap;      /* 重要：幅が足りない時に自動で改行する */
+  justify-content: flex-end; /* 右側に寄せる */
   align-items: center;
-  gap: 10px;
+  gap: 5px; /* ボタン同士の隙間（marginを個別に書かなくて済む） */
   margin-left: auto;
+  max-width: 100%;      /* 画面からはみ出さない */
 }
 
 /* BGM切り替え部分の囲み枠 */
@@ -402,6 +402,50 @@ input:checked + .slider:before { transform: translateX(20px); }
   opacity: 0.7; /* ホバー時に少し薄くする */
 }
 
+
+/* statusバー全体をクリッカブルにし、レイアウトを調整 */
+#status {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0; /* 内部の余白は子要素で調整 */
+  overflow: hidden;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* statusバー左端の細長いボタン部分 */
+#status::before {
+  content: var(--status-arrow, "▼");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  min-width: 25px;
+  background: rgba(255, 255, 255, 0.05); /* ほとんど透けている */
+  align-self: stretch;
+  font-size: 10px; /* 少し小さめに */
+  color: #555;     /* 暗めのグレー */
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 10px;
+  transition: all 0.4s ease; /* ゆっくり変化させることで刺激を抑える */
+}
+/* 触れたとき（意思があるとき）だけ灯る */
+#status:hover::before {
+  color: #fff;
+  text-shadow: 0 0 8px #2ecc71;
+}
+/* ステータスの中身（テキスト部分）の余白 */
+#status > strong, #status {
+  padding-right: 10px;
+}
+
+#status:active {
+  transform: scale(0.98); /* 2%だけ縮小 */
+  filter: brightness(1.2); /* 少し明るく */
+  transition: transform 0.1s;
+}
+
 </style>
 </head>
 <body>
@@ -412,6 +456,9 @@ input:checked + .slider:before { transform: translateX(20px); }
   </h1>
 
   <div class="header-right-ui">
+    <button id="font-size-toggle" class="debug-btn" onclick="nextFontSize()" style="min-width: 46px;">A+</button>
+    <button id="font-style-toggle" class="debug-btn" onclick="nextFontStyle()" style="min-width: 42px;">Aa</button>
+    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="min-width: 52px;">🖼️ B</button>
     <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
       <span class="bgm-label-text">♪</span>
@@ -422,7 +469,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     </div>
 
     <div id="file-menu">
-      <button onclick="toggleSelectors()" class="debug-btn">▼📁 menu</button>
+      <button id="menu-btn" onclick="toggleSelectors()" class="debug-btn">▼📁</button>
     </div>
   </div>
 </div>
@@ -482,10 +529,15 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div id="game-area">
   <div id="game-ui" style="display:none;">
     <div id="status"></div>
+    <!-- 画像表示可能領域：上部 -->
+    <div id="img-container-top" style="display:none; margin-bottom:15px;"></div> 
     <!-- 文章表示 -->
     <div id="text"></div>
+    <!-- 画像表示可能領域：中部 -->
+    <div id="img-container-mid" style="display:none; margin:15px 0;"></div>
+    <!-- 選択肢表示 -->
     <div id="options"></div>
-    <!-- 戦闘表示 -->
+    <!-- 戦闘ログ表示 -->
     <div id="log" class="log-battle"></div>
   </div>
 </div>
@@ -513,6 +565,15 @@ let player = {};
 let maxHP = 0;
 let ruleData = {};
 let scenarioData = [];
+
+// フォントサイズ設定 (0:小, 1:標準, 2:中, 3:大)
+let fontSizeMode = 1;
+const fontSizes = ["13px","16px", "20px", "24px"];
+const fontSizeLabels = ["A-", "A", "A+", "A++"]; // サイズが大きくなることを示す視覚的ラベル
+
+// 画像切り替え設定
+let imgDisplayMode = 0; // 0:背景, 1:上部, 2:中間, 3:なし
+const imgModeLabels = ["🖼️ B", "🖼️ T", "🖼️ M", "🖼️ X"];
 
 // =======================
 // BGM管理（常に1つだけ使う）
@@ -697,13 +758,13 @@ function startGame(paragraphs) {
 function forceCloseMenu() {
   const controls = document.getElementById("file-controls");
   const studio = document.getElementById("studio-import");
-  const btn = document.querySelector(".debug-btn");
+  const btn = document.getElementById("menu-btn");
 
   if (controls) controls.style.display = "none";
   if (studio) studio.style.display = "none";
 
   if (btn) {
-    btn.innerText = "▼📁 menu";
+    btn.innerText = "▼📁";
     btn.style.opacity = "0.6";
     btn.style.backgroundColor = "#333";
   }
@@ -740,12 +801,35 @@ function showParagraph(id) {
   handleBGM(p.bgm);
 
   // --- 背景画像の設定 ---
-  // bgi列から読み込む
   const gameArea = document.getElementById("game-area");
-  if (p.bgi && p.bgi.trim() !== "") {
-    gameArea.style.backgroundImage = `url(${p.bgi})`;
-  } else if (ruleData.bg) {
-    gameArea.style.backgroundImage = `url(${ruleData.bg})`;
+  const imgTop = document.getElementById("img-container-top");
+  const imgMid = document.getElementById("img-container-mid");
+
+  // 全て初期化
+  gameArea.style.backgroundImage = "none";
+  imgTop.style.display = "none";
+  imgMid.style.display = "none";
+  imgTop.innerHTML = "";
+  imgMid.innerHTML = "";
+
+  const targetImg = (p.bgi && p.bgi.trim() !== "") ? p.bgi : ruleData.bg; //bgi列から読み込む
+
+  if (targetImg && imgDisplayMode !== 3) {
+    if (imgDisplayMode === 0) {
+      // 背景モード
+      gameArea.style.backgroundImage = `url(${targetImg})`;
+    } else {
+      // 挿入モード (innerHTMLを使うことで既存の要素構造を壊さない)
+      const imgHtml = `<img src="${targetImg}" onerror="this.style.display='none'" style="width:100%; height:auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.5);">`;
+
+      if (imgDisplayMode === 1) {
+        imgTop.innerHTML = imgHtml;
+        imgTop.style.display = "block";
+      } else if (imgDisplayMode === 2) {
+        imgMid.innerHTML = imgHtml;
+        imgMid.style.display = "block";
+      }
+    }
   }
 
   // --- effect列による自動処理（!による再発動に対応） ---
@@ -1243,7 +1327,7 @@ document.getElementById("rule-file").onchange = function(e) {
 function toggleSelectors() {
   const controls = document.getElementById("file-controls"); // ファイル選択
   const studio = document.getElementById("studio-import"); // 貼り付け枠
-  const btn = document.querySelector(".debug-btn");
+  const btn = document.getElementById("menu-btn");
 
   // 現在の状態を確認（一つ目の要素が非表示かどうかで判定）
   const isCurrentlyHidden = (controls.style.display === "none");
@@ -1257,7 +1341,7 @@ function toggleSelectors() {
 
   // ボタンの見た目を更新
   if (btn) {
-    btn.innerText = isCurrentlyHidden ? "▲📁 menu" : "▼📁 menu";
+    btn.innerText = isCurrentlyHidden ? "▲📁" : "▼📁";
     btn.style.opacity = isCurrentlyHidden ? "1.0" : "0.6";
   }
 }
@@ -1492,6 +1576,103 @@ function nextTheme() {
 
 // 全ての読み込みが終わった最後に、強制的に今のテーマを再適用する
 window.addEventListener('load', () => applyTheme(currentThemeIndex));
+
+// 画像表示モード切り替え
+function nextImgMode() {
+  imgDisplayMode = (imgDisplayMode + 1) % 4;
+  document.getElementById("img-mode-toggle").innerText = imgModeLabels[imgDisplayMode];
+  
+  // 現在の画面を安全に更新
+  const currentText = document.getElementById("text").innerText;
+  if (currentText && currentText.length > 0) {
+    // 最後に表示したパラグラフIDを探して再描画
+    const idMatch = document.querySelector(".paragraph-id")?.innerText.match(/\d+/);
+    if (idMatch) showParagraph(parseInt(idMatch[0]));
+  }
+}
+
+// フォントサイズ切り替え
+function nextFontSize() {
+  fontSizeMode = (fontSizeMode + 1) % 4;
+  
+  const textDiv = document.getElementById("text");
+  const fontBtn = document.getElementById("font-size-toggle");
+  
+  if (textDiv) {
+    // textエリアのみフォントサイズを変更
+    textDiv.style.fontSize = fontSizes[fontSizeMode];
+  }
+  
+  if (fontBtn) {
+    // ボタンの表示を更新
+    fontBtn.innerText = fontSizeLabels[fontSizeMode];
+  }
+}
+
+// フォントスタイル (0: Sans-serif系, 1: Serif系)
+let fontStyleMode = 0; 
+const fontFamilies = [
+  // Sans: ゴシック/黑体
+  "sans-serif, 'Microsoft YaHei', 'SimHei', 'Arial'", 
+  // Serif: 明朝/宋体
+  "serif, 'SimSun', 'STSong', 'Times New Roman'"
+];
+const fontStyleLabels = ["Aa", "Aa"]; //["Font:Sans", "Font:Serif"]とすれば見た目を区別できるが一旦統一
+
+function nextFontStyle() {
+  fontStyleMode = (fontStyleMode + 1) % 2;
+  const textDiv = document.getElementById("text");
+  const styleBtn = document.getElementById("font-style-toggle");
+  
+  if (textDiv) {
+    // 既存のサイズ設定などは維持したまま、フォント系統だけを上書き
+    textDiv.style.fontFamily = fontFamilies[fontStyleMode];
+  }
+  
+  if (styleBtn) {
+    // ボタンのテキストを更新
+    styleBtn.innerText = fontStyleLabels[fontStyleMode];
+  }
+}
+
+// --- ステータスバーの位置の管理 ---
+let statusPositionMode = 0; // 0:初期位置, 1:中段(midとoptionsの間), 2:下段(optionsとlogの間)
+
+function rotateStatusPosition() {
+  statusPositionMode = (statusPositionMode + 1) % 3;
+  applyStatusPosition();
+}
+
+function applyStatusPosition() {
+  const status = document.getElementById("status");
+  const gameUI = document.getElementById("game-ui");
+  const imgMid = document.getElementById("img-container-mid");
+  const options = document.getElementById("options");
+  const log = document.getElementById("log");
+
+  // 一旦マージンをリセット
+  status.style.marginTop = "0px";
+  status.style.marginBottom = "15px";
+
+  if (statusPositionMode === 0) {
+    // 0: デフォルト（game-uiの先頭、imgTopの前）
+    gameUI.insertBefore(status, gameUI.firstChild);
+    status.style.setProperty('--status-arrow', '"▼"');
+  } else if (statusPositionMode === 1) {
+    // 1: mid画像とoptionsの間
+    gameUI.insertBefore(status, options);
+    status.style.setProperty('--status-arrow', '"▲▼"');
+  } else if (statusPositionMode === 2) {
+    // 2: optionsとlogの間
+    gameUI.insertBefore(status, log);
+    status.style.marginTop = "15px"; // 余白
+    status.style.marginBottom = "10px"; // 余白
+    status.style.setProperty('--status-arrow', '"▲"');
+  }
+}
+
+// 初期設定としてクリックイベントを登録
+document.getElementById("status").onclick = rotateStatusPosition;
 
 </script>
 </body>
