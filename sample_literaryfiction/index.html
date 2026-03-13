@@ -119,7 +119,8 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   margin-bottom: 20px; 
   white-space: pre-wrap; /* 改行をそのまま反映 */
   min-height: 100px; 
-  font-size: 1.1em; 
+  font-size: 16px;
+  transition: font-size 0.2s ease-out; /* サイズ変更を滑らかに */
   color: #fff;
   /* 文字に影を付けて可読性を向上 */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
@@ -412,6 +413,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   </h1>
 
   <div class="header-right-ui">
+    <button id="font-size-toggle" class="debug-btn" onclick="nextFontSize()" style="margin-right: 5px; min-width: 46px;">A+</button>
     <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="margin-right: 5px;">🖼️ 背景</button>
     <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
@@ -520,8 +522,14 @@ let maxHP = 0;
 let ruleData = {};
 let scenarioData = [];
 
-let imgDisplayMode = 0; // 0:背景, 1:上, 2:中, 3:消
-const imgModeLabels = ["🖼️ 背景", "🖼️ 上部", "🖼️ 中間", "🖼️ 非表示"];
+// フォントサイズ設定 (0:小, 1:標準, 2:中, 3:大)
+let fontSizeMode = 1;
+const fontSizes = ["13px","16px", "20px", "24px"];
+const fontSizeLabels = ["A-", "A", "A+", "A++"]; // サイズが大きくなることを示す視覚的ラベル
+
+// 画像切り替え設定
+let imgDisplayMode = 0; // 0:背景, 1:上, 2:中, 3:なし
+const imgModeLabels = ["🖼️ 背景", "🖼️ 上部", "🖼️ 中間", "🖼️ なし"];
 
 // =======================
 // BGM管理（常に1つだけ使う）
@@ -1535,6 +1543,24 @@ function nextImgMode() {
     // 最後に表示したパラグラフIDを探して再描画
     const idMatch = document.querySelector(".paragraph-id")?.innerText.match(/\d+/);
     if (idMatch) showParagraph(parseInt(idMatch[0]));
+  }
+}
+
+// フォントサイズ切り替え
+function nextFontSize() {
+  fontSizeMode = (fontSizeMode + 1) % 4;
+  
+  const textDiv = document.getElementById("text");
+  const fontBtn = document.getElementById("font-size-toggle");
+  
+  if (textDiv) {
+    // textエリアのみフォントサイズを変更
+    textDiv.style.fontSize = fontSizes[fontSizeMode];
+  }
+  
+  if (fontBtn) {
+    // ボタンの表示を更新
+    fontBtn.innerText = fontSizeLabels[fontSizeMode];
   }
 }
 
