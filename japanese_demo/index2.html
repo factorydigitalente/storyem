@@ -1592,6 +1592,12 @@ function importCSV() {
     ruleData = parseRuleCSV(ruleCSV);
     applyRule(ruleData); // ここでCSVに書かれたHPや技術点の初期値が一旦セットされる
 
+    // 手動インポート時はURLのセーブデータを無視するため、URLを空にする
+    if (window.history.replaceState) {
+        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState(null, '', url);
+    }
+
     // 6. シナリオを解析して startGame へ
     const parsedScenario = parseCSV(scenarioCSV);
     
