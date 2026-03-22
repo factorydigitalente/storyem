@@ -1511,7 +1511,19 @@ window.addEventListener('load', async () => {
 
       const startBtn = document.createElement("button");
       startBtn.innerText = "Click to Game Start / ゲーム開始";
-      
+
+      // スタイルを直接指定して「大きく、青く」する
+      startBtn.style.fontSize = "1.5em";           // 文字を大きく
+      startBtn.style.padding = "20px 40px";        // ボタンを分厚く
+      startBtn.style.backgroundColor = "#007bff";  // 鮮やかなブルー
+      startBtn.style.color = "#ffffff";            // 文字は白
+      startBtn.style.border = "none";              // 枠線を消してモダンに
+      startBtn.style.borderRadius = "8px";         // 角を丸く
+      startBtn.style.cursor = "pointer";
+      startBtn.style.fontWeight = "bold";
+      startBtn.style.width = "100%;"               // 横幅いっぱい（お好みで）
+      startBtn.style.boxShadow = "0 4px 15px rgba(0,123,255,0.4)"; // ふんわり光らせる
+
       startBtn.onclick = () => {
         // ★重要：開始ボタンが押されたとき、テキストエリアに全ソースを反映する
         textarea.value = ruleText + "\n\n" + scenarioText;
