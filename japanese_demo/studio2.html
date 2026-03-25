@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
+<!-- STORYEM（ストリーム） -->
+<!-- ver20260308 -->
+<!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
+<!-- このゲームエンジン及び、サンプルゲーム内の画像と使用楽曲の著作権は全て、ファクトリー・デジタル・エンターテインメントおよび矢崎大信が有します。 -->
+<!-- 上記の著作権者に無断で、サンプルゲーム内の画像と使用楽曲を出版・放送・演奏・複製・公開に使用することを禁じます。 -->
+<!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
+<!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>STORYEM：GAMEBOOK studio - CSV生成アシスタント</title>
+<style>
+body { 
+    font-family: sans-serif; 
+    max-width: 600px; 
+    margin: 20px auto; 
+    padding: 20px; 
+    line-height: 1.6; 
+    background-color: #f9f9f9;
+    width: 90%; /* 画面幅が狭い時に左右にマージンを持たせる */
+}
+/* ロゴ用のスタイル */
+.studio-logo {
+    text-align: center;
+    margin: 20px 0;
+}
+.studio-logo img {
+    max-width: 200px;
+    height: auto;
+    /* 少し影をつけて浮かび上がらせる */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.title-header {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px 0;
+    /* 上下のラインで挟むことで「タイトル」であることを強調 */
+    border-top: 2px solid #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.title-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em;
+    line-height: 1.4;
+    border: none; /* 既存のborderルールがあればリセット */
+}
+
+.title-header .subtitle {
+    display: block;
+    font-size: 0.75em;
+    color: #666;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+textarea { 
+    width: 100%; 
+    height: 150px; 
+    margin-bottom: 10px; 
+    border: 2px solid #007bff; /* 縁取りを少し太くし、メインカラーの青に */
+    border-radius: 8px;       /* 角を少し丸くして柔らかい印象に */
+    padding: 15px; 
+    box-sizing: border-box; 
+    background-color: #ffffff; 
+    font-size: 1em;
+    line-height: 1.6;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); /* 内側に薄い影を入れて立体感を出す */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 入力中に枠線を強調する設定 */
+textarea:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0,123,255,0.25); /* ふんわり光るエフェクト */
+}
+textarea::placeholder {
+    color: #999;
+}
+textarea:hover {
+    border-color: #66b0ff; /* フォーカス時よりは薄い青 */
+}
+
+/* ルールボックスの基本スタイル */
+.rule-box { 
+    background: #f4f4f4; 
+    padding: 15px; 
+    border-radius: 5px; 
+    font-size: 0.9em; 
+    line-height: 1.4; 
+    color: #2d5a27; 
+    border: 1px inset #ddd; 
+    overflow: hidden; 
+    max-height: 120px; /* 約5〜6行分 */
+    transition: max-height 0.4s ease-out; /* 開閉アニメーション */
+    position: relative;
+}
+
+/* 展開時のスタイル */
+.rule-box.expanded {
+    max-height: none; /* 数値指定をやめて制限をなくす */
+}
+
+/* 「続きを見る」ボタンのスタイル */
+.rule-toggle-btn {
+    display: block;
+    width: 100%;
+    background: #e7f1ff;
+    color: #007bff;
+    border: 1px solid #b3d7ff;
+    padding: 8px;
+    margin-top: -1px; /* ボックスの枠線と重ねて一体感を出す */
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.rule-toggle-btn:hover {
+    background: #dee2e6;
+}
+
+/* 共通のボタンベース */
+button { 
+    color: white; 
+    border: none; 
+    padding: 15px 20px; 
+    cursor: pointer; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    width: 100%; 
+    font-size: 1.1em; 
+    transition: 0.3s; 
+    margin-bottom: 10px; /* ボタン同士の間隔 */
+}
+
+/* ChatGPT用（従来の青） */
+.btn-chatgpt {
+    background: #007bff;
+}
+.btn-chatgpt:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Gemini用（少し鮮やかな青、またはGoogleカラー） */
+.btn-gemini {
+    background: linear-gradient(135deg, #1a73e8, #4285f4);
+}
+.btn-gemini:hover {
+    background: #1557b0;
+    transform: translateY(-2px);
+}
+
+h2 { text-align: center; color: #333; font-size: 1.4em; }
+
+.section-title { border-left: 5px solid #007bff; padding-left: 10px; margin-top: 30px; font-weight: bold; }
+
+#status { 
+    font-weight: bold; 
+    margin-top: 25px; 
+    text-align: center; 
+    color: #1a7a33; /* 成功のグリーン */
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+/* 言語切り替えナビゲーション */
+.lang-nav {
+    text-align: right;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.lang-nav a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.lang-nav a:hover {
+    text-decoration: underline;
+}
+
+.lang-nav span {
+    color: #333;
+    font-weight: normal;
+}
+</style>
+</head>
+<body>
+<div class="lang-nav">
+    <a href="studio_eng.html">English(英語)</a> / <span>Japanese(日本語)</span>
+</div>
+
+<div class="studio-logo">
+    <img src="storyem_studio_logo.png" alt="STORYEM studio">
+</div>
+
+<div class="title-header">
+    <h2>STORYEM：GAMEBOOK studio<br>
+    <span class="subtitle">ストリーム：ゲームブックスタジオ<br>＜ルールCSV・シナリオCSV 生成アシスタント＞</span></h2>
+</div>
+
+<div class="section-title">【A】生成ルール（固定）</div>
+<br>
+※以下のルール文は固定で、変更はできません。<br>
+このルール文は、あなたが【B】に入力する物語の概要と結合され、AIに対して使用する命令文（プロンプト）の一部になります。<br>
+</p>
+
+
+<div class="rule-box" id="ruleBox">
+    ■以下がルールCSV（ゲーム全体の設定）のサンプルです。<br>
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme,items<br>
+鉄の街の試練,city_gate.jpg,20,3,9,2,8,iron_sword:鉄の剣|steel_armor:鋼の鎧|herb:即効薬草|boss_key:主の鍵|aura_orb:オーラの玉<br>
+<br>
+    ■以下がシナリオCSV（物語の内容）のサンプルです。<br>
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect<br>
+1,normal,"君は冒険者として「鉄の街」に到着した。懐にあるのはわずか230Gの路銀のみ。まずは装備を整え、技術を磨くべきだろう。","武器屋へ行く→2,防具屋へ行く→3,塔へ向かう→5,[aura_orb]オーラの玉の導きで扉へ直行→8",,,,,town_ambient.mp3,,gold+230<br>
+2,normal,"武器屋の主人が声をかけてきた。「この鉄の剣を使えば、技のキレが格段に上がるぞ。300Gだ。……おや、少し金が足りないようだな？」","[gold:300]鉄の剣を買う (300G)→21,店を出る→1",,,,,town_ambient.mp3,shop.jpg,<br>
+21,normal,"鉄の剣を手に入れた！ずっしりとした重みが、君に勝利の予感をもたらす。技術点が3上昇した。","街に戻る→1",,,,,town_ambient.mp3,shop.jpg,"gold-300,item+iron_sword,skill+3"<br>
+3,normal,"防具屋の主人が勧める。「この鋼の鎧は動きやすい設計だ。防御だけでなく技術も高まるぞ。最後の１着、200Gだ。」","[!steel_armor][gold:200]鋼の鎧を買う (200G)→31,店を出る→1",,,,,town_ambient.mp3,shop.jpg,<br>
+31,normal,"鋼の鎧を身につけた。鈍い銀色の光沢が君の身を守る。技術点が2上昇した。","街に戻る→1",,,,,town_ambient.mp3,shop.jpg,"gold-200,item+steel_armor,skill+2"<br>
+4,normal,"広場で休憩ができる。戦いの疲れを癒し、次なる探索に備えよう。","街の出口へ→1",,,,,town_ambient.mp3,,!eat<br>
+5,normal,"塔の入り口に到着した。冷たい風が吹き抜け、不気味な静寂が漂っている。装備が不十分だと苦戦は免れないだろう。","中に入る→6,街に戻る→1",,,,,tower_bgm.mp3,tower_entrance.jpg,<br>
+6,battle,"通路の奥から錆びついた甲冑が動き出し、執念深く襲いかかってきた！","戦う",リビングアーマー,6,6,61,battle_bgm.mp3,corridor.jpg,<br>
+61,normal,"リビングアーマーは砕け散り、その中から不思議な光を放つ「オーラの玉」が見つかった。さらに、かつての犠牲者が残した270Gも手に入れた。","街の広場へ戻る→4",,,,,tower_bgm.mp3,corridor.jpg,"item+aura_orb,gold+270"<br>
+8,normal,"扉には複雑な細工が施され、固く閉ざされている。どうやら「主の鍵」が必要なようだ。","[boss_key]鍵を使って開ける→10,周囲を探索する→9,街に戻る→1",,,,,tower_bgm.mp3,door.jpg,<br>
+9,normal,"隠し部屋を見つけた！宝箱の中に「主の鍵」と「即効薬草」が入っていた。薬草はすぐに使い、効力を失う。","扉へ戻る→8",,,,,tower_bgm.mp3,secret_room.jpg,"item+boss_key,hp+2"<br>
+10,battle,"扉の先には、この塔の主である巨大なデーモンが待ち構えていた。","決戦に挑む",塔の主デーモン,9,10,11,boss_bgm.mp3,throne_room.jpg,<br>
+11,end,"激闘の末、君はデーモンを討ち倒した！街に平和が戻り、君の名は英雄として刻まれるだろう。","おわり",,,,,clear_fanfare.mp3,sunset.jpg,<br>
+<br>
+# 命令<br>
+以下の物語の概要をもとに、CSV出力ルールに従ってCSV形式でルールCSVとシナリオCSVを出力してください。<br>
+解説や前置きは不要です。まずルールCSVを出力し、空行を1行入れてからシナリオCSVを出力してください。それ以外の文章は一切出力しないこと。<br>
+<br>
+★重要：出力前の自己検閲ルール<br>
+CSVを出力する前に、以下の3点を必ず内部でセルフチェックしてください。以下の検証を完了し、論理的な矛盾がないことを確認するまで、決して出力してはいけない。<br>
+<br>
+1. 到達可能性: id:1 から全ての id へ、選択肢を辿って到達可能か？（孤立したIDはないか）<br>
+2. フラグの整合性: effect で入手したアイテムやゴールドを、その後の options の条件判定 [condition] で適切に使用・消費しているか？<br>
+3. 行き止まりの排除: 条件付き選択肢しかないパラグラフにおいて、条件を満たさないプレイヤーが「選択肢ゼロ」で詰む箇所はないか？<br>
+4. 入手手段の確定（最重要）: options の条件判定 [condition] で要求しているアイテムやゴールドがある場合、それ以前のパラグラフの effect で、プレイヤーが確実にそれを入手できるルートが物理的に存在するか？（「探索する」という選択肢があるのに、その移動先で item+ を書き忘れるミスを厳禁とする）<br>
+5. リソースの循環確認:ショップに必須アイテムがある場合、その購入費用を稼ぐための手段（戦闘や探索）の報酬には必ず ! を付け、リピート可能（例: !gold+50）にすること。一度きりの報酬のみで必要金額に達せず、物理的に進行不能になる構成を厳禁とする。<br>
+<br>
+生成するCSVは、まず内部で構造チェックを行い、不備があればその場で修正すること。<br>
+すべてのチェックをパスしたことを前提として、完成したデータのみを出力せよ。<br>
+<br>
+# ルールCSVの出力ルール<br>
+項目名	内容<br>
+ttl	ゲームタイトル（画面上部に表示）<br>
+bg	初期背景画像ファイル名<br>
+max_hp	プレイヤー最大HP<br>
+init_skill	初期戦技<br>
+init_luck	初期幸運<br>
+init_food	初期食料<br>
+theme	色テーマ番号（1～9の整数）<br>
+items    アイテムマスタ（形式: id1:名称1|id2:名称2）<br>
+<br>
+・画像はHTMLと同じフォルダに置くものとし、ファイル名は拡張子を含めて正確に書くものとする<br>
+・数値は半角数字<br>
+・カンマ区切り<br>
+・1行目は必ず項目名<br>
+<br>
+・引用符（""）の徹底（最重要）: text, options, effect の3つの列は、必ず列全体を半角ダブルクォーテーション "" で囲ってください。 > 特に、複数の選択肢や複数の効果をカンマで区切って記述する場合、囲わないと列がズレてしまい、データが正しく読み込まれません。<br>
+    　正しい例: 1,normal,"文章","選択肢A→2,選択肢B→3",,,,,bgm.mp3,img.jpg,"item+key,skill+1"<br>
+    　悪い例: 1,normal,文章,選択肢A→2,選択肢B→3,,,,,bgm.mp3,img.jpg,item+key,skill+1<br>
+<br>
+▼theme（色テーマ）の種類<br>
+物語の雰囲気に合わせて 1～9 の番号を1つ選んでください。<br>
+1: 黒・グレー（標準・無機質・無彩色）<br>
+2: 赤（情熱・危機・炎）<br>
+3: 黄・金（砂漠・財宝・高貴）<br>
+4: 緑（森林・休息・自然）<br>
+5: 深緑（深い森・迷宮）<br>
+6: 青（深海・夜・冷静）<br>
+7: 紫（魔法・神秘・毒）<br>
+8: 茶（土・遺跡・レトロ）<br>
+9: 濃茶（泥・腐敗・絶望）<br>
+<br>
+▼items（アイテムマスタ）の書き方<br>
+シナリオに登場するキーアイテムや装備を定義します。<br>
+例：iron_sword:鉄の剣|boss_key:主の鍵<br>
+<br>
+# シナリオCSVの出力ルール<br>
+列	内容<br>
+id	パラグラフ番号（整数）<br>
+type	normal / battle / end<br>
+text	表示する文章<br>
+options	選択肢<br>
+e_name	敵の名前（battle時）<br>
+e_skill	敵の戦技<br>
+e_hp	敵HP<br>
+next	戦闘勝利後の移動先パラグラフID<br>
+bgm	BGMファイル名<br>
+bgi	背景画像ファイル名<br>
+effect	特殊効果<br>
+<br>
+▼type の種類<br>
+① normal：<br>
+通常シーン。<br>
+例：<br>
+1,normal,"通路は左右に分かれている。","左→2,右→3",,,,,bgm.mp3,room.jpg,<br>
+<br>
+② battle：戦闘シーン。<br>
+2,battle,"鉄の兵が襲いかかる。","戦う",オートマン,6,6,3,bgm_fight.mp3,battle.jpg,<br>
+<br>
+③ end：エンディング<br>
+10,end,"静寂が戻った。","おわり",,,,,bgm_title.mp3,,<br>
+<br>
+▼options（選択肢）の基本の書き方<br>
+形式：　表示テキスト→移動先ID<br>
+複数ある場合：　左へ→2,右へ→3<br>
+<br>
+注意：<br>
+・「→」は全角矢印<br>
+・カンマで区切る<br>
+・移動先は必ず存在するID<br>
+<br>
+▼options（選択肢）の「フラグ・条件チェック」<br>
+特定のアイテムやフラグを持っていないと選べない選択肢を作れます。<br>
+形式： [アイテムIDまたはフラグ名]表示テキスト→移動先ID<br>
+1. 所持金チェック： [gold:200] （200G以上必要）<br>
+2. アイテム所持： [item_id] （そのアイテムが必要）<br>
+3. 未所持チェック： [!item_id] （そのアイテムを持っていない時だけ出現）<br>
+例： [gold:300]鉄の剣を買う→21<br>
+例： [silver_key]カギを使って扉を開ける→5<br>
+<br>
+▼text の書き方<br>
+改行はしないこと。<br>
+<br>
+▼戦闘の仕組み<br>
+戦闘は、2d6 + 戦技　で判定されます。<br>
+勝利 → 敵に2ダメージ<br>
+敗北 → 自分に2ダメージ<br>
+幸運使用で増減<br>
+幸運は使うたび1減少<br>
+<br>
+▼effect（特殊効果）<br>
+特定のパラグラフに自動効果を付けられます。<br>
+効果によってHPが0になった場合は、その時点でゲームオーバーとなります。<br>
+<br>
+ステータス増減の形式（通常は初回訪問時のみ）：<br>
+hp+3<br>
+hp-2<br>
+skill+1<br>
+luck-1<br>
+food+1<br>
+<br>
+アイテム入手　例）item+アイテムID（例: item+silver_key）<br>
+<br>
+ゴールド操作　例： gold+100, gold-50（例: gold+500）<br>
+<br>
+※先頭に「!」を付けると、訪れるたびに繰り返し効果が発動します（例: !hp-2）。<br>
+※複数を組み合わせる場合はカンマで区切ります（例: gold-300,item+iron_sword,skill+3）。<br>
+※アイテムとゴールドを組み合わせるとショップにできます。（例：gold-300,item+herb）<br>
+<br>
+例：以下の場合、同じidを訪れるたびにhp-2となります。<br>
+11,normal,"罠の道だ！","戻る→1",,,,,,,!hp-2<br>
+例：以下の場合、同じidを訪れても、2回目以降はfoodは増えません。<br>
+31,normal,"干し肉を見つけた。","進む→4",,,,,,,food+1<br>
+<br>
+食事ポイントとして「eat」を書くと、食料がある場合にHPを4回復できるボタンが表示されます。<br>
+「eat」は1度きり、「!eat」は食料がある限り何度でも使用可能です。<br>
+例：<br>
+4,normal,"ここは安全そうだ。食料を好きなだけ食べても構わない。","進む→5",,,,,,,!eat<br>
+<br>
+▼BGMについて<br>
+mp3ファイル名を書く<br>
+空欄なら停止<br>
+同じBGMなら切り替わらない<br>
+例：<br>
+bgm_fight.mp3<br>
+<br>
+▼背景画像（bgi）<br>
+そのパラグラフの専用背景<br>
+空欄ならルールCSVで指定した背景を使用<br>
+<br>
+★よくある記述ミス<br>
+・カンマ不足：列数が足りないと正常動作しません。すべての行は必ず列数が同じ（カンマの個数が同じ）であること（末尾が空でもカンマを打つ）。<br>
+・IDの重複：同じIDは使わないこと。<br>
+・存在しないIDへ移動しないこと<br>
+・options内の矢印は必ず「→」を使う。「->」などは禁止。<br>
+・戦闘行の整合性: battleタイプでは、5列目(敵名)から8列目(勝利後ID)までを必ず埋めること。<br>
+・引用符の管理: textとoptionsは必ず半角のダブルクォーテーション "" で囲むこと。<br>
+<br>
+・アイテム入手と条件分岐の分離: 同一ID内で「アイテム入手(effect)」と「そのアイテムを条件とする選択肢(options)」を同時に記述しないでください。入手と使用はパラグラフを分けてください。<br>
+　悪い例：6,normal,"鍵を得た","[key]扉へ→7",,,,,,,item+key（ボタンが反応しない恐れあり）<br>
+　良い例：6,normal,"鍵を得た","次へ→61",,,,,,,item+key<br>
+　　　　　61,normal,"鍵を持っている。","[key]扉へ→7",,,,,,,<br>
+<br>
+・進行不能の回避（デッドロック禁止）: 選択肢に条件[condition]を付ける場合、その条件を満たしていないプレイヤーが移動先で「選べる選択肢がゼロ」にならないよう、必ず「条件なしの選択肢」を混ぜるか、移動前の時点で条件チェックを行ってください。<br>
+　悪い例：2,normal,"城へ着いた","次へ→3",,,,,,,<br>
+　　　　　3,normal,"扉がある","[key]開ける→4",,,,,,,（鍵がないと詰む）<br>
+　良い例：2,normal,"城へ着いた","[key]扉へ→3,鍵を探す→5",,,,,,,（移動前にチェック）<br>
+　または：3,normal,"扉がある","[key]開ける→4,戻る→2",,,,,,,（戻る選択肢がある）<br>
+<br>
+★その他<br>
+戦闘は少なめに。パラグラフ10個当たり2回がテンポ良い。<br>
+回復ポイントを作るとよい。<br>
+戦闘前後に eat を配置するとバランスが良い。<br>
+</div>
+
+<button type="button" class="rule-toggle-btn" id="toggleBtn" onclick="toggleRule()">
+    ▼ すべてを見てみる（サンプルと詳細ルール）
+</button>
+
+
+<div class="section-title">【B】ゲームブックとして作りたい物語の概要を入力してみましょう</div>
+
+<br>
+例：スライムが魔王を倒す物語。戦闘は高難度で。<br>
+例：真冬の放課後恋愛ものをパラグラフ20個程度で。<br>
+例：富士登山（五合目までバス、八合目で宿泊、ご来光、砂走りで下山、麓で温泉と懐石料理）を戦闘なしで。<br>
+例：四択の選択式クイズを３問。<br>
+例：爆笑！闇鍋パーティー<br>
+<br>
+<span style="color:#990000;">※生成AI側の規約に反しないよう、良識の範囲内で入力しましょう。</span>
+<br>
+<textarea id="storyB" placeholder="ここに物語のあらすじや設定を記入してください。"></textarea>
+
+<div class="section-title">【C】カスタム指示（オプション）</div>
+<div style="background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em;">
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_count"> パラグラフを
+        <select id="val_count">
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select> 個以上にして
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_length"> １つのパラグラフ内の文章を
+        <select id="val_length">
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+        </select> 文字以上にして
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_newline"> 読みやすく\n\nの改行を入れて
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_battle"> 戦闘回数を
+        <select id="val_battle">
+            <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="5" selected>5</option><option value="10">10</option>
+            <option value="15">15</option><option value="20">20</option>
+        </select> 回にして
+    </div>
+	<div style="margin-bottom: 8px;">
+	    <input type="checkbox" id="opt_strong"> 自分を
+	    <select id="val_strong">
+	        <option value="少し">少し</option>
+	        <option value="かなり">かなり</option>
+	    </select> 強くして
+	</div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_noitem" checked> アイテムフラグを使わないで
+    </div>
+</div>
+
+<p>
+<strong>もしも以前作成したルールCSVとシナリオCSVがあれば、それらの中身を上記の入力欄に貼り付け、さらに指示を文章で追記することで、改訂版を作ることもできます。（物語を膨らませたい・難易度を上げたいなど）</strong>
+<br>
+<p>
+【A】の固定の生成ルールに、この【B】と【C】の入力内容が結合され、生成AIに対してそのまま使用できる長文の命令文（プロンプト）となります。<br>
+<br>
+以下のボタンを押すと、命令文をクリップボードにコピーした状態でAIが起動しますので、AI側のチャット欄に貼り付けてお使いください。
+</p>
+
+<button class="btn-chatgpt" onclick="copyAndOpen('chatgpt')">プロンプトをコピーして AI (ChatGPT) を起動</button>
+<button class="btn-gemini" onclick="copyAndOpen('gemini')">プロンプトをコピーして AI (Gemini) を起動</button>
+
+<p id="status"></p>
+
+<div class="studio-logo" style="margin-top: 50px; opacity: 1.0;">
+    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+    <img src="storyem_logo.png" alt="STORYEM LOGO" style="max-width: 350px;margin-right: 20px;">
+    <img src="fde_white.png" alt="Factory Digital Entertainment LOGO" style="max-width: 130px;">
+    <p style="font-size: 1em; color: #111;">© 2026 Factory Digital Entertainment</p>
+</div>
+
+<script>
+// --- ルール文章【A】をここに記述 ---
+const ruleA = `
+    ■以下がルールCSV（ゲーム全体の設定）のサンプルです。
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme,items
+鉄の街の試練,city_gate.jpg,20,3,9,2,8,iron_sword:鉄の剣|steel_armor:鋼の鎧|herb:即効薬草|boss_key:主の鍵|aura_orb:オーラの玉
+
+    ■以下がシナリオCSV（物語の内容）のサンプルです。
+    id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
+1,normal,"君は冒険者として「鉄の街」に到着した。懐にあるのはわずか230Gの路銀のみ。まずは装備を整え、技術を磨くべきだろう。","武器屋へ行く→2,防具屋へ行く→3,塔へ向かう→5,[aura_orb]オーラの玉の導きで扉へ直行→8",,,,,town_ambient.mp3,,gold+230
+2,normal,"武器屋の主人が声をかけてきた。「この鉄の剣を使えば、技のキレが格段に上がるぞ。300Gだ。……おや、少し金が足りないようだな？」","[gold:300]鉄の剣を買う (300G)→21,店を出る→1",,,,,town_ambient.mp3,shop.jpg,
+21,normal,"鉄の剣を手に入れた！ずっしりとした重みが、君に勝利の予感をもたらす。技術点が3上昇した。","街に戻る→1",,,,,town_ambient.mp3,shop.jpg,"gold-300,item+iron_sword,skill+3"
+3,normal,"防具屋の主人が勧める。「この鋼の鎧は動きやすい設計だ。防御だけでなく技術も高まるぞ。最後の１着、200Gだ。」","[!steel_armor][gold:200]鋼の鎧を買う (200G)→31,店を出る→1",,,,,town_ambient.mp3,shop.jpg,
+31,normal,"鋼の鎧を身につけた。鈍い銀色の光沢が君の身を守る。技術点が2上昇した。","街に戻る→1",,,,,town_ambient.mp3,shop.jpg,"gold-200,item+steel_armor,skill+2"
+4,normal,"広場で休憩ができる。戦いの疲れを癒し、次なる探索に備えよう。","街の出口へ→1",,,,,town_ambient.mp3,,!eat
+5,normal,"塔の入り口に到着した。冷たい風が吹き抜け、不気味な静寂が漂っている。装備が不十分だと苦戦は免れないだろう。","中に入る→6,街に戻る→1",,,,,tower_bgm.mp3,tower_entrance.jpg,
+6,battle,"通路の奥から錆びついた甲冑が動き出し、執念深く襲いかかってきた！","戦う",リビングアーマー,6,6,61,battle_bgm.mp3,corridor.jpg,
+61,normal,"リビングアーマーは砕け散り、その中から不思議な光を放つ「オーラの玉」が見つかった。さらに、かつての犠牲者が残した270Gも手に入れた。","街の広場へ戻る→4",,,,,tower_bgm.mp3,corridor.jpg,"item+aura_orb,gold+270"
+8,normal,"扉には複雑な細工が施され、固く閉ざされている。どうやら「主の鍵」が必要なようだ。","[boss_key]鍵を使って開ける→10,周囲を探索する→9,街に戻る→1",,,,,tower_bgm.mp3,door.jpg,
+9,normal,"隠し部屋を見つけた！宝箱の中に「主の鍵」と「即効薬草」が入っていた。薬草はすぐに使い、効力を失う。","扉へ戻る→8",,,,,tower_bgm.mp3,secret_room.jpg,"item+boss_key,hp+2"
+10,battle,"扉の先には、この塔の主である巨大なデーモンが待ち構えていた。","決戦に挑む",塔の主デーモン,9,10,11,boss_bgm.mp3,throne_room.jpg,
+11,end,"激闘の末、君はデーモンを討ち倒した！街に平和が戻り、君の名は英雄として刻まれるだろう。","おわり",,,,,clear_fanfare.mp3,sunset.jpg,
+
+# 命令
+以下の物語の概要をもとに、CSV出力ルールに従ってCSV形式でルールCSVとシナリオCSVを出力してください。
+解説や前置きは不要です。まずルールCSVを出力し、空行を1行入れてからシナリオCSVを出力してください。それ以外の文章は一切出力しないこと。
+
+★重要：出力前の自己検閲ルール
+CSVを出力する前に、以下の3点を必ず内部でセルフチェックしてください。以下の検証を完了し、論理的な矛盾がないことを確認するまで、決して出力してはいけない。
+
+1. 到達可能性: id:1 から全ての id へ、選択肢を辿って到達可能か？（孤立したIDはないか）
+2. フラグの整合性: effect で入手したアイテムやゴールドを、その後の options の条件判定 [condition] で適切に使用・消費しているか？
+3. 行き止まりの排除: 条件付き選択肢しかないパラグラフにおいて、条件を満たさないプレイヤーが「選択肢ゼロ」で詰む箇所はないか？
+4. 入手手段の確定（最重要）: options の条件判定 [condition] で要求しているアイテムやゴールドがある場合、それ以前のパラグラフの effect で、プレイヤーが確実にそれを入手できるルートが物理的に存在するか？（「探索する」という選択肢があるのに、その移動先で item+ を書き忘れるミスを厳禁とする）
+5. リソースの循環確認:ショップに必須アイテムがある場合、その購入費用を稼ぐための手段（戦闘や探索）の報酬には必ず ! を付け、リピート可能（例: !gold+50）にすること。一度きりの報酬のみで必要金額に達せず、物理的に進行不能になる構成を厳禁とする。
+
+生成するCSVは、まず内部で構造チェックを行い、不備があればその場で修正すること。
+すべてのチェックをパスしたことを前提として、完成したデータのみを出力せよ。
+
+# ルールCSVの出力ルール
+項目名	内容
+ttl	ゲームタイトル（画面上部に表示）
+bg	初期背景画像ファイル名
+max_hp	プレイヤー最大HP
+init_skill	初期戦技
+init_luck	初期幸運
+init_food	初期食料
+theme	色テーマ番号（1～9の整数）
+items    アイテムマスタ（形式: id1:名称1|id2:名称2）
+
+・画像はHTMLと同じフォルダに置くものとし、ファイル名は拡張子を含めて正確に書くものとする
+・数値は半角数字
+・カンマ区切り
+・1行目は必ず項目名
+
+・引用符（""）の徹底（最重要）: text, options, effect の3つの列は、必ず列全体を半角ダブルクォーテーション "" で囲ってください。 > 特に、複数の選択肢や複数の効果をカンマで区切って記述する場合、囲わないと列がズレてしまい、データが正しく読み込まれません。
+    　正しい例: 1,normal,"文章","選択肢A→2,選択肢B→3",,,,,bgm.mp3,img.jpg,"item+key,skill+1"
+    　悪い例: 1,normal,文章,選択肢A→2,選択肢B→3,,,,,bgm.mp3,img.jpg,item+key,skill+1
+
+▼theme（色テーマ）の種類
+物語の雰囲気に合わせて 1～9 の番号を1つ選んでください。
+1: 黒・グレー（標準・無機質・無彩色）
+2: 赤（情熱・危機・炎）
+3: 黄・金（砂漠・財宝・高貴）
+4: 緑（森林・休息・自然）
+5: 深緑（深い森・迷宮）
+6: 青（深海・夜・冷静）
+7: 紫（魔法・神秘・毒）
+8: 茶（土・遺跡・レトロ）
+9: 濃茶（泥・腐敗・絶望）
+
+▼items（アイテムマスタ）の書き方
+シナリオに登場するキーアイテムや装備を定義します。
+例：iron_sword:鉄の剣|boss_key:主の鍵
+
+# シナリオCSVの出力ルール
+列	内容
+id	パラグラフ番号（整数）
+type	normal / battle / end
+text	表示する文章
+options	選択肢
+e_name	敵の名前（battle時）
+e_skill	敵の戦技
+e_hp	敵HP
+next	戦闘勝利後の移動先パラグラフID
+bgm	BGMファイル名
+bgi	背景画像ファイル名
+effect	特殊効果
+
+▼type の種類
+① normal：
+通常シーン。
+例：
+1,normal,"通路は左右に分かれている。","左→2,右→3",,,,,bgm.mp3,room.jpg,
+
+② battle：戦闘シーン。
+2,battle,"鉄の兵が襲いかかる。","戦う",オートマン,6,6,3,bgm_fight.mp3,battle.jpg,
+
+③ end：エンディング
+10,end,"静寂が戻った。","おわり",,,,,bgm_title.mp3,,
+
+▼options（選択肢）の基本の書き方
+形式：　表示テキスト→移動先ID
+複数ある場合：　左へ→2,右へ→3
+
+注意：
+・「→」は全角矢印
+・カンマで区切る
+・移動先は必ず存在するID
+
+▼options（選択肢）の「フラグ・条件チェック」
+特定のアイテムやフラグを持っていないと選べない選択肢を作れます。
+形式： [アイテムIDまたはフラグ名]表示テキスト→移動先ID
+1. 所持金チェック： [gold:200] （200G以上必要）
+2. アイテム所持： [item_id] （そのアイテムが必要）
+3. 未所持チェック： [!item_id] （そのアイテムを持っていない時だけ出現）
+例： [gold:300]鉄の剣を買う→21
+例： [silver_key]カギを使って扉を開ける→5
+
+▼text の書き方
+改行はしないこと。
+
+▼戦闘の仕組み
+戦闘は、2d6 + 戦技　で判定されます。
+勝利 → 敵に2ダメージ
+敗北 → 自分に2ダメージ
+幸運使用で増減
+幸運は使うたび1減少
+
+▼effect（特殊効果）
+特定のパラグラフに自動効果を付けられます。
+効果によってHPが0になった場合は、その時点でゲームオーバーとなります。
+
+ステータス増減の形式（通常は初回訪問時のみ）：
+hp+3
+hp-2
+skill+1
+luck-1
+food+1
+
+アイテム入手　例）item+アイテムID（例: item+silver_key）
+
+ゴールド操作　例： gold+100, gold-50（例: gold+500）
+
+※先頭に「!」を付けると、訪れるたびに繰り返し効果が発動します（例: !hp-2）。
+※複数を組み合わせる場合はカンマで区切ります（例: gold-300,item+iron_sword,skill+3）。
+※アイテムとゴールドを組み合わせるとショップにできます。（例：gold-300,item+herb）
+
+例：以下の場合、同じidを訪れるたびにhp-2となります。
+11,normal,"罠の道だ！","戻る→1",,,,,,,!hp-2
+例：以下の場合、同じidを訪れても、2回目以降はfoodは増えません。
+31,normal,"干し肉を見つけた。","進む→4",,,,,,,food+1
+
+食事ポイントとして「eat」を書くと、食料がある場合にHPを4回復できるボタンが表示されます。
+「eat」は1度きり、「!eat」は食料がある限り何度でも使用可能です。
+例：
+4,normal,"ここは安全そうだ。食料を好きなだけ食べても構わない。","進む→5",,,,,,,!eat
+
+
+▼BGMについて
+mp3ファイル名を書く
+空欄なら停止
+同じBGMなら切り替わらない
+例：
+bgm_fight.mp3
+
+▼背景画像（bgi）
+そのパラグラフの専用背景
+空欄ならルールCSVで指定した背景を使用
+
+★よくある記述ミス
+・カンマ不足：列数が足りないと正常動作しません。すべての行は必ず列数が同じ（カンマの個数が同じ）であること（末尾が空でもカンマを打つ）。
+・IDの重複：同じIDは使わないこと。
+・存在しないIDへ移動しないこと
+・options内の矢印は必ず「→」を使う。「->」などは禁止。
+・text内での改行は禁止。
+・戦闘行の整合性: battleタイプでは、5列目(敵名)から8列目(勝利後ID)までを必ず埋めること。
+・引用符の管理: textとoptionsは必ず半角のダブルクォーテーション "" で囲むこと。
+
+・アイテム入手と条件分岐の分離: 同一ID内で「アイテム入手(effect)」と「そのアイテムを条件とする選択肢(options)」を同時に記述しないでください。入手と使用はパラグラフを分けてください。
+　悪い例：6,normal,"鍵を得た","[key]扉へ→7",,,,,,,item+key（ボタンが反応しない恐れあり）
+　良い例：6,normal,"鍵を得た","次へ→61",,,,,,,item+key
+　　　　　61,normal,"鍵を持っている。","[key]扉へ→7",,,,,,,
+
+・進行不能の回避（デッドロック禁止）: 選択肢に条件[condition]を付ける場合、その条件を満たしていないプレイヤーが移動先で「選べる選択肢がゼロ」にならないよう、必ず「条件なしの選択肢」を混ぜるか、移動前の時点で条件チェックを行ってください。
+　悪い例：2,normal,"城へ着いた","次へ→3",,,,,,,
+　　　　　3,normal,"扉がある","[key]開ける→4",,,,,,,（鍵がないと詰む）
+　良い例：2,normal,"城へ着いた","[key]扉へ→3,鍵を探す→5",,,,,,,（移動前にチェック）
+　または：3,normal,"扉がある","[key]開ける→4,戻る→2",,,,,,,（戻る選択肢がある）
+
+★その他
+戦闘は少なめに。パラグラフ10個当たり2回がテンポ良い。
+回復ポイントを作るとよい。
+戦闘前後に eat を配置するとバランスが良い。
+物語の舞台や雰囲気を考慮して、最適な theme 番号を 1～9 から選出してください。迷うなら1でよい。
+整合性の取れた面白いゲームブックを生成してください。
+
+
+`; //const部分の終わり
+
+function copyAndOpen(targetAI) {
+    const storyB = document.getElementById('storyB').value;
+    if (!storyB) {
+        alert("ゲームブックとして作りたい物語の概要を記入してください。");
+        return;
+    }
+
+    // --- オプションの追記命令を構築 ---
+    let extraInstructions = "\n\n# 追加の構成指示\n";
+    
+    if (document.getElementById('opt_count').checked) {
+        extraInstructions += `・パラグラフ数は必ず ${document.getElementById('val_count').value} 個以上にしてください。\n`;
+    }
+    if (document.getElementById('opt_length').checked) {
+        extraInstructions += `・各パラグラフの文章量は ${document.getElementById('val_length').value} 文字以上にして、描写を詳しくしてください。\n`;
+    }
+    if (document.getElementById('opt_newline').checked) {
+        extraInstructions += `・可読性を高めるため、文章の適所に \\n\\n を入れて改行してください。\n`;
+    }
+    if (document.getElementById('opt_battle').checked) {
+        extraInstructions += `・物語の中での戦闘回数は合計 ${document.getElementById('val_battle').value} 回程度に調整してください。\n`;
+    }
+	if (document.getElementById('opt_strong').checked) {
+	    const strength = document.getElementById('val_strong').value;
+	    if (strength === "かなり") {
+	        extraInstructions += `・プレイヤーの初期ステータス（HP・技術・幸運）を圧倒的に高く設定し、無双状態で進行できるようにしてください。\n`;
+	    } else {
+	        extraInstructions += `・プレイヤーの初期ステータス（HP・技術・幸運）を少し高めに設定し、有利に進行できるようにしてください。\n`;
+	    }
+	}
+    if (document.getElementById('opt_noitem').checked) {
+        extraInstructions += `・今回はアイテムの入手や所持判定（フラグ管理）を行わない、シンプルな読み物形式にしてください。\n`;
+    }
+
+    // もし何もチェックされていなければ、extraInstructionsを空にする
+    if (extraInstructions === "\n\n# 追加の構成指示\n") extraInstructions = "";
+
+    const fullPrompt = `${ruleA}\n\n# 物語の概要\n${storyB}${extraInstructions}`;
+
+    // 以下、コピーとURL開く処理（変更なし）
+    const url = (targetAI === 'gemini') ? "https://gemini.google.com/" : "https://chatgpt.com/";
+
+    navigator.clipboard.writeText(fullPrompt).then(() => {
+        const statusEl = document.getElementById('status');
+        const aiName = (targetAI === 'gemini') ? 'Gemini' : 'ChatGPT';
+        statusEl.innerHTML = `✅ ${aiName} 用のプロンプトをコピーしました！<br>別タブで開いたチャット欄に貼り付けてください。`;
+        window.open(url, "_blank");
+    }).catch(err => {
+        console.error('コピー失敗:', err);
+        alert("クリップボードへのコピーに失敗しました。手動でコピーしてください。");
+    });
+}
+
+function toggleRule() {
+    const box = document.getElementById('ruleBox');
+    const btn = document.getElementById('toggleBtn');
+    
+    if (box.classList.contains('expanded')) {
+        box.classList.remove('expanded');
+        btn.innerText = "▼ すべてを見てみる（サンプルと詳細ルール）";
+        // 閉じたときに画面が飛ぶのを防ぐため、少し上にスクロールさせるのもアリ
+    } else {
+        box.classList.add('expanded');
+        btn.innerText = "▲ 閉じる";
+    }
+}
+</script>
+</body>
+</html>
