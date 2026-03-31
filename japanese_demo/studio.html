@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
 <!-- STORYEM（ストリーム） -->
-<!-- ver20260308 -->
+<!-- ver20260331 -->
 <!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
 <!-- このゲームエンジン及び、サンプルゲーム内の画像と使用楽曲の著作権は全て、ファクトリー・デジタル・エンターテインメントおよび矢崎大信が有します。 -->
 <!-- 上記の著作権者に無断で、サンプルゲーム内の画像と使用楽曲を出版・放送・演奏・複製・公開に使用することを禁じます。 -->
@@ -389,7 +389,8 @@ bgm_fight.mp3<br>
 ・存在しないIDへ移動しないこと<br>
 ・options内の矢印は必ず「→」を使う。「->」などは禁止。<br>
 ・戦闘行の整合性: battleタイプでは、5列目(敵名)から8列目(勝利後ID)までを必ず埋めること。<br>
-・引用符の管理: textとoptionsは必ず半角のダブルクォーテーション "" で囲むこと。<br>
+・引用符の管理: textとoptionsとeffectは必ず半角のダブルクォーテーション "" で囲むこと。また、テキスト内での二重引用符（"）の使用は厳禁。セリフや引用は必ず一重引用符（'）または「」に置換すること。
+<br>
 <br>
 ・アイテム入手と条件分岐の分離: 同一ID内で「アイテム入手(effect)」と「そのアイテムを条件とする選択肢(options)」を同時に記述しないでください。入手と使用はパラグラフを分けてください。<br>
 　悪い例：6,normal,"鍵を得た","[key]扉へ→7",,,,,,,item+key（ボタンが反応しない恐れあり）<br>
@@ -471,10 +472,133 @@ bgm_fight.mp3<br>
 	<div style="margin-bottom: 8px;">
 	    <input type="checkbox" id="opt_lang">
 	    <select id="val_lang">
-	        <option value="English">English</option>
-	        <option value="Chinese">Chinese</option>
-	        <option value="Spanish">Spanish</option>
-	        <option value="French">French</option>
+			<option value="English">English (英語)</option>
+            <option value="Chinese (Simplified)">Chinese (中国語 簡体字)</option>
+            <option value="Chinese (Traditional)">Chinese (中国語 繁体字)</option>
+            <option value="Korean">Korean (韓国語)</option>
+            <option value="French">French (フランス語)</option>
+            <option value="Spanish">Spanish (スペイン語)</option>
+            <option value="German">German (ドイツ語)</option>
+            <option value="Italian">Italian (イタリア語)</option>
+            <option value="Portuguese">Portuguese (ポルトガル語)</option>
+            <option value="Russian">Russian (ロシア語)</option>
+            <option value="Thai">Thai (タイ語)</option>
+            <option value="Vietnamese">Vietnamese (ベトナム語)</option>
+            <hr>
+            <option value="Icelandic">Icelandic (アイスランド語)</option>
+            <option value="Akan">Akan (アカン語)</option>
+            <option value="Azerbaijani">Azerbaijani (アゼルバイジャン語)</option>
+            <option value="Assamese">Assamese (アッサム語)</option>
+            <option value="Afar">Afar (アファル語)</option>
+            <option value="Afrikaans">Afrikaans (アフリカーンス語)</option>
+            <option value="Amharic">Amharic (アムハラ語)</option>
+            <option value="Arabic">Arabic (アラビア語)</option>
+            <option value="Albanian">Albanian (アルバニア語)</option>
+            <option value="Armenian">Armenian (アルメニア語)</option>
+            <option value="Ilocano">Ilocano (イロカノ語)</option>
+            <option value="Indonesian">Indonesian (インドネシア語)</option>
+            <option value="Uyghur">Uyghur (ウイグル語)</option>
+            <option value="Welsh">Welsh (ウェールズ語)</option>
+            <option value="Ukrainian">Ukrainian (ウクライナ語)</option>
+            <option value="Uzbek">Uzbek (ウズベク語)</option>
+            <option value="Urdu">Urdu (ウルドゥー語)</option>
+            <option value="Ewe">Ewe (エウェ語)</option>
+            <option value="Estonian">Estonian (エストニア語)</option>
+            <option value="Esperanto">Esperanto (エスペラント語)</option>
+            <option value="Oromo">Oromo (オロモ語)</option>
+            <option value="Kazakh">Kazakh (カザフ語)</option>
+            <option value="Catalan">Catalan (カタロニア語)</option>
+            <option value="Galician">Galician (ガリシア語)</option>
+            <option value="Kannada">Kannada (カンナダ語)</option>
+            <option value="Greek">Greek (ギリシャ語)</option>
+            <option value="Kyrgyz">Kyrgyz (キルギス語)</option>
+            <option value="Guarani">Guarani (グアラニー語)</option>
+            <option value="Gujarati">Gujarati (グジャラート語)</option>
+            <option value="Khmer">Khmer (クメール語)</option>
+            <option value="Krio">Krio (クリオ語)</option>
+            <option value="Kurdish (Kurmanji)">Kurdish (クルド語 クルマンジー)</option>
+            <option value="Kurdish (Sorani)">Kurdish (クルド語 ソラニー)</option>
+            <option value="Croatian">Croatian (クロアチア語)</option>
+            <option value="Quechua">Quechua (ケチュア語)</option>
+            <option value="Xhosa">Xhosa (コサ語)</option>
+            <option value="Konkani">Konkani (コンカニ語)</option>
+            <option value="Corsican">Corsican (コルシカ語)</option>
+            <option value="Samoan">Samoan (サモア語)</option>
+            <option value="Sanskrit">Sanskrit (サンスクリット語)</option>
+            <option value="Javanese">Javanese (ジャワ語)</option>
+            <option value="Georgian">Georgian (ジョージア語)</option>
+            <option value="Shona">Shona (ショナ語)</option>
+            <option value="Sindhi">Sindhi (シンド語)</option>
+            <option value="Sinhala">Sinhala (シンハラ語)</option>
+            <option value="Swedish">Swedish (スウェーデン語)</option>
+            <option value="Zulu">Zulu (ズールー語)</option>
+            <option value="Scottish Gaelic">Scottish Gaelic (スコットランド ゲール語)</option>
+            <option value="Slovak">Slovak (スロバキア語)</option>
+            <option value="Slovenian">Slovenian (スロベニア語)</option>
+            <option value="Swahili">Swahili (スワヒリ語)</option>
+            <option value="Sundanese">Sundanese (スンダ語)</option>
+            <option value="Cebuano">Cebuano (セブアノ語)</option>
+            <option value="Serbian">Serbian (セルビア語)</option>
+            <option value="Sepedi">Sepedi (セペディ語)</option>
+            <option value="Sotho">Sotho (ソト語)</option>
+            <option value="Somali">Somali (ソマリ語)</option>
+            <option value="Tajik">Tajik (タジク語)</option>
+            <option value="Tatar">Tatar (タタール語)</option>
+            <option value="Tamil">Tamil (タミル語)</option>
+            <option value="Czech">Czech (チェコ語)</option>
+            <option value="Tsonga">Tsonga (ツォンガ語)</option>
+            <option value="Tswana">Tswana (ツワナ語)</option>
+            <option value="Tiv">Tiv (ティヴ語)</option>
+            <option value="Tigrinya">Tigrinya (ティグリニャ語)</option>
+            <option value="Telugu">Telugu (テルグ語)</option>
+            <option value="Danish">Danish (デンマーク語)</option>
+            <option value="Turkmen">Turkmen (トルクメン語)</option>
+            <option value="Turkish">Turkish (トルコ語)</option>
+            <option value="Dhivehi">Dhivehi (ディベヒ語)</option>
+            <option value="Dogri">Dogri (ドグリ語)</option>
+            <option value="Nyanja (Chichewa)">Nyanja (ニャンジャ語)</option>
+            <option value="Nepali">Nepali (ネパール語)</option>
+            <option value="Norwegian">Norwegian (ノルウェー語)</option>
+            <option value="Haitian Creole">Haitian Creole (ハイチ クレオール語)</option>
+            <option value="Hausa">Hausa (ハウサ語)</option>
+            <option value="Pashto">Pashto (パシュト語)</option>
+            <option value="Basque">Basque (バスク語)</option>
+            <option value="Hawaiian">Hawaiian (ハワイ語)</option>
+            <option value="Hungarian">Hungarian (ハンガリー語)</option>
+            <option value="Punjabi">Punjabi (パンジャブ語)</option>
+            <option value="Hindi">Hindi (ヒンディー語)</option>
+            <option value="Bambara">Bambara (バンバラ語)</option>
+            <option value="Finnish">Finnish (フィンランド語)</option>
+            <option value="Fijian">Fijian (フィジー語)</option>
+            <option value="Filipino (Tagalog)">Filipino (フィリピン語)</option>
+            <option value="Belarusian">Belarusian (ベラルーシ語)</option>
+            <option value="Bengali">Bengali (ベンガル語)</option>
+            <option value="Persian">Persian (ペルシャ語)</option>
+            <option value="Bhojpuri">Bhojpuri (ボージュプリー語)</option>
+            <option value="Polish">Polish (ポーランド語)</option>
+            <option value="Bosnian">Bosnian (ボスニア語)</option>
+            <option value="Maithili">Maithili (マイティリー語)</option>
+            <option value="Maori">Maori (マオリ語)</option>
+            <option value="Macedonian">Macedonian (マケドニア語)</option>
+            <option value="Marathi">Marathi (マラーティー語)</option>
+            <option value="Malagasy">Malagasy (マダガスカル語)</option>
+            <option value="Malayalam">Malayalam (マラヤーラム語)</option>
+            <option value="Malay">Malay (マレー語)</option>
+            <option value="Maltese">Maltese (マルタ語)</option>
+            <option value="Meiteilon (Manipuri)">Meiteilon (マニプル語)</option>
+            <option value="Mizo">Mizo (ミゾ語)</option>
+            <option value="Myanmar (Burmese)">Myanmar (ビルマ語)</option>
+            <option value="Mongolian">Mongolian (モンゴル語)</option>
+            <option value="Yoruba">Yoruba (ヨルバ語)</option>
+            <option value="Lao">Lao (ラオ語)</option>
+            <option value="Latin">Latin (ラテン語)</option>
+            <option value="Latvian">Latvian (ラトビア語)</option>
+            <option value="Lithuanian">Lithuanian (リトアニア語)</option>
+            <option value="Lingala">Lingala (リンガラ語)</option>
+            <option value="Luganda">Luganda (ルガンダ語)</option>
+            <option value="Romanian">Romanian (ルーマニア語)</option>
+            <option value="Luxembourgish">Luxembourgish (ルクセンブルク語)</option>
+            <option value="Rwanda">Rwanda (ルワンダ語)</option>
 	    </select> の訳文を追加する
 	</div>
 	<div style="margin-bottom: 8px;">
@@ -503,45 +627,52 @@ bgm_fight.mp3<br>
     ✨ 生成後の便利な追加命令 (必要に応じて、AIに続けて入力してください)
   </h3>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🛠️ 「全行の構文エラー、バトル項目の未入力、および全選択肢からゴールへの到達可否を、一項目ずつデバッグして修正して。到達できないパラグラフがないか精査して。CSVのヘッダー行も忘れないで。」</strong><br>
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🛠️ 「全行の構文エラー、バトル項目の未入力、および全選択肢からゴールへの到達可否を、一項目ずつデバッグして修正して。到達できないパラグラフがないか精査して。CSVのヘッダー行も忘れないで。」</strong><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      アイテムフラグを使用した場合など、AIは1回の生成では整合性のあるデータを生成できない場合があります。そのような場合はこの命令を実行することで、徹底的なデバッグ・修正をし、精度の高いデータを再生成してくれやすくなります。
+      アイテムフラグを使用した場合など、AIは1回の生成では整合性のあるデータを生成できない場合があります。その場合はこの命令を実行することで、徹底的な修正をし、精度の高いデータを再生成してくれやすくなります。
     </div>
   </div>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🏃 「攻略手順を教えて」</strong><br>
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">⏩ 「続きを書いて」「パラグラフ[番号]から再開して」「最後まで出力して」</strong><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      複雑な分岐を作った際、作者自身も正解ルートがわからなくなることがあります。AIに攻略手順を列挙してもらい、作者（あなた）自身もテストがしやすくなります。
+      AIの制限により物語が途切れることがあります。その場合はこの命令を実行することで、続きを出力してくれます。
+    </div>
+  </div>
+
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🏃 「攻略手順を教えて」</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      複雑な分岐を作った際、AIに攻略手順を列挙してもらい、作者（あなた）自身もテストプレイがしやすくなります。
     </div>
   </div>
 
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
     <strong style="color: #0d47a1; font-size: 0.95em;">🎨 「関連する全種類の画像をコマ割りで作って」</strong> <span style="font-size: 0.8em; opacity: 0.7;">（※Gemini推奨）</span><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      物語の舞台や登場人物を視覚化できます。切り抜いて生成された画像をエンジンの背景（bgi）として設定したり、SNSでの紹介用バナーとして活用するのに最適です。
+      物語の舞台や登場人物を視覚化できます。切り抜いて生成された画像をゲームの背景（bgi）として設定したり、SNSでの紹介用バナーとして活用するのに最適です。
     </div>
   </div>
 
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
     <strong style="color: #0d47a1; font-size: 0.95em;">🎵 「関連する曲を作って」</strong> <span style="font-size: 0.8em; opacity: 0.7;">（※Gemini推奨）</span><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      物語の雰囲気に合わせたBGMを生成できます。戦闘シーンやエンディングなど、特定のシーンを盛り上げるための専用トラックを作成して、臨場感を高めましょう。
+      雰囲気に合わせたBGMを生成できます。特定のシーンを盛り上げるための専用トラックを作成しましょう。
     </div>
   </div>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    <strong style="color: #0d47a1; font-size: 0.95em;">💬 「今回の感想や、工夫した点は？」</strong><br>
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">💬 「今回の感想や、工夫した点は？」</strong><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      AIは単なるデータ生成機ではなく、最初の読者でもあります。物語の盛り上がりや設定の面白さをAIに自己評価してもらうことで、次回作へのモチベーションに繋がります。
+      AIは最初の読者でもあります。客観的な評価をもらうことで、次回作へのモチベーションに繋がります。
     </div>
   </div>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    <strong style="color: #0d47a1; font-size: 0.95em;">👍 「ぜひ」</strong><br>
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">👍 「ぜひ」</strong><br>
     <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-      AIから追加の提案があった場合に、あなたがその提案に賛同するのでしたら、このように返答するとよいです。
+      AIからの提案に賛同し、作業を進めてもらう際に返答する便利な一言です。
     </div>
   </div>
 
@@ -732,7 +863,7 @@ bgm_fight.mp3
 ・options内の矢印は必ず「→」を使う。「->」などは禁止。
 ・text内での改行は禁止。
 ・戦闘行の整合性: battleタイプでは、5列目(敵名)から8列目(勝利後ID)までを必ず埋めること。
-・引用符の管理: textとoptionsは必ず半角のダブルクォーテーション "" で囲むこと。
+・引用符の管理: textとoptionsとeffectは必ず半角のダブルクォーテーション "" で囲むこと。また、テキスト内での二重引用符（"）の使用は厳禁。セリフや引用は必ず一重引用符（'）または「」に置換すること。
 
 ・アイテム入手と条件分岐の分離: 同一ID内で「アイテム入手(effect)」と「そのアイテムを条件とする選択肢(options)」を同時に記述しないでください。入手と使用はパラグラフを分けてください。
 　悪い例：6,normal,"鍵を得た","[key]扉へ→7",,,,,,,item+key（ボタンが反応しない恐れあり）
