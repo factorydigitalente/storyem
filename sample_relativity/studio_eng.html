@@ -1,7 +1,16 @@
 <!DOCTYPE html>
+<!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
+<!-- STORYEM（ストリーム） -->
+<!-- ver20260331 -->
+<!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
+<!-- このゲームエンジン及び、サンプルゲーム内の画像と使用楽曲の著作権は全て、ファクトリー・デジタル・エンターテインメントおよび矢崎大信が有します。 -->
+<!-- 上記の著作権者に無断で、サンプルゲーム内の画像と使用楽曲を出版・放送・演奏・複製・公開に使用することを禁じます。 -->
+<!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
+<!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STORYEM: GAMEBOOK studio - CSV Generation Assistant</title>
 <style>
 body { 
@@ -166,7 +175,7 @@ button {
 
 <div class="title-header">
     <h2>STORYEM: GAMEBOOK studio<br>
-    <span class="subtitle">&lt;Rule CSV & Scenario CSV Generation Assistant&gt;</span></h2>
+    <span class="subtitle">&lt;Rule & Scenario CSV Generation Assistant&gt;</span></h2>
 </div>
 
 <div class="section-title">[A] Generation Rules (Fixed)</div>
@@ -176,104 +185,85 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 
 <div class="rule-box" id="ruleBox">
     ■ Sample Rule CSV (General Settings):<br>
-    ttl,bg,max_hp,init_skill,init_luck,init_food,theme<br>
-    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3<br>
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme,items<br>
+    The Trial of the Iron City,city_gate.jpg,20,3,9,2,8,iron_sword:Iron Sword|steel_armor:Steel Armor|herb:Instant Herb|boss_key:Master Key|aura_orb:Aura Orb<br>
     <br>
     ■ Sample Scenario CSV (Story Content):<br>
     id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect<br>
-    1,normal,"You entered the vault. Paths go left, center, and right.","Left→2,Center→11,Right→3",,,,,bgm_title.mp3,bgi1.jpg,<br>
-    2,battle,"An iron automaton activates!","Destroy it",Automaton,6,6,3,bgm_fog.mp3,bgi2.jpg,<br>
-    3,normal,"You found a box.","Open it→31,Ignore it→4",,,,,bgm2.mp3,bgi3.jpg,<br>
-    31,normal,"Dried meat found! (Food +1)","Proceed→4",,,,,bgm2.mp3,bgi3.jpg,food+1<br>
-    4,normal,"It's safe here. You can rest.","Move forward→5",,,,,bgm2.mp3,bgi4.jpg,eat<br>
-    10,end,"Silence returns to the vault.","END",,,,,bgm_title.mp3,bgi4.jpg,<br>
+    1,normal,"You arrived at the 'Iron City'. You only have 230G. You should prepare your equipment first.","Go to Weapon Shop→2,Go to Armor Shop→3,Head to the Tower→5,[aura_orb]Guided by the Aura Orb to the Door→8",,,,,town_ambient.mp3,,gold+230<br>
+    2,normal,"The shopkeeper says, 'This Iron Sword costs 300G. Oh, you don't have enough money?'","[gold:300]Buy Iron Sword (300G)→21,Leave shop→1",,,,,town_ambient.mp3,shop.jpg,<br>
+    21,normal,"You got the Iron Sword! Your skill increased by 3.","Back to town→1",,,,,town_ambient.mp3,shop.jpg,"gold-300,item+iron_sword,skill+3"<br>
+    3,normal,"The armor shop offers a Steel Armor for 200G.","[!steel_armor][gold:200]Buy Steel Armor (200G)→31,Leave shop→1",,,,,town_ambient.mp3,shop.jpg,<br>
+    31,normal,"You equipped the Steel Armor. Your skill increased by 2.","Back to town→1",,,,,town_ambient.mp3,shop.jpg,"gold-200,item+steel_armor,skill+2"<br>
+    4,normal,"A town square where you can rest and eat.","Back to town exit→1",,,,,town_ambient.mp3,,!eat<br>
+    61,normal,"The Living Armor was destroyed. You found an 'Aura Orb' and 270G.","Back to town square→4",,,,,tower_bgm.mp3,corridor.jpg,"item+aura_orb,gold+270"<br>
+    8,normal,"The door is locked. You need the 'Master Key'.","[boss_key]Unlock with the key→10,Search surroundings→9,Back to town→1",,,,,tower_bgm.mp3,door.jpg,<br>
     <br>
-    # Instructions<br>
-    Based on the following story outline, output both Rule CSV and Scenario CSV in CSV format according to the output rules.<br>
+	# Instructions<br>
+	Based on the following story outline, output both Rule CSV and Scenario CSV in CSV format according to the output rules. <br>
+	Output Rule CSV first, followed by one blank line, then Scenario CSV. Do not output any other text or preamble.<br>
+	<br>
+	★CRITICAL: Pre-Output Self-Check Rules<br>
+	Before generating the CSV, you MUST internally perform the following three checks. You are STRICTLY PROHIBITED from generating any output until you have completed these verifications and confirmed there are no logical contradictions.<br>
+	<br>
+	1. Reachability: Is every 'id' reachable from 'id:1' through the choices provided in 'options'? Ensure there are no isolated nodes or "orphan" paragraphs.<br>
+	2. Flag Consistency: Are items or gold acquired via 'effect' properly utilized or required in subsequent 'options' using [condition] checks?<br>
+	3. Deadlock Prevention: In paragraphs with conditional choices, ensure that a player who does not meet those conditions will NOT be left with "zero available choices."<br>
+	4. Guaranteed Acquisition: If an item or gold is required as a [condition] in an option, you MUST ensure there is a physical paragraph where the player can actually acquire it via the effect column. Do not create a "Search" option that leads to a paragraph where no item is actually given (e.g., if the player needs a 'key', one paragraph MUST contain item+key).<br>
+	5. Resource Loop Verification: If a mandatory item must be purchased at a shop, you MUST ensure there is a repeatable way to earn the required gold (e.g., via a repeatable battle or exploration with !gold+50). It is strictly prohibited to create a situation where a player cannot reach the required amount due to one-time-only rewards, resulting in a literal dead-end.<br>
+	<br>
+	You must mentally simulate the entire game flow, check the structure for any flaws, and correct them before finalizing the data. <br>
+	Output the CSV only after ensuring it has passed all internal quality and logic checks.<br>
     <br>
     # Rule CSV Output Rules<br>
     Column: Content<br>
-    ttl: Game Title (Displayed at the top of the screen)<br>
+    ttl: Game Title<br>
     bg: Initial background image filename<br>
-    max_hp: Player's Maximum HP<br>
-    init_skill: Initial Skill level<br>
-    init_luck: Initial Luck level<br>
-    init_food: Initial Food count<br>
-    theme    Color Theme Number (Integer 1-9)<br>
+    max_hp: Max HP<br>
+    init_skill: Initial Skill<br>
+    init_luck: Initial Luck<br>
+    init_food: Initial Food<br>
+    theme: Color Theme Number (1-9)<br>
+    items: Item Master (Format: id1:Name1|id2:Name2)<br>
     <br>
-    - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.<br>
-    - Use half-width alphanumeric characters for numbers.<br>
+    - Images are assumed to be in the same folder as the HTML.<br>
     - Comma-separated values.<br>
     - The first line must always be the column headers.<br>
+	<br>
+	- Mandatory Quoting (Crucial): The columns text, options, and effect MUST always be enclosed in half-width double quotation marks "". > This is especially critical when these columns contain commas (e.g., multiple choices or multiple effects). Without quotes, the CSV structure will break, and subsequent data will be ignored.<br>
+	  Correct: 1,normal,"Story text","Option A→2,Option B→3",,,,,bgm.mp3,img.jpg,"item+key,skill+1"<br>
+	  Incorrect: 1,normal,Story text,Option A→2,Option B→3,,,,,bgm.mp3,img.jpg,item+key,skill+1<br>
     <br>
-    ▼ Theme Selection (Color Themes)<br>
-	Please select one number from 1 to 9 that best matches the atmosphere of the story.<br>
-	1: Black/Gray (Standard, Inorganic, Achromatic)<br>
-	2: Red (Passion, Crisis, Flame)<br>
-	3: Yellow/Gold (Desert, Treasure, Noble)<br>
-	4: Green (Forest, Rest, Nature)<br>
-	5: Dark Green (Deep Forest, Labyrinth)<br>
-	6: Blue (Deep Sea, Night, Calm)<br>
-	7: Purple (Magic, Mystery, Poison)<br>
-	8: Brown (Earth, Ruins, Retro)<br>
-	9: Dark Brown (Mud, Decay, Despair)<br>
+    ▼ Theme Selection<br>
+    1:Black, 2:Red, 3:Gold, 4:Green, 5:Deep Green, 6:Blue, 7:Purple, 8:Brown, 9:Dark Brown<br>
     <br>
     # Scenario CSV Output Rules<br>
-    Column: Content<br>
-    id: Paragraph ID (Integer)<br>
-    type: normal / battle / end<br>
-    text: Text to be displayed<br>
-    options: Choices for the player<br>
-    e_name: Enemy name (for 'battle' type)<br>
-    e_skill: Enemy Skill level<br>
-    e_hp: Enemy HP<br>
-    next: Target paragraph ID after winning a battle<br>
-    bgm: BGM filename<br>
-    bgi: Paragraph-specific background image filename<br>
-    effect: Special effects/Automatic triggers<br>
-    <br>
-    # CSV Formatting Rules<br>
+    id, type, text, options, e_name, e_skill, e_hp, next, bgm, bgi, effect<br>
     <br>
     ▼ Types (type)<br>
-    1. normal: Standard scenes.<br>
-    Example: 1,normal,"The path splits.","Left→2,Right→3",,,,,bgm.mp3,room.jpg,<br>
+    - normal: Standard scenes<br>
+    - battle: Combat scenes<br>
+    - end: Ending scenes<br>
     <br>
-    2. battle: Combat scenes.<br>
-    Example: 2,battle,"An enemy attacks!","Fight",EnemyName,6,6,3,bgm_fight.mp3,battle.jpg,<br>
-    <br>
-    3. end: Ending scenes.<br>
-    Example: 10,end,"Game Over.","Finish",,,,,bgm_title.mp3,,<br>
-    <br>
-    ▼ Options (options)<br>
-    Format: Display Text→Target ID<br>
-    Multiple: Choice A→2,Choice B→3<br>
-    Note: Always use the full-width arrow "→". Target IDs must exist.<br>
-    <br>
-    ▼ Text (text)<br>
-    Do not use line breaks for AI generation. <br>
-    When editing manually, you can use "\n" for line breaks.<br>
-    <br>
-    ▼ Combat Mechanics<br>
-    Calculated as: 2d6 + Skill<br>
-    - Win → Deal 2 damage to enemy<br>
-    - Lose → Take 2 damage to self<br>
-    - Using Luck: Modifies damage, but Luck decreases by 1 per use.<br>
+    ▼ Options & Condition Checks<br>
+    Format: [Condition]Display Text→TargetID<br>
+    1. Gold Check: [gold:200] (Requires 200G or more)<br>
+    2. Item Requirement: [item_id] (Requires the item)<br>
+    3. Absence Check: [!item_id] (Only appears if NOT holding the item)<br>
+    Example: [gold:300]Buy Sword→21<br>
     <br>
     ▼ Special Effects (effect)<br>
-    Adds automatic effects to paragraphs. If HP reaches 0, it's Game Over.<br>
+    - Stats: hp+3, hp-2, skill+1, luck-1, food+1<br>
+    - Items: item+item_id<br>
+    - Gold: gold+100, gold-50<br>
+    - Eating: eat (One-time), !eat (Repeatable)<br>
+    * Use "!" prefix for repeatable effects (e.g., !hp-2).<br>
+    * Combine with commas (e.g., gold-300,item+iron_sword,skill+3).<br>
     <br>
-    Status Changes (Triggers on first visit):<br>
-    - hp+3, hp-2, food+1, luck-1<br>
-    <br>
-    Repeatable Effects (Add "!" prefix):<br>
-    - !hp-2 (e.g., for traps or environmental damage)<br>
-    Example: 11,normal,"A trap!","Go back→1",,,,,,,!hp-2<br>
-    <br>
-    Healing / Eating:<br>
-    - "eat": One-time meal point. Restores 4 HP (consumes 1 food).<br>
-    - "!eat": Repeatable meal point.<br>
-    Example: 4,normal,"A safe place to eat.","Proceed→5",,,,,,,!eat<br>
-    <br>
+    ▼ Important Formatting<br>
+    - Always use the full-width arrow "→" in options.<br>
+    - NO line breaks inside text columns.<br>
+    - Ensure every row has the same number of commas.<br>
     ▼ BGM<br>
     Enter the .mp3 filename. Leave blank to stop music.<br>
 	<br>
@@ -287,7 +277,18 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 	- Broken Links: Do not point options to an ID that does not exist.<br>
 	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.<br>
 	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.<br>
-	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".<br>
+	- Quote Management: The "text", "options", and "effect" columns MUST be enclosed in half-width double quotation marks "". The use of double quotation marks (") inside the text is strictly prohibited as it will break the CSV structure. For dialogue or quotes, always use single quotation marks (').<br>
+	<br>
+	- Item Acquisition & Condition Split: Do not include both "item acquisition (effect)" and "a choice requiring that item (options)" in the same ID. Split them into two paragraphs.<br>
+	  Bad: 6,normal,"Got a key","[key]Open→7",,,,,,,item+key (The button may not work)<br>
+	  Good: 6,normal,"Got a key","Next→61",,,,,,,item+key<br>
+	        61,normal,"You have the key.","[key]Open→7",,,,,,,<br>
+	<br>
+	- Prevent Deadlocks: When using conditions [condition] in options, ensure the player never gets stuck with "zero available choices." Either perform the condition check *before* moving to the next paragraph, or always provide an unconditional "Go Back" option.<br>
+	  Bad:  2,normal,"At the castle","Next→3",,,,,,,<br>
+	        3,normal,"A locked door","[key]Open→4",,,,,,, (Stuck if no key)<br>
+	  Good: 2,normal,"At the castle","[key]To the door→3,Look for key→5",,,,,,, (Pre-check)<br>
+	  Or:   3,normal,"A locked door","[key]Open→4,Go back→2",,,,,,, (Provides an exit)<br>
 	<br>
 	★ Additional Guidelines<br>
 	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.<br>
@@ -316,11 +317,198 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 <textarea id="storyB" placeholder="Enter your story plot and settings here..."></textarea>
 
 <p>
-<strong>If you have a previously created Rule CSV or Scenario CSV, you can paste it here and add instructions like "Make this harder" or "Expand the story" to generate a revised version.</strong>
+<p>You can also create a revised version:<br>
+If you have a previously created Rule CSV or Scenario CSV, you can paste it here and add instructions like "Make this harder" or "Expand the story" to generate a revised version.
 </p>
 
+<div class="section-title">[C] Custom Instructions (Optional)</div>
+<div style="background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em;">
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_count"> Set number of paragraphs to 
+        <select id="val_count">
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select> or more.
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_length"> Set text per paragraph to 
+        <select id="val_length">
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+        </select> characters or more.
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_newline"> Add "\n\n" line breaks for readability.
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_battle"> Set battle frequency to 
+        <select id="val_battle">
+            <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="5" selected>5</option><option value="10">10</option>
+            <option value="15">15</option><option value="20">20</option>
+        </select> times.
+    </div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_strong"> Make the player 
+        <select id="val_strong">
+            <option value="little">little</option>
+            <option value="very">very</option>
+        </select> stronger.
+    </div>
+	<div style="margin-bottom: 8px;">
+	    <input type="checkbox" id="opt_lang"> Add 
+	    <select id="val_lang">
+			<option value="Japanese">Japanese</option>
+            <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+            <option value="Chinese (Traditional)">Chinese (Traditional)</option>
+            <option value="Korean">Korean</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+            <option value="German">German</option>
+            <option value="Italian">Italian</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Russian">Russian</option>
+            <option value="Thai">Thai</option>
+            <option value="Vietnamese">Vietnamese</option>
+            <hr>
+            <option value="Afrikaans">Afrikaans</option>
+            <option value="Akan">Akan</option>
+            <option value="Albanian">Albanian</option>
+            <option value="Amharic">Amharic</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Armenian">Armenian</option>
+            <option value="Assamese">Assamese</option>
+            <option value="Azerbaijani">Azerbaijani</option>
+            <option value="Bambara">Bambara</option>
+            <option value="Basque">Basque</option>
+            <option value="Belarusian">Belarusian</option>
+            <option value="Bengali">Bengali</option>
+            <option value="Bhojpuri">Bhojpuri</option>
+            <option value="Bosnian">Bosnian</option>
+            <option value="Bulgarian">Bulgarian</option>
+            <option value="Burmese">Burmese</option>
+            <option value="Catalan">Catalan</option>
+            <option value="Cebuano">Cebuano</option>
+            <option value="Chichewa">Chichewa</option>
+            <option value="Corsican">Corsican</option>
+            <option value="Croatian">Croatian</option>
+            <option value="Czech">Czech</option>
+            <option value="Danish">Danish</option>
+            <option value="Dhivehi">Dhivehi</option>
+            <option value="Dogri">Dogri</option>
+            <option value="Dutch">Dutch</option>
+            <option value="Esperanto">Esperanto</option>
+            <option value="Estonian">Estonian</option>
+            <option value="Ewe">Ewe</option>
+            <option value="Filipino">Filipino</option>
+            <option value="Finnish">Finnish</option>
+            <option value="Frisian">Frisian</option>
+            <option value="Galician">Galician</option>
+            <option value="Georgian">Georgian</option>
+            <option value="Greek">Greek</option>
+            <option value="Guarani">Guarani</option>
+            <option value="Gujarati">Gujarati</option>
+            <option value="Haitian Creole">Haitian Creole</option>
+            <option value="Hausa">Hausa</option>
+            <option value="Hawaiian">Hawaiian</option>
+            <option value="Hebrew">Hebrew</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Hmong">Hmong</option>
+            <option value="Hungarian">Hungarian</option>
+            <option value="Icelandic">Icelandic</option>
+            <option value="Igbo">Igbo</option>
+            <option value="Ilocano">Ilocano</option>
+            <option value="Indonesian">Indonesian</option>
+            <option value="Irish">Irish</option>
+            <option value="Javanese">Javanese</option>
+            <option value="Kannada">Kannada</option>
+            <option value="Kazakh">Kazakh</option>
+            <option value="Khmer">Khmer</option>
+            <option value="Kinyarwanda">Kinyarwanda</option>
+            <option value="Konkani">Konkani</option>
+            <option value="Krio">Krio</option>
+            <option value="Kurdish (Kurmanji)">Kurdish (Kurmanji)</option>
+            <option value="Kurdish (Sorani)">Kurdish (Sorani)</option>
+            <option value="Kyrgyz">Kyrgyz</option>
+            <option value="Lao">Lao</option>
+            <option value="Latin">Latin</option>
+            <option value="Latvian">Latvian</option>
+            <option value="Lingala">Lingala</option>
+            <option value="Lithuanian">Lithuanian</option>
+            <option value="Luganda">Luganda</option>
+            <option value="Luxembourgish">Luxembourgish</option>
+            <option value="Macedonian">Macedonian</option>
+            <option value="Maithili">Maithili</option>
+            <option value="Malagasy">Malagasy</option>
+            <option value="Malay">Malay</option>
+            <option value="Malayalam">Malayalam</option>
+            <option value="Maltese">Maltese</option>
+            <option value="Maori">Maori</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Meiteilon (Manipuri)">Meiteilon (Manipuri)</option>
+            <option value="Mizo">Mizo</option>
+            <option value="Mongolian">Mongolian</option>
+            <option value="Nepali">Nepali</option>
+            <option value="Norwegian">Norwegian</option>
+            <option value="Odia (Oriya)">Odia (Oriya)</option>
+            <option value="Oromo">Oromo</option>
+            <option value="Papiamento">Papiamento</option>
+            <option value="Pashto">Pashto</option>
+            <option value="Persian">Persian</option>
+            <option value="Polish">Polish</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Quechua">Quechua</option>
+            <option value="Romanian">Romanian</option>
+            <option value="Samoan">Samoan</option>
+            <option value="Sanskrit">Sanskrit</option>
+            <option value="Scots Gaelic">Scots Gaelic</option>
+            <option value="Sepedi">Sepedi</option>
+            <option value="Serbian">Serbian</option>
+            <option value="Sesotho">Sesotho</option>
+            <option value="Shona">Shona</option>
+            <option value="Sindhi">Sindhi</option>
+            <option value="Sinhala">Sinhala</option>
+            <option value="Slovak">Slovak</option>
+            <option value="Slovenian">Slovenian</option>
+            <option value="Somali">Somali</option>
+            <option value="Sundanese">Sundanese</option>
+            <option value="Swahili">Swahili</option>
+            <option value="Swedish">Swedish</option>
+            <option value="Tajik">Tajik</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Tatar">Tatar</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Tigrinya">Tigrinya</option>
+            <option value="Tsonga">Tsonga</option>
+            <option value="Turkish">Turkish</option>
+            <option value="Turkmen">Turkmen</option>
+            <option value="Twi">Twi</option>
+            <option value="Ukrainian">Ukrainian</option>
+            <option value="Urdu">Urdu</option>
+            <option value="Uyghur">Uyghur</option>
+            <option value="Uzbek">Uzbek</option>
+            <option value="Welsh">Welsh</option>
+            <option value="Xhosa">Xhosa</option>
+            <option value="Yiddish">Yiddish</option>
+            <option value="Yoruba">Yoruba</option>
+            <option value="Zulu">Zulu</option>
+	    </select> translation.
+	</div>
+    <div style="margin-bottom: 8px;">
+        <input type="checkbox" id="opt_noitem" checked> Do not use item flags.
+    </div>
+</div>
+
+<div style="text-align: center; margin: 40px 0;">
+  <div style="width: 0; height: 0; border-left: 40px solid transparent; border-right: 40px solid transparent; border-top: 40px solid #2196F3; margin: 0 auto; opacity: 0.8;"></div>
+</div>
+
 <p style="font-size: 0.9em; line-height: 1.5; color: #333; background: #fffde7; padding: 10px; border: 1px dashed #ffd600; border-radius: 5px;">
-    The fixed rules in <strong>[A]</strong> will be combined with your input in <strong>[B]</strong> to create a comprehensive prompt for the AI.
+    The fixed rules in <strong>[A]</strong> will be combined with your input in <strong>[B] and [C]</strong> to create a comprehensive prompt for the AI.
     <br><br>
     Clicking a button below will <strong>copy the prompt to your clipboard</strong> and launch the AI service. 
     Simply <strong>paste it</strong> into the AI's chat box to start!
@@ -329,7 +517,65 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 <button class="btn-chatgpt" onclick="copyAndOpen('chatgpt')">Copy Prompt & Open ChatGPT</button>
 <button class="btn-gemini" onclick="copyAndOpen('gemini')">Copy Prompt & Open Gemini</button>
 
-<p id="status"></p>
+<p id="status"></p><!-- Copy completion message area -->
+
+<hr style="border: 0; border-top: 1px solid #eee; margin: 50px 0 30px 0;">
+
+<div id="additional-commands" style="width: 96%; max-width: 600px; margin: 0 auto; text-align: left; font-family: sans-serif;">
+  <h3 style="color: #2196F3; font-size: 1.1em; border-bottom: 2px solid #2196F3; padding-bottom: 5px; margin-bottom: 20px;">
+    ✨ Useful Post-Generation Commands
+  </h3>
+
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🛠️ "Debug and fix all syntax errors, missing battle items, and check the reachability of the goal from all choices, one by one. Ensure there are no unreachable paragraphs. Don't forget the CSV header row."</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      The AI may fail to generate consistent data in one go, especially when using item flags. Use this command to perform a thorough debug and fix, making it easier to regenerate high-accuracy data.
+    </div>
+  </div>
+
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">⏩ "Continue writing", "Resume from paragraph [Number]", "Output until the end"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Stories may be cut off due to AI limits. If this happens, execute this command to have the AI output the rest of the content.
+    </div>
+  </div>
+
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🏃 "Show me the walkthrough / how to reach the goal"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      When creating complex branches, even the author may lose track of the correct path. Have the AI list the walkthrough to make testing easier for yourself.
+    </div>
+  </div>
+
+  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #0d47a1; font-size: 0.95em;">🎨 "Create panel-style images for all related types"</strong> <span style="font-size: 0.8em; opacity: 0.7;">(*Gemini recommended)</span><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Visualize the setting and characters. Images can be set as background images (bgi) for the game or used as promotional banners for social media.
+    </div>
+  </div>
+
+  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #0d47a1; font-size: 0.95em;">🎵 "Create a song related to this story"</strong> <span style="font-size: 0.8em; opacity: 0.7;">(*Gemini recommended)</span><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Generate BGM that matches the mood of your story. Create dedicated tracks for battle scenes or endings to enhance immersion.
+    </div>
+  </div>
+
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">💬 "What are your thoughts on this story, and what points did you focus on?"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      The AI is also your first reader. Getting its self-evaluation on the excitement and settings can boost your motivation for your next project.
+    </div>
+  </div>
+
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">👍 "Sure / Go ahead"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      A handy response when you agree with an additional suggestion from the AI and want it to proceed.
+    </div>
+  </div>
+
+</div>
 
 <div class="studio-logo" style="margin-top: 50px; opacity: 1.0;">
     <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
@@ -341,104 +587,86 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 <script>
 const ruleA = `
     ■ Sample Rule CSV (General Settings):
-    ttl,bg,max_hp,init_skill,init_luck,init_food,theme
-    Sealed Vault Adventure,picture_sealed.jpg,20,7,9,2,3
+    ttl,bg,max_hp,init_skill,init_luck,init_food,theme,items
+    The Trial of the Iron City,city_gate.jpg,20,3,9,2,8,iron_sword:Iron Sword|steel_armor:Steel Armor|herb:Instant Herb|boss_key:Master Key|aura_orb:Aura Orb
     
     ■ Sample Scenario CSV (Story Content):
     id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
-    1,normal,"You entered the vault. Paths go left, center, and right.","Left→2,Center→11,Right→3",,,,,bgm_title.mp3,bgi1.jpg,
-    2,battle,"An iron automaton activates!","Destroy it",Automaton,6,6,3,bgm_fog.mp3,bgi2.jpg,
-    3,normal,"You found a box.","Open it→31,Ignore it→4",,,,,bgm2.mp3,bgi3.jpg,
-    31,normal,"Dried meat found! (Food +1)","Proceed→4",,,,,bgm2.mp3,bgi3.jpg,food+1
-    4,normal,"It's safe here. You can rest.","Move forward→5",,,,,bgm2.mp3,bgi4.jpg,eat
-    10,end,"Silence returns to the vault.","END",,,,,bgm_title.mp3,bgi4.jpg,
+    1,normal,"You arrived at the 'Iron City'. You only have 230G. You should prepare your equipment first.","Go to Weapon Shop→2,Go to Armor Shop→3,Head to the Tower→5,[aura_orb]Guided by the Aura Orb to the Door→8",,,,,town_ambient.mp3,,gold+230
+    2,normal,"The shopkeeper says, 'This Iron Sword costs 300G. Oh, you don't have enough money?'","[gold:300]Buy Iron Sword (300G)→21,Leave shop→1",,,,,town_ambient.mp3,shop.jpg,
+    21,normal,"You got the Iron Sword! Your skill increased by 3.","Back to town→1",,,,,town_ambient.mp3,shop.jpg,"gold-300,item+iron_sword,skill+3"
+    3,normal,"The armor shop offers a Steel Armor for 200G.","[!steel_armor][gold:200]Buy Steel Armor (200G)→31,Leave shop→1",,,,,town_ambient.mp3,shop.jpg,
+    31,normal,"You equipped the Steel Armor. Your skill increased by 2.","Back to town→1",,,,,town_ambient.mp3,shop.jpg,"gold-200,item+steel_armor,skill+2"
+    4,normal,"A town square where you can rest and eat.","Back to town exit→1",,,,,town_ambient.mp3,,!eat
+    61,normal,"The Living Armor was destroyed. You found an 'Aura Orb' and 270G.","Back to town square→4",,,,,tower_bgm.mp3,corridor.jpg,"item+aura_orb,gold+270"
+    8,normal,"The door is locked. You need the 'Master Key'.","[boss_key]Unlock with the key→10,Search surroundings→9,Back to town→1",,,,,tower_bgm.mp3,door.jpg,
     
-    # Instructions
-    Based on the following story outline, output both Rule CSV and Scenario CSV in CSV format according to the output rules.
+	# Instructions
+	Based on "# User Story Outline", output both Rule CSV and Scenario CSV in CSV format according to the output rules. 
+	Output Rule CSV first, followed by one blank line, then Scenario CSV. Do not output any other text or preamble.
+
+	★CRITICAL: Pre-Output Self-Check Rules
+	Before generating the CSV, you MUST internally perform the following three checks. You are STRICTLY PROHIBITED from generating any output until you have completed these verifications and confirmed there are no logical contradictions.
+
+	1. Reachability: Is every 'id' reachable from 'id:1' through the choices provided in 'options'? Ensure there are no isolated nodes or "orphan" paragraphs.
+	2. Flag Consistency: Are items or gold acquired via 'effect' properly utilized or required in subsequent 'options' using [condition] checks?
+	3. Deadlock Prevention: In paragraphs with conditional choices, ensure that a player who does not meet those conditions will NOT be left with "zero available choices."
+	4. Guaranteed Acquisition: If an item or gold is required as a [condition] in an option, you MUST ensure there is a physical paragraph where the player can actually acquire it via the effect column. Do not create a "Search" option that leads to a paragraph where no item is actually given (e.g., if the player needs a 'key', one paragraph MUST contain item+key).
+	5. Resource Loop Verification: If a mandatory item must be purchased at a shop, you MUST ensure there is a repeatable way to earn the required gold (e.g., via a repeatable battle or exploration with !gold+50). It is strictly prohibited to create a situation where a player cannot reach the required amount due to one-time-only rewards, resulting in a literal dead-end.
+
+	You must mentally simulate the entire game flow, check the structure for any flaws, and correct them before finalizing the data. 
+	Output the CSV only after ensuring it has passed all internal quality and logic checks.
     
     # Rule CSV Output Rules
     Column: Content
-    ttl: Game Title (Displayed at the top of the screen)
+    ttl: Game Title
     bg: Initial background image filename
-    max_hp: Player's Maximum HP
-    init_skill: Initial Skill level
-    init_luck: Initial Luck level
-    init_food: Initial Food count
-    theme    Color Theme Number (Integer 1-9)
+    max_hp: Max HP
+    init_skill: Initial Skill
+    init_luck: Initial Luck
+    init_food: Initial Food
+    theme: Color Theme Number (1-9)
+    items: Item Master (Format: id1:Name1|id2:Name2)
     
-    - Images are assumed to be in the same folder as the HTML; write filenames accurately with extensions.
-    - Use half-width alphanumeric characters for numbers.
+    - Images are assumed to be in the same folder as the HTML.
     - Comma-separated values.
     - The first line must always be the column headers.
     
-    ▼ Theme Selection (Color Themes)
-	Please select one number from 1 to 9 that best matches the atmosphere of the story.
-	1: Black/Gray (Standard, Inorganic, Achromatic)
-	2: Red (Passion, Crisis, Flame)
-	3: Yellow/Gold (Desert, Treasure, Noble)
-	4: Green (Forest, Rest, Nature)
-	5: Dark Green (Deep Forest, Labyrinth)
-	6: Blue (Deep Sea, Night, Calm)
-	7: Purple (Magic, Mystery, Poison)
-	8: Brown (Earth, Ruins, Retro)
-	9: Dark Brown (Mud, Decay, Despair)
+	- Mandatory Quoting (Crucial): The columns text, options, and effect MUST always be enclosed in half-width double quotation marks "". > This is especially critical when these columns contain commas (e.g., multiple choices or multiple effects). Without quotes, the CSV structure will break, and subsequent data will be ignored.
+	  Correct: 1,normal,"Story text","Option A→2,Option B→3",,,,,bgm.mp3,img.jpg,"item+key,skill+1"
+	  Incorrect: 1,normal,Story text,Option A→2,Option B→3,,,,,bgm.mp3,img.jpg,item+key,skill+1
+
+    ▼ Theme Selection
+    1:Black, 2:Red, 3:Gold, 4:Green, 5:Deep Green, 6:Blue, 7:Purple, 8:Brown, 9:Dark Brown
     
     # Scenario CSV Output Rules
-    Column: Content
-    id: Paragraph ID (Integer)
-    type: normal / battle / end
-    text: Text to be displayed
-    options: Choices for the player
-    e_name: Enemy name (for 'battle' type)
-    e_skill: Enemy Skill level
-    e_hp: Enemy HP
-    next: Target paragraph ID after winning a battle
-    bgm: BGM filename
-    bgi: Paragraph-specific background image filename
-    effect: Special effects/Automatic triggers
-    
-    # CSV Formatting Rules
+    id, type, text, options, e_name, e_skill, e_hp, next, bgm, bgi, effect
     
     ▼ Types (type)
-    1. normal: Standard scenes.
-    Example: 1,normal,"The path splits.","Left→2,Right→3",,,,,bgm.mp3,room.jpg,
+    - normal: Standard scenes
+    - battle: Combat scenes
+    - end: Ending scenes
     
-    2. battle: Combat scenes.
-    Example: 2,battle,"An enemy attacks!","Fight",EnemyName,6,6,3,bgm_fight.mp3,battle.jpg,
-    
-    3. end: Ending scenes.
-    Example: 10,end,"Game Over.","Finish",,,,,bgm_title.mp3,,
-    
-    ▼ Options (options)
-    Format: Display Text→Target ID
-    Multiple: Choice A→2,Choice B→3
-    Note: Always use the full-width arrow "→". Target IDs must exist.
-    
-    ▼ Text (text)
-    Do not use line breaks for AI generation. 
-    When editing manually, you can use "\n" for line breaks.
-    
-    ▼ Combat Mechanics
-    Calculated as: 2d6 + Skill
-    - Win → Deal 2 damage to enemy
-    - Lose → Take 2 damage to self
-    - Using Luck: Modifies damage, but Luck decreases by 1 per use.
+    ▼ Options & Condition Checks
+    Format: [Condition]Display Text→TargetID
+    1. Gold Check: [gold:200] (Requires 200G or more)
+    2. Item Requirement: [item_id] (Requires the item)
+    3. Absence Check: [!item_id] (Only appears if NOT holding the item)
+    Example: [gold:300]Buy Sword→21
     
     ▼ Special Effects (effect)
-    Adds automatic effects to paragraphs. If HP reaches 0, it's Game Over.
+    - Stats: hp+3, hp-2, skill+1, luck-1, food+1
+    - Items: item+item_id
+    - Gold: gold+100, gold-50
+    - Eating: eat (One-time), !eat (Repeatable)
+    * Use "!" prefix for repeatable effects (e.g., !hp-2).
+    * Combine with commas (e.g., gold-300,item+iron_sword,skill+3).
     
-    Status Changes (Triggers on first visit):
-    - hp+3, hp-2, food+1, luck-1
-    
-    Repeatable Effects (Add "!" prefix):
-    - !hp-2 (e.g., for traps or environmental damage)
-    Example: 11,normal,"A trap!","Go back→1",,,,,,,!hp-2
-    
-    Healing / Eating:
-    - "eat": One-time meal point. Restores 4 HP (consumes 1 food).
-    - "!eat": Repeatable meal point.
-    Example: 4,normal,"A safe place to eat.","Proceed→5",,,,,,,!eat
-    
+    ▼ Important Formatting
+    - Always use the full-width arrow "→" in options.
+    - NO line breaks inside text columns.
+    - Ensure every row has the same number of commas.
+
     ▼ BGM
     Enter the .mp3 filename. Leave blank to stop music.
 
@@ -452,14 +680,24 @@ const ruleA = `
 	- Broken Links: Do not point options to an ID that does not exist.
 	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.
 	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.
-	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".
+	- Quote Management: The "text", "options", and "effect" columns MUST be enclosed in half-width double quotation marks "". The use of double quotation marks (") inside the text is strictly prohibited as it will break the CSV structure. For dialogue or quotes, always use single quotation marks (').
+
+	- Item Acquisition & Condition Split: Do not include both "item acquisition (effect)" and "a choice requiring that item (options)" in the same ID. Split them into two paragraphs.
+	  Bad: 6,normal,"Got a key","[key]Open→7",,,,,,,item+key (The button may not work)
+	  Good: 6,normal,"Got a key","Next→61",,,,,,,item+key
+	        61,normal,"You have the key.","[key]Open→7",,,,,,,
+
+	- Prevent Deadlocks: When using conditions [condition] in options, ensure the player never gets stuck with "zero available choices." Either perform the condition check *before* moving to the next paragraph, or always provide an unconditional "Go Back" option.
+	  Bad:  2,normal,"At the castle","Next→3",,,,,,,
+	        3,normal,"A locked door","[key]Open→4",,,,,,, (Stuck if no key)
+	  Good: 2,normal,"At the castle","[key]To the door→3,Look for key→5",,,,,,, (Pre-check)
+	  Or:   3,normal,"A locked door","[key]Open→4,Go back→2",,,,,,, (Provides an exit)
 
 	★ Additional Guidelines
 	- Pacing: Keep combat encounters to a minimum. A ratio of about 2 battles per 10 paragraphs provides the best flow.
 	- Recovery: It is recommended to include recovery points. 
 	- Balance: Placing the "eat" effect before or after a battle helps balance the difficulty.
 	- Theme: Please select the most appropriate "theme" number (1-9) based on the setting and atmosphere of the story. If you are unsure, use "1".
-
 
 `;
 
@@ -470,16 +708,35 @@ function copyAndOpen(targetAI) {
         return;
     }
 
-    const fullPrompt = `${ruleA}\n\n# Story Outline\n${storyB}`;
+    // Capture Custom Instructions from UI
+    let extraInstructions = "\n# Additional Constraints\n";
+    if (document.getElementById('opt_count').checked) 
+        extraInstructions += `- Minimum ${document.getElementById('val_count').value} paragraphs.\n`;
+    if (document.getElementById('opt_length').checked) 
+        extraInstructions += `- Text per paragraph must be at least ${document.getElementById('val_length').value} characters.\n`;
+    if (document.getElementById('opt_newline').checked) 
+        extraInstructions += "- Use double newlines (\\n\\n) within text columns for better readability.\n";
+    if (document.getElementById('opt_battle').checked) 
+        extraInstructions += `- Exactly ${document.getElementById('val_battle').value} battle encounters.\n`;
+    if (document.getElementById('opt_strong').checked) 
+        extraInstructions += `- Adjust player stats to be ${document.getElementById('val_strong').value} stronger.\n`;
+    if (document.getElementById('opt_lang').checked) {
+        const targetLang = document.getElementById('val_lang').value;
+        extraInstructions += `- Translation: For columns "ttl", "text", "options", and "e_name", please provide both the original language and the ${targetLang} translation. (e.g., "Text/Translation")\n`;
+    }
+    if (document.getElementById('opt_noitem').checked) 
+        extraInstructions += "- Keep it simple: Do NOT use item or gold requirement flags.\n";
+
+    const fullPrompt = `${ruleA}\n\n# User Story Outline\n${storyB}\n${extraInstructions}`;
     const url = (targetAI === 'gemini') ? "https://gemini.google.com/" : "https://chatgpt.com/";
 
     navigator.clipboard.writeText(fullPrompt).then(() => {
         const statusEl = document.getElementById('status');
         const aiName = (targetAI === 'gemini') ? 'Gemini' : 'ChatGPT';
-        statusEl.innerHTML = `✅ Prompt copied for ${aiName}!<br>Please paste it into the AI chat window.`;
+        statusEl.innerHTML = `✅ Prompt copied for ${aiName}!<br>Please paste (Ctrl+V) it into the AI chat.`;
         window.open(url, "_blank");
     }).catch(err => {
-        alert("Failed to copy. Please copy manually.");
+        alert("Copy failed. Please copy manually.");
     });
 }
 
