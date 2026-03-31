@@ -671,6 +671,12 @@ input:checked + .slider:before { transform: translateX(20px); }
   white-space: nowrap; /* 折り返しを防いで1行に収める */
   font-size: 13px;     /* 必要に応じて文字サイズも少し小さくするとより詰まって見えます */
 }
+#tree-display {
+  resize: both;   /* 下側のツマミでサイズ変更可 */
+  overflow: auto;     /* 内容が溢れたらスクロールバーを出す */
+  min-height: 150px;  /* 最小サイズ */
+  max-height: 80vh;   /* 画面の8割以上は広がらないように制限 */
+}
 </style>
 </head>
 <body>
@@ -701,7 +707,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div id="file-controls" style="display:none;">
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 12px 15px; border-radius: 4px; color: #0d47a1; font-size: 0.9em; margin-top: 5px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-    <strong style="font-size: 1.05em; color: #000;">▼ CSVファイル読み込みで開始する場合</strong> (URLセーブ機能に対応)<br>
+    <strong style="font-size: 1.05em; color: #000;">▼ CSVファイル読み込みで開始する場合 / When starting by loading CSV files</strong><br>
+     (URLセーブ機能に対応 / Supports URL save)<br>
   </div>
 
   <div id="rule-selector">
@@ -714,15 +721,19 @@ input:checked + .slider:before { transform: translateX(20px); }
   </div>
 
   <div style="margin: 0 15px 30px 15px; margin-top:10px; padding-left: 15px; border-left: 2px solid #ccc; color: #555; font-size: 0.85em; line-height: 1.6;">
-    <span style="font-weight: bold; color: #ffff00;">💡 URLセーブ機能</span><br>
-    <span style="color: #ffffff;">プレイ中のURLをブックマークすれば、そのURLから続きを再開できます。</span><br>
-    <span style="color: #ffffff;">※再開時は、最初に使用したCSVファイルを再度読み込んでください。</span>
+    <span style="font-weight: bold; color: #ffff00;">💡 URLセーブ機能 / URL save function</span><br>
+    <span style="color: #ffffff;">プレイ中のURLをブックマークすれば、そのURLから続きを再開できます。<br>
+    ※再開時は、最初に使用したCSVファイルを再度読み込んでください。</span><br>
+    <span style="color: #ffffff;">If you bookmark the URL you are currently playing, you can resume where you left off.<br>
+    *When restarting, please reload the CSV file used initially.</span>
   </div>
 
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 12px 15px; border-radius: 4px; color: #0d47a1; font-size: 0.9em; margin-top: 5px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-    <strong style="font-size: 1.05em; color: #000;">▼ 一括貼り付けで開始する場合</strong> (URLセーブ機能に非対応)<br>
-    下の入力欄に「ルールCSV」と「シナリオCSV」の中身をまとめて貼り付けても実行できます。<br>
-    <span style="color: #c62828; font-weight: bold; display: block; margin-top: 4px;">※注意：この方法ではURLセーブ機能には対応していません。</span>
+    <strong style="font-size: 1.05em; color: #000;">▼ 一括貼り付けで開始する場合 / When starting with batch pasting</strong><br>
+     (URLセーブ機能に非対応 / URL save function not supported)<br>
+    <span style="color: #666666;">下の入力欄に「ルールCSV」と「シナリオCSV」の中身をまとめて貼り付けても実行できます。<br>
+    You can also paste the contents of "Rule CSV" and "Scenario CSV" together into the input field below.</span><br>
+    <span style="color: #c62828; font-weight: bold; display: block; margin-top: 4px;">※この方法はURLセーブ機能に非対応です。/ This method does not support the URL save function.</span>
   </div>
 </div>
 
@@ -2266,7 +2277,7 @@ function visualizeTree() {
         nodes[id] = {
             id: id,
             type: cols[1],
-            text: (cols[2] || "").replace(/"/g, "").substring(0, 25),
+            text: (cols[2] || "").replace(/"/g, "").substring(0, 50),
             links: links,
             effect: cols[10] ? cols[10].replace(/"/g, "").trim() : ""
         };
@@ -2295,7 +2306,7 @@ function visualizeTree() {
         
         if (isRevisit) {
             // 合流済みリンク（点灯アニメーション付き）：クリック時にそのIDの場所までスムーズスクロールさせるリンク
-			html += ` <a href="javascript:void(0)" onclick="const t=document.getElementById('tree-node-${id}'); t.scrollIntoView({behavior:'smooth', block:'center'}); t.classList.remove('flash-active'); void t.offsetWidth; t.classList.add('flash-active');" style="color:#007bff; font-size:0.8em; text-decoration:underline;">(↑合流済みIDへ)</a></div>`;
+			html += ` <a href="javascript:void(0)" onclick="const t=document.getElementById('tree-node-${id}'); t.scrollIntoView({behavior:'smooth', block:'center'}); t.classList.remove('flash-active'); void t.offsetWidth; t.classList.add('flash-active');" style="color:#007bff; font-size:0.8em; text-decoration:underline;">(↑ID)</a></div>`;
             return html;
         }
         html += `</div>`;
