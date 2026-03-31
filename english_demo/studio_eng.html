@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
+<!-- STORYEM（ストリーム） -->
+<!-- ver20260331 -->
+<!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
+<!-- このゲームエンジン及び、サンプルゲーム内の画像と使用楽曲の著作権は全て、ファクトリー・デジタル・エンターテインメントおよび矢崎大信が有します。 -->
+<!-- 上記の著作権者に無断で、サンプルゲーム内の画像と使用楽曲を出版・放送・演奏・複製・公開に使用することを禁じます。 -->
+<!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
+<!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -269,7 +277,7 @@ The rules below are fixed and will be combined with your story outline [B] to cr
 	- Broken Links: Do not point options to an ID that does not exist.<br>
 	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.<br>
 	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.<br>
-	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".<br>
+	- Quote Management: The "text", "options", and "effect" columns MUST be enclosed in half-width double quotation marks "". The use of double quotation marks (") inside the text is strictly prohibited as it will break the CSV structure. For dialogue or quotes, always use single quotation marks (').<br>
 	<br>
 	- Item Acquisition & Condition Split: Do not include both "item acquisition (effect)" and "a choice requiring that item (options)" in the same ID. Split them into two paragraphs.<br>
 	  Bad: 6,normal,"Got a key","[key]Open→7",,,,,,,item+key (The button may not work)<br>
@@ -354,10 +362,140 @@ If you have a previously created Rule CSV or Scenario CSV, you can paste it here
 	<div style="margin-bottom: 8px;">
 	    <input type="checkbox" id="opt_lang"> Add 
 	    <select id="val_lang">
-	        <option value="Japanese">Japanese</option>
-	        <option value="Chinese">Chinese</option>
-	        <option value="Spanish">Spanish</option>
-	        <option value="French">French</option>
+			<option value="Japanese">Japanese</option>
+            <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+            <option value="Chinese (Traditional)">Chinese (Traditional)</option>
+            <option value="Korean">Korean</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+            <option value="German">German</option>
+            <option value="Italian">Italian</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Russian">Russian</option>
+            <option value="Thai">Thai</option>
+            <option value="Vietnamese">Vietnamese</option>
+            <hr>
+            <option value="Afrikaans">Afrikaans</option>
+            <option value="Akan">Akan</option>
+            <option value="Albanian">Albanian</option>
+            <option value="Amharic">Amharic</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Armenian">Armenian</option>
+            <option value="Assamese">Assamese</option>
+            <option value="Azerbaijani">Azerbaijani</option>
+            <option value="Bambara">Bambara</option>
+            <option value="Basque">Basque</option>
+            <option value="Belarusian">Belarusian</option>
+            <option value="Bengali">Bengali</option>
+            <option value="Bhojpuri">Bhojpuri</option>
+            <option value="Bosnian">Bosnian</option>
+            <option value="Bulgarian">Bulgarian</option>
+            <option value="Burmese">Burmese</option>
+            <option value="Catalan">Catalan</option>
+            <option value="Cebuano">Cebuano</option>
+            <option value="Chichewa">Chichewa</option>
+            <option value="Corsican">Corsican</option>
+            <option value="Croatian">Croatian</option>
+            <option value="Czech">Czech</option>
+            <option value="Danish">Danish</option>
+            <option value="Dhivehi">Dhivehi</option>
+            <option value="Dogri">Dogri</option>
+            <option value="Dutch">Dutch</option>
+            <option value="Esperanto">Esperanto</option>
+            <option value="Estonian">Estonian</option>
+            <option value="Ewe">Ewe</option>
+            <option value="Filipino">Filipino</option>
+            <option value="Finnish">Finnish</option>
+            <option value="Frisian">Frisian</option>
+            <option value="Galician">Galician</option>
+            <option value="Georgian">Georgian</option>
+            <option value="Greek">Greek</option>
+            <option value="Guarani">Guarani</option>
+            <option value="Gujarati">Gujarati</option>
+            <option value="Haitian Creole">Haitian Creole</option>
+            <option value="Hausa">Hausa</option>
+            <option value="Hawaiian">Hawaiian</option>
+            <option value="Hebrew">Hebrew</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Hmong">Hmong</option>
+            <option value="Hungarian">Hungarian</option>
+            <option value="Icelandic">Icelandic</option>
+            <option value="Igbo">Igbo</option>
+            <option value="Ilocano">Ilocano</option>
+            <option value="Indonesian">Indonesian</option>
+            <option value="Irish">Irish</option>
+            <option value="Javanese">Javanese</option>
+            <option value="Kannada">Kannada</option>
+            <option value="Kazakh">Kazakh</option>
+            <option value="Khmer">Khmer</option>
+            <option value="Kinyarwanda">Kinyarwanda</option>
+            <option value="Konkani">Konkani</option>
+            <option value="Krio">Krio</option>
+            <option value="Kurdish (Kurmanji)">Kurdish (Kurmanji)</option>
+            <option value="Kurdish (Sorani)">Kurdish (Sorani)</option>
+            <option value="Kyrgyz">Kyrgyz</option>
+            <option value="Lao">Lao</option>
+            <option value="Latin">Latin</option>
+            <option value="Latvian">Latvian</option>
+            <option value="Lingala">Lingala</option>
+            <option value="Lithuanian">Lithuanian</option>
+            <option value="Luganda">Luganda</option>
+            <option value="Luxembourgish">Luxembourgish</option>
+            <option value="Macedonian">Macedonian</option>
+            <option value="Maithili">Maithili</option>
+            <option value="Malagasy">Malagasy</option>
+            <option value="Malay">Malay</option>
+            <option value="Malayalam">Malayalam</option>
+            <option value="Maltese">Maltese</option>
+            <option value="Maori">Maori</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Meiteilon (Manipuri)">Meiteilon (Manipuri)</option>
+            <option value="Mizo">Mizo</option>
+            <option value="Mongolian">Mongolian</option>
+            <option value="Nepali">Nepali</option>
+            <option value="Norwegian">Norwegian</option>
+            <option value="Odia (Oriya)">Odia (Oriya)</option>
+            <option value="Oromo">Oromo</option>
+            <option value="Papiamento">Papiamento</option>
+            <option value="Pashto">Pashto</option>
+            <option value="Persian">Persian</option>
+            <option value="Polish">Polish</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Quechua">Quechua</option>
+            <option value="Romanian">Romanian</option>
+            <option value="Samoan">Samoan</option>
+            <option value="Sanskrit">Sanskrit</option>
+            <option value="Scots Gaelic">Scots Gaelic</option>
+            <option value="Sepedi">Sepedi</option>
+            <option value="Serbian">Serbian</option>
+            <option value="Sesotho">Sesotho</option>
+            <option value="Shona">Shona</option>
+            <option value="Sindhi">Sindhi</option>
+            <option value="Sinhala">Sinhala</option>
+            <option value="Slovak">Slovak</option>
+            <option value="Slovenian">Slovenian</option>
+            <option value="Somali">Somali</option>
+            <option value="Sundanese">Sundanese</option>
+            <option value="Swahili">Swahili</option>
+            <option value="Swedish">Swedish</option>
+            <option value="Tajik">Tajik</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Tatar">Tatar</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Tigrinya">Tigrinya</option>
+            <option value="Tsonga">Tsonga</option>
+            <option value="Turkish">Turkish</option>
+            <option value="Turkmen">Turkmen</option>
+            <option value="Twi">Twi</option>
+            <option value="Ukrainian">Ukrainian</option>
+            <option value="Urdu">Urdu</option>
+            <option value="Uyghur">Uyghur</option>
+            <option value="Uzbek">Uzbek</option>
+            <option value="Welsh">Welsh</option>
+            <option value="Xhosa">Xhosa</option>
+            <option value="Yiddish">Yiddish</option>
+            <option value="Yoruba">Yoruba</option>
+            <option value="Zulu">Zulu</option>
 	    </select> translation.
 	</div>
     <div style="margin-bottom: 8px;">
@@ -388,46 +526,53 @@ If you have a previously created Rule CSV or Scenario CSV, you can paste it here
     ✨ Useful Post-Generation Commands
   </h3>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🛠️ "Debug and fix any syntax errors, empty battle fields, and reachability for all choices. Ensure no orphaned paragraphs exist. Don't forget the CSV header."</strong><br>
-    <div style="margin-top: 8px; color: #333; font-size: 0.85em;">
-      Use this if the AI makes a mistake in the logic or CSV format. It forces a deep verification.
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🛠️ "Debug and fix all syntax errors, missing battle items, and check the reachability of the goal from all choices, one by one. Ensure there are no unreachable paragraphs. Don't forget the CSV header row."</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      The AI may fail to generate consistent data in one go, especially when using item flags. Use this command to perform a thorough debug and fix, making it easier to regenerate high-accuracy data.
     </div>
   </div>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🏃 "Give me a walkthrough of the story."</strong><br>
-    <div style="margin-top: 8px; color: #333; font-size: 0.85em;">
-      Helps you test the game by showing the "correct" path to the ending.
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">⏩ "Continue writing", "Resume from paragraph [Number]", "Output until the end"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Stories may be cut off due to AI limits. If this happens, execute this command to have the AI output the rest of the content.
     </div>
   </div>
 
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🎨 "Generate all related images in a comic-strip layout."</strong><br>
-    <div style="margin-top: 8px; color: #333; font-size: 0.85em;">
-      (Best for Gemini) Visualizes locations and characters to use as background images (bgi).
-    </div>
-  </div>
-
-  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-    <strong style="color: #0d47a1; font-size: 0.95em;">🎵 "Compose a music track that fits this atmosphere."</strong><br>
-    <div style="margin-top: 8px; color: #333; font-size: 0.85em;">
-      (Best for Gemini) Creates an original BGM track for your game.
+  <div style="background: #fff3e0; border-left: 5px solid #ff9800; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #e65100; font-size: 0.95em;">🏃 "Show me the walkthrough / how to reach the goal"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      When creating complex branches, even the author may lose track of the correct path. Have the AI list the walkthrough to make testing easier for yourself.
     </div>
   </div>
 
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-      <strong style="color: #0d47a1; font-size: 0.95em;">💬 "What are your thoughts on this story? What parts did you focus on improving?"</strong><br>
-      <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-        The AI is your first reader. Asking for its self-evaluation on the plot and settings can provide fresh insights and boost your motivation for the next project.
-      </div>
+    <strong style="color: #0d47a1; font-size: 0.95em;">🎨 "Create panel-style images for all related types"</strong> <span style="font-size: 0.8em; opacity: 0.7;">(*Gemini recommended)</span><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Visualize the setting and characters. Images can be set as background images (bgi) for the game or used as promotional banners for social media.
+    </div>
   </div>
 
   <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-      <strong style="color: #0d47a1; font-size: 0.95em;">👍 "Go"</strong><br>
-      <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
-        If the AI suggests additional ideas or improvements, use this to give it the green light to proceed with those changes.
-      </div>
+    <strong style="color: #0d47a1; font-size: 0.95em;">🎵 "Create a song related to this story"</strong> <span style="font-size: 0.8em; opacity: 0.7;">(*Gemini recommended)</span><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      Generate BGM that matches the mood of your story. Create dedicated tracks for battle scenes or endings to enhance immersion.
+    </div>
+  </div>
+
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">💬 "What are your thoughts on this story, and what points did you focus on?"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      The AI is also your first reader. Getting its self-evaluation on the excitement and settings can boost your motivation for your next project.
+    </div>
+  </div>
+
+  <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; border-radius: 4px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #1b5e20; font-size: 0.95em;">👍 "Sure / Go ahead"</strong><br>
+    <div style="margin-top: 8px; color: #333; font-size: 0.85em; line-height: 1.5; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px;">
+      A handy response when you agree with an additional suggestion from the AI and want it to proceed.
+    </div>
   </div>
 
 </div>
@@ -535,7 +680,7 @@ const ruleA = `
 	- Broken Links: Do not point options to an ID that does not exist.
 	- Arrow Symbol: You MUST use the full-width arrow "→" in the options column. Symbols like "->" or "=>" are strictly prohibited.
 	- Battle Row Consistency: For "battle" types, columns 5 (Enemy Name) through 8 (Next ID) must be fully populated.
-	- Quote Management: The "text" and "options" columns MUST be enclosed in half-width double quotation marks "".
+	- Quote Management: The "text", "options", and "effect" columns MUST be enclosed in half-width double quotation marks "". The use of double quotation marks (") inside the text is strictly prohibited as it will break the CSV structure. For dialogue or quotes, always use single quotation marks (').
 
 	- Item Acquisition & Condition Split: Do not include both "item acquisition (effect)" and "a choice requiring that item (options)" in the same ID. Split them into two paragraphs.
 	  Bad: 6,normal,"Got a key","[key]Open→7",,,,,,,item+key (The button may not work)
