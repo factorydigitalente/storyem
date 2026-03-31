@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Story Tree Of Roleplaying Yourself Entertainment Media -->
 <!-- STORYEM（ストリーム） -->
-<!-- ver20260313 -->
+<!-- ver20260330 -->
 <!-- Copyright (C) 2026 Factory Digital Entertainment. All rights reserved. -->
 <!-- Factory Digital Entertainment and Hironov Yazaki own all copyrights to this game engine and the images and songs used in the sample game. -->
 <!-- It is prohibited to use the images and songs in the sample game for publication, broadcast, performance, reproduction, or public viewing without permission from the above copyright holder. -->
@@ -107,12 +107,63 @@ button:disabled { background: #222; color: #555; cursor: not-allowed; }
   border: 2px solid #444;
 }
 
+/* statusバー全体：スマホでの折り返しと左端固定を両立 */
 #status {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 左詰めに固定して隙間を消す */
+  flex-wrap: wrap;             /* スマホで入り切らない時に自動で2段にする */
+  padding: 0;                  /* 内部余白は子要素で制御 */
   margin-bottom: 15px;
-  padding: 10px;
-  background: #222; /* ステータス欄の背景 */
+  background: #222;            /* ステータス欄の背景 */
   border-radius: 5px;
-  border-left: 4px solid #888; /* 左側にアクセントの縦線 */
+  border-left: 4px solid #888; /* 左側のアクセント線 */
+  overflow: hidden;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+  font-variant-numeric: tabular-nums; /* 数字の幅を一定にしてガタつき防止 */
+  max-height: 120px; /* 3〜4行分くらいで止める */
+  overflow-y: auto;  /* 超えたら枠内でスクロール */
+}
+
+/* 左端の矢印ボタン部分：ここを固定幅にすることで隙間問題を解決 */
+#status::before {
+  content: var(--status-arrow, "▼");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;                /* 幅を固定 */
+  min-width: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  align-self: stretch;        /* バーが2段になっても高さを維持 */
+  font-size: 10px;
+  color: #555;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 10px;         /* 矢印と文字の間の距離 */
+  transition: all 0.4s ease;
+}
+
+/* ステータス内の各項目（HPなど）の微調整 */
+#status strong {
+  color: #fff;
+  margin: 0 2px;
+}
+
+/* 項目が途中で改行されないように保護 */
+#status > span, #status > strong, #status > b {
+  white-space: nowrap;
+  padding: 5px 0; /* 上下に少しだけ余白を持たせる */
+}
+
+/* マウスホバー・アクティブ時の演出 */
+#status:hover::before {
+  color: #fff;
+  text-shadow: 0 0 8px #2ecc71;
+}
+#status:active {
+  transform: scale(0.98);
+  filter: brightness(1.2);
 }
 
 #text { 
@@ -323,7 +374,12 @@ input:checked + .slider:before { transform: translateX(20px); }
   border: 1px solid #444;
   border-radius: 4px;
   padding: 8px;
+  box-sizing: border-box; /* 枠線や余白を幅に含める */
   width: 100%;
+  height:180px;
+  margin-bottom:15px;
+  line-height: 1.1;
+  letter-spacing: 0.1px;
 }
 
 /* 入力ヒント（プレースホルダー）の色設定 */
@@ -446,6 +502,42 @@ input:checked + .slider:before { transform: translateX(20px); }
   transition: transform 0.1s;
 }
 
+/* ボタンを包むコンテナ：丁寧な長い文言でも崩れないように調整 */
+.import-btn-container {
+  display: flex;
+  flex-wrap: wrap;       /* 幅が足りない時に自動で折り返す */
+  justify-content: center;
+  gap: 15px;             /* 縦並び・横並びどちらでもボタン間に15pxの隙間を確保 */
+  margin-top: 15px;
+  width: 100%;
+}
+
+/* コンテナ内のボタン共通設定 */
+.import-btn-container button {
+  flex: 1;               /* PCでは2つのボタンが同じ幅で並ぶ */
+  min-width: 320px;      /* 文言が長いため、少し広めの320pxで折り返し判定 */
+  max-width: 450px;      /* PCで見苦しく広がらないよう上限を設定 */
+  padding: 12px 20px;    /* 丁寧なボタンにふさわしい、少し厚みのある余白 */
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  line-height: 1.4;      /* 2行のテキストが読みやすい行間 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* スマホ等、非常に画面が狭い（480px以下）時の最終調整 */
+@media (max-width: 480px) {
+  .import-btn-container button {
+    min-width: 100%;     /* スマホでは横幅いっぱいの押しやすいサイズに固定 */
+    font-size: 0.95em;    /* 文字がはみ出さないよう、わずかに調整 */
+  }
+}
+
 </style>
 </head>
 <body>
@@ -458,7 +550,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div class="header-right-ui">
     <button id="font-size-toggle" class="debug-btn" onclick="nextFontSize()" style="min-width: 46px;">A+</button>
     <button id="font-style-toggle" class="debug-btn" onclick="nextFontStyle()" style="min-width: 42px;">Aa</button>
-    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="min-width: 52px;">🖼️ B</button>
+    <button id="img-mode-toggle" class="debug-btn" onclick="nextImgMode()" style="min-width: 52px;">🖼️ T</button>
     <button id="theme-toggle" class="theme-btn" onclick="nextTheme()" title="Change Color Theme"></button>
     <div id="bgm-control">
       <span class="bgm-label-text">♪</span>
@@ -475,6 +567,10 @@ input:checked + .slider:before { transform: translateX(20px); }
 </div>
 
 <div id="file-controls" style="display:none;">
+  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 12px 15px; border-radius: 4px; color: #0d47a1; font-size: 0.9em; margin-top: 5px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <strong style="font-size: 1.05em; color: #000;">▼ CSVファイル読み込みで開始する場合</strong> (URLセーブ機能に対応)<br>
+  </div>
+
   <div id="rule-selector">
     <label for="rule-file">📘 ruleCSV ルール:</label>
     <input type="file" id="rule-file" accept=".csv">
@@ -482,6 +578,18 @@ input:checked + .slider:before { transform: translateX(20px); }
   <div id="scenario-selector">
     <label for="scenario-file">📜 scenarioCSV シナリオ:</label>
     <input type="file" id="scenario-file" accept=".csv">
+  </div>
+
+  <div style="margin: 0 15px 30px 15px; margin-top:10px; padding-left: 15px; border-left: 2px solid #ccc; color: #555; font-size: 0.85em; line-height: 1.6;">
+    <span style="font-weight: bold; color: #ffff00;">💡 URLセーブ機能</span><br>
+    <span style="color: #ffffff;">プレイ中のURLをブックマークすれば、そのURLから続きを再開できます。</span><br>
+    <span style="color: #ffffff;">※再開時は、最初に使用したCSVファイルを再度読み込んでください。</span>
+  </div>
+
+  <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 12px 15px; border-radius: 4px; color: #0d47a1; font-size: 0.9em; margin-top: 5px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <strong style="font-size: 1.05em; color: #000;">▼ 一括貼り付けで開始する場合</strong> (URLセーブ機能に非対応)<br>
+    下の入力欄に「ルールCSV」と「シナリオCSV」の中身をまとめて貼り付けても実行できます。<br>
+    <span style="color: #c62828; font-weight: bold; display: block; margin-top: 4px;">※注意：この方法ではURLセーブ機能には対応していません。</span>
   </div>
 </div>
 
@@ -509,21 +617,22 @@ input:checked + .slider:before { transform: translateX(20px); }
     placeholder="Paste the contents of the created rule CSV and scenario CSV here.&#10; ここに 作成した ルールCSV と シナリオCSV の中身をまとめて貼り付け"
     style="width:100%; height:180px; margin-bottom:15px;"></textarea>
 
-  <div style="text-align: center;">
+  <div class="import-btn-container">
     <button onclick="setSampleCSV()" 
             class="btn-sample"
-            style="display:inline-block; padding:10px 20px; font-weight:bold; border-radius:5px; margin-right:10px; width: auto;">
+            style="padding:10px 20px; font-weight:bold; border-radius:5px;">
       既定のサンプルを入力欄に反映する<br>
-      Load the Built-In Sample
+      Load Sample
     </button>
 
     <button onclick="importCSV()" 
             class="btn-start"
-            style="display:inline-block; padding:10px 20px; font-weight:bold; border-radius:5px; width: auto;">
+            style="padding:10px 20px; font-weight:bold; border-radius:5px;">
       貼り付けた内容を解析してゲームを開始する<br>
-      Analyze & Start Game
+      Analyze & Start
     </button>
   </div>
+
 </div>
 
 <div id="game-area">
@@ -561,7 +670,16 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 
 <script>
-let player = {};
+// リスタート用フラグ
+let isRestarting = false;
+
+// playerオブジェクトの初期設定
+let player = {
+  hp: 0, skill: 0, luck: 0, food: 0,
+  gold: 0,      // 所持金
+  items: [],    // 所持アイテムIDの配列 ["sword1", "key_a"]
+  flags: {}     // フラグ状態 {"f1": 1, "f2": 0}
+};
 let maxHP = 0;
 let ruleData = {};
 let scenarioData = [];
@@ -572,8 +690,11 @@ const fontSizes = ["13px","16px", "20px", "24px"];
 const fontSizeLabels = ["A-", "A", "A+", "A++"]; // サイズが大きくなることを示す視覚的ラベル
 
 // 画像切り替え設定
-let imgDisplayMode = 0; // 0:背景, 1:上部, 2:中間, 3:なし
+let imgDisplayMode = 1; // 0:背景, 1:上部, 2:中間, 3:なし
 const imgModeLabels = ["🖼️ B", "🖼️ T", "🖼️ M", "🖼️ X"];
+
+// アイテムのIDと表示名のマスタ（CSVから読み込むため let に変更）
+let itemMaster = {};
 
 // =======================
 // BGM管理（常に1つだけ使う）
@@ -648,6 +769,19 @@ function applyRule(rule) {
   // CSVの列名は 'theme' と想定。未記入や不正値は applyTheme 側でガード
   const csvTheme = parseInt(rule.theme);
   applyTheme(csvTheme || 1);
+
+  // --- アイテムマスタの読み込み ---
+  if (rule.items) {
+    itemMaster = {}; // 一旦リセット
+    // "id1:名前1|id2:名前2" を分解
+    const pairs = rule.items.split("|");
+    pairs.forEach(p => {
+      const [id, name] = p.split(":");
+      if (id && name) {
+        itemMaster[id.trim()] = name.trim();
+      }
+    });
+  }
 
   // ===== プレイヤー初期化 =====
   maxHP = parseInt(rule.max_hp) || 20;
@@ -747,11 +881,79 @@ function setUIMode(mode) {
 }
 
 // --- ゲーム制御 ---
+// startGame を拡張：URLにパラメータがあればそれを適用する
 function startGame(paragraphs) {
   scenarioData = paragraphs;
-  setUIMode('game'); // ここで一括切り替え
-  forceCloseMenu(); // ゲームが始まったらメニューを強制的に閉じる
-  showParagraph(1);
+  setUIMode('game');
+  
+  // メニューを閉じる
+  const controls = document.getElementById("file-controls");
+  const studio = document.getElementById("studio-import");
+  if (controls) controls.style.display = "none";
+  if (studio) studio.style.display = "none";
+
+  const params = new URLSearchParams(window.location.search);
+  
+  // URLに 'p' (現在のパラグラフID) がある場合は、セーブデータとして読み込む
+  if (params.has("p")) {
+    console.log("URLからステータスを復元します...");
+    
+    // 基本ステータスの復元
+    const savedHP  = parseInt(params.get("hp"));
+    const savedMHP = parseInt(params.get("mhp"));
+    const savedSK  = parseInt(params.get("sk"));
+    const savedLK  = parseInt(params.get("lk"));
+    const savedFD  = parseInt(params.get("fd"));
+    const savedP   = parseInt(params.get("p"));
+
+    if (!isNaN(savedHP)) player.hp = savedHP;
+    if (!isNaN(savedMHP)) maxHP = savedMHP;
+    if (!isNaN(savedSK)) player.skill = savedSK;
+    if (!isNaN(savedLK)) player.luck = savedLK;
+    if (!isNaN(savedFD)) player.food = savedFD;
+
+    // --- 【追加】ゴールドの復元 ---
+    const savedGD = parseInt(params.get("gd"));
+    if (!isNaN(savedGD)) {
+      player.gold = savedGD;
+    } else {
+      player.gold = ruleData.init_gold || 0; // URLになければルール初期値
+    }
+
+    // --- 【追加】アイテムの復元 ---
+    const itParam = params.get("it");
+    if (itParam && itParam.trim() !== "") {
+      player.items = itParam.split(",");
+    } else {
+      player.items = [];
+    }
+
+    // --- 【追加】フラグの復元 (f1:1,f2:0 の形式を解析) ---
+    const flParam = params.get("fl");
+    player.flags = {}; // 一旦リセット
+    if (flParam) {
+      flParam.split(",").forEach(pair => {
+        const parts = pair.split(":");
+        if (parts.length === 2) {
+          const k = parts[0].trim();
+          const v = parseInt(parts[1]);
+          if (k) player.flags[k] = v;
+        }
+      });
+    }
+
+    updateStatus(); // 復元した全数値を画面に反映
+    showParagraph(savedP || 1);
+  } else {
+    // URLに何もない場合は、CSVの初期値のまま第1パラグラフを開始
+    // 新規開始時もゴールドを初期化
+    player.gold = ruleData.init_gold || 0;
+    player.items = [];
+    player.flags = {};
+    
+    updateStatus(); 
+    showParagraph(1);
+  }
 }
 
 // メニューを強制的に「閉じ状態」にする共通関数
@@ -784,44 +986,56 @@ function resetAndShowSelectors() {
   document.getElementById("scenario-selector").style.setProperty("display", "block", "important");
 }
 
+// ステータスバー処理
 function updateStatus() {
-  document.getElementById("status").innerHTML = 
-    `❤️ HP: <strong>${player.hp}</strong> / ${maxHP} | ⚔️ Skill技: <strong>${player.skill}</strong> | 🍀 Luck運: <strong>${player.luck}</strong> | 🍞 Food食料: <strong>${player.food}</strong>`;
+  const statusDiv = document.getElementById("status");
+  
+  // アイテムIDを日本語名に変換して結合
+  const itemNames = player.items.map(id => itemMaster[id] || id).join(", ");
+
+  statusDiv.innerHTML = `
+    <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.3); padding:5px; border-radius:5px;">
+      <span>❤️HP:${player.hp}/${maxHP}</span>
+      <span>⚔️技:${player.skill}</span>
+      <span>🍀運:${player.luck}</span>
+      <span>🍞食:${player.food}</span>
+      <span style="color:#ffd700;">💰:${player.gold}G</span>
+    </div>
+    <div style="font-size:0.85em; margin-top:5px; color:#bdc3c7;">
+      🎒所持品: ${itemNames || "なし"}
+    </div>
+  `;
 }
 
 // --- パラグラフ表示処理 (食事機能を追加) ---
 function showParagraph(id) {
-  const p = scenarioData.find(x => x.id === id);
+  const p = scenarioData.find(x => x.id === parseInt(id));
   if (!p) return;
 
-  // --- 前回のバトルログや通知をリセット ---
+  // --- 前回のログや通知をリセット ---
   const logDiv = document.getElementById("log");
   if (logDiv) logDiv.innerText = "";
 
   handleBGM(p.bgm);
 
-  // --- 背景画像の設定 ---
+  // --- 背景・画像表示の初期化 ---
   const gameArea = document.getElementById("game-area");
   const imgTop = document.getElementById("img-container-top");
   const imgMid = document.getElementById("img-container-mid");
 
-  // 全て初期化
   gameArea.style.backgroundImage = "none";
   imgTop.style.display = "none";
   imgMid.style.display = "none";
   imgTop.innerHTML = "";
   imgMid.innerHTML = "";
 
-  const targetImg = (p.bgi && p.bgi.trim() !== "") ? p.bgi : ruleData.bg; //bgi列から読み込む
+  const targetImg = (p.bgi && p.bgi.trim() !== "") ? p.bgi : ruleData.bg;
 
   if (targetImg && imgDisplayMode !== 3) {
     if (imgDisplayMode === 0) {
-      // 背景モード
       gameArea.style.backgroundImage = `url(${targetImg})`;
     } else {
-      // 挿入モード (innerHTMLを使うことで既存の要素構造を壊さない)
       const imgHtml = `<img src="${targetImg}" onerror="this.style.display='none'" style="width:100%; height:auto; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.5);">`;
-
       if (imgDisplayMode === 1) {
         imgTop.innerHTML = imgHtml;
         imgTop.style.display = "block";
@@ -832,89 +1046,85 @@ function showParagraph(id) {
     }
   }
 
-  // --- effect列による自動処理（!による再発動に対応） ---
-  // シナリオCSVのeffect列の冒頭に「!」をつけると、そのパラグラフに留まる限り何度でも発動する。
-  // 「!」をつけずにeatとした場合は、１度だけ発動する。
-  // hp-2 と書けば、初回のみダメージ。
-  // !hp-2 と書けば、訪れるたびにダメージ。
+  // --- effect列による自動処理（HP, Food, Luck, Gold, Item, Flag） ---
   if (p.effect) {
-    // 命令が「!」で始まっているか判定（例: !hp-2 なら再発動モード）
     const isRepeatable = p.effect.startsWith("!");
-
-    // 「まだ未訪問(!p.visited)」か、あるいは「再発動設定(isRepeatable)」である場合に実行
     if (!p.visited || isRepeatable) {
-      
-      // 解析用に「!」を取り除いた実際の命令文字列を取得
-      const cmd = isRepeatable ? p.effect.slice(1) : p.effect;
-      
-      // 命令（hp-2など）からステータス名と数値を正規表現で抽出
-      const match = cmd.match(/([a-z]+)([+-]\d+)/i);
-      
-      if (match) {
-        const stat = match[1].toLowerCase(); // 例: hp
-        const amount = parseInt(match[2], 10); // 例: -2
+      const cmdStr = isRepeatable ? p.effect.slice(1) : p.effect;
+      const commands = cmdStr.split(","); 
 
-        // 対象のステータスを加減算
-        if (stat === "food") player.food += amount;
-        if (stat === "hp")   player.hp += amount;
-        if (stat === "luck") player.luck += amount;
+      commands.forEach(cmd => {
+        const t = cmd.trim();
+        let logMsg = "";
 
-        // HPが最大値を超えないように、また死亡判定のため0未満にならないように調整
-        if (player.hp > maxHP) player.hp = maxHP;
-        if (player.hp < 0) player.hp = 0;
-
-        // 画面上のログに変化を表示
-        document.getElementById("log").innerText = `${stat} ${amount} ！`;
-
-        // HPが最大値を超えないように調整
-        if (player.hp > maxHP) player.hp = maxHP;
-        // 0未満にならないように調整
-        if (player.hp < 0) player.hp = 0;
-
-        // 【ここが重要！】HPを計算した直後に画面上のステータス表示を更新する
-        updateStatus();
-
-        // 変化があったことをログに表示
-        document.getElementById("log").innerText = `${stat} ${amount} ！`;
-
-        // HPが0になった瞬間の死亡判定
-        if (player.hp <= 0) {
-          // 死亡時のテキストを表示
-          document.getElementById("text").innerText = "...You're exhausted. Your adventure ends here. ……力尽きた。君の冒険はここで終わりだ。";
-          
-          // 選択肢をクリアし、リトライボタンだけを表示
-          const optDiv = document.getElementById("options");
-          optDiv.innerHTML = ""; 
-          const retryBtn = document.createElement("button");
-          retryBtn.innerText = "Play Again /最初からリトライ";
-          retryBtn.onclick = () => restartGame();
-          optDiv.appendChild(retryBtn);
-          
-          // 死亡したので、これ以降の処理を中断
-          return; 
+        // 1. ゴールド処理 (gold+100)
+        if (t.startsWith("gold")) {
+          const amt = parseInt(t.replace("gold", ""), 10);
+          player.gold += amt;
+          logMsg = `💰 ${amt}G ！`;
         }
+        // 2. アイテム入手 (item+key_id)
+        else if (t.startsWith("item+")) {
+          const itemId = t.replace("item+", "");
+          if (!player.items.includes(itemId)) {
+            player.items.push(itemId);
+            logMsg = `🎒 ${itemMaster[itemId] || itemId} を手に入れた！`;
+          }
+        }
+        // 3. フラグ操作 (f_flag:1)
+        else if (t.includes(":")) {
+          const [fName, fVal] = t.split(":");
+          player.flags[fName.trim()] = parseInt(fVal, 10);
+        }
+        // 4. 基本ステータス (hp, food, luck)
+        else {
+          const match = t.match(/([a-z]+)([+-]\d+)/i);
+          if (match) {
+            const stat = match[1].toLowerCase();
+            const amount = parseInt(match[2], 10);
+            if (stat === "food") player.food += amount;
+            if (stat === "hp")   player.hp += amount;
+            if (stat === "luck") player.luck += amount;
+            if (stat === "skill") player.skill += amount;
+            logMsg = `${stat.toUpperCase()} ${amount > 0 ? "+" + amount : amount} ！`;
+          }
+        }
+        if (logMsg && logDiv) logDiv.innerText += logMsg + "\n";
+      });
+
+      // 限界値調整
+      if (player.hp > maxHP) player.hp = maxHP;
+      if (player.hp < 0) player.hp = 0;
+
+      updateStatus();
+      updateURLParameters(); // 変化があったら即セーブ
+
+      if (player.hp <= 0) {
+        document.getElementById("text").innerText = "……力尽きた。君の冒険はここで終わりだ。";
+        const optDiv = document.getElementById("options");
+        optDiv.innerHTML = ""; 
+        const retryBtn = document.createElement("button");
+        retryBtn.innerText = "最初からリトライ";
+        retryBtn.onclick = () => restartGame();
+        optDiv.appendChild(retryBtn);
+        return; 
       }
-      // まだ生きている場合のみ、訪問済みフラグを立てる
       p.visited = true; 
     }
   }
 
+  // --- テキストとIDの表示 ---
   updateStatus();
   document.getElementById("text").innerText = p.text;
-
-  // パラグラフID表示用の要素を作成して追加
   const idDisplay = document.createElement("span");
   idDisplay.className = "paragraph-id";
-  idDisplay.innerText = `§ ${p.id}`; // 「§」や「No.」を付けるとそれっぽい
+  idDisplay.innerText = `§ ${p.id}`;
   document.getElementById("text").appendChild(idDisplay);
-
-  // ログの初期化タイミングに注意（通知を残したい場合はここを調整）
-  // document.getElementById("log").innerText = ""; // ←通知を消したくない場合はコメントアウト
 
   const optDiv = document.getElementById("options");
   optDiv.innerHTML = "";
 
-  // エンディング時のリスタート処理
+  // --- エンディング判定 ---
   if (p.type === "end") {
     optDiv.innerHTML = "<strong>― The End 完 ―</strong><br>";
     const restartBtn = document.createElement("button");
@@ -926,53 +1136,93 @@ function showParagraph(id) {
     return;
   }
 
+  // --- バトルまたは選択肢の生成 ---
   if (p.type === "battle") {
     startBattle(p);
   } else {
-    // 通常の選択肢ボタン
-    p.options.forEach(o => {
+    // 選択肢の解析と条件チェック
+    const optList = Array.isArray(p.options) ? p.options : p.options.split(",");
+
+    optList.forEach(optRaw => {
+      // 内部データ形式の違いを吸収
+      const opt = typeof optRaw === "string" ? optRaw : `${optRaw.text}→${optRaw.to}`;
+      
+      // [要求アイテム]ラベル→ID の解析
+      const match = opt.match(/\[(.*?)\](.*)→(\d+)/);
+      let label, nextId, reqKey = null;
+
+      if (match) {
+        reqKey = match[1].trim(); 
+        label = match[2].trim();
+        nextId = parseInt(match[3], 10);
+      } else {
+        const parts = opt.split("→");
+        if (parts.length < 2) return;
+        label = parts[0].trim();
+        nextId = parseInt(parts[1], 10);
+      }
+
       const b = document.createElement("button");
-      b.innerText = o.text;
-      b.onclick = () => showParagraph(o.to);
+      b.innerText = label;
+
+      // カギ・フラグチェック
+      if (reqKey) {
+        let canOpen = false;
+
+        // ゴールド判定 [gold:300] の形式
+        if (reqKey.startsWith("gold:")) {
+          const needGold = parseInt(reqKey.split(":")[1]);
+          if (player.gold >= needGold) canOpen = true;
+        } 
+        // 「持っていないこと」判定 [!item_id] 
+        else if (reqKey.startsWith("!")) {
+          const targetKey = reqKey.slice(1); // ! を除いた ID を取得
+          const hasItem = player.items.includes(targetKey);
+          const hasFlag = player.flags[targetKey] && player.flags[targetKey] > 0;
+          if (!hasItem && !hasFlag) canOpen = true; // 持っていなければ OK
+        }
+        // アイテム・フラグ判定 (既存)
+        else {
+          const hasItem = player.items.includes(reqKey);
+          const hasFlag = player.flags[reqKey] && player.flags[reqKey] > 0;
+          if (hasItem || hasFlag) canOpen = true;
+        }
+        // 条件を満たしていない場合はボタンを無効化
+        if (!canOpen) {
+          b.disabled = true;
+          b.style.opacity = "0.5";
+          b.style.cursor = "not-allowed";
+          const reqName = itemMaster[reqKey] || reqKey;
+          b.innerText += ` (条件を満たしていないようだ)`;
+        }
+      }
+
+      b.onclick = () => showParagraph(nextId);
       optDiv.appendChild(b);
     });
 
-    // --- 食事ボタンの判定（!eatによる連食に対応） ---
-    // 設定が "eat" もしくは "!eat" かつ、食料を1つ以上持っているか確認
-    // シナリオCSVのeffect列に!eat と書けば、そのパラグラフに留まる限り何度でも食べられるようになる。
-    // 「!」をつけずにeatとした場合は、１度だけ発動する。
-    const isEatNode = (p.effect === "eat" || p.effect === "!eat");
-    
+    // --- 食事ボタン (eat / !eat) ---
+    const isEatNode = (p.effect && (p.effect.includes("eat") || p.effect.includes("!eat")));
     if (isEatNode && player.food > 0) {
       const eatBtn = document.createElement("button");
-      eatBtn.innerText = `🍞 Eat food to restore HP 食料を食べてHP回復 (Remaining 残り:${player.food})`;
+      eatBtn.innerText = `🍞 食料を食べてHP回復 (残り:${player.food})`;
       eatBtn.style.backgroundColor = "#2d5a27";
-      
       eatBtn.onclick = () => {
-        // 食料を消費してHPを4回復させる
         player.food -= 1;
         player.hp += 4;
-        
-        // 最大HPを超えないようにガードし、画面表示を最新にする
         if (player.hp > maxHP) player.hp = maxHP;
         updateStatus();
-        
-        // 【分岐点】!がつかない通常の「eat」設定なら、1回食べた瞬間にボタンを消す
-        // !がついた「!eat」設定なら、ボタンを残して連食を可能にする
-        if (p.effect === "eat") {
+        updateURLParameters();
+        if (!p.effect.includes("!")) {
           eatBtn.remove();
         } else {
-          // !eatの場合は、ボタン内の残り個数表示を更新する
-          eatBtn.innerText = `🍞 Eat food to restore HP 食料を食べてHP回復 (Remaining 残り:${player.food})`;
-          // もし食べている途中で食料が尽きたらボタンを消去
+          eatBtn.innerText = `🍞 食料を食べてHP回復 (残り:${player.food})`;
           if (player.food <= 0) eatBtn.remove();
         }
-        
-        document.getElementById("log").innerText = "Recovered HP! 食事をして体力が回復した！";
+        if (logDiv) logDiv.innerText = "食料を食べて体力が回復した！";
       };
       optDiv.appendChild(eatBtn);
     }
-
   }
 }
 
@@ -1192,15 +1442,35 @@ function rollDice(count = 2) {
   return { total, results };
 }
 
-// リスタート用の共通関数
+// リスタート用の共通関数（URLパラメータの初期化付き）
 function restartGame() {
-  // 1. 全パラグラフの訪問済みフラグをリセット
+  // 1. visitedリセット
   scenarioData.forEach(p => p.visited = false);
-  // 2. プレイヤーのステータスを初期値に戻す
+
+  // 2. 完全初期化
   applyRule(ruleData);
-  // 3. 最初のパラグラフを表示
+  player.gold = ruleData.init_gold || 0;
+  player.items = [];
+  player.flags = {};
+
+  // 3. URLを完全クリア
+  if (window.history.replaceState) {
+    const url = window.location.pathname;
+    window.history.replaceState(null, '', url);
+  }
+
+  // 4. URL更新を一時停止
+  isRestarting = true;
+
+  // 5. 最初へ
   showParagraph(1);
-  console.log("I initialized the game and restarted it. ゲームを初期化して再開しました。");
+
+  // 6. ステータスUIを強制再描画
+  // ※ showParagraphだけではUIが古いまま残ることがあるため明示的に更新
+  updateStatus();
+
+  // 7. URL更新の一時停止を解除
+  isRestarting = false;
 }
 
 // BGMのミュート状態を管理
@@ -1325,24 +1595,29 @@ document.getElementById("rule-file").onchange = function(e) {
 
 // ファイルメニューの表示・非表示を切り替える関数
 function toggleSelectors() {
-  const controls = document.getElementById("file-controls"); // ファイル選択
-  const studio = document.getElementById("studio-import"); // 貼り付け枠
+  const controls = document.getElementById("file-controls");
+  const studio = document.getElementById("studio-import");
   const btn = document.getElementById("menu-btn");
 
-  // 現在の状態を確認（一つ目の要素が非表示かどうかで判定）
-  const isCurrentlyHidden = (controls.style.display === "none");
+  if (!controls || !studio) return;
 
-  // まとめて 表示(block) / 非表示(none) を切り替える
-  [controls, studio].forEach(el => {
-    if (el) {
-      el.style.display = isCurrentlyHidden ? "block" : "none";
+  // 判定を「実測値」に変更（初期状態 style="display:none" に対応）
+  const isCurrentlyHidden = (window.getComputedStyle(controls).display === "none");
+
+  if (isCurrentlyHidden) {
+    controls.style.display = "block";
+    studio.style.display = "block";
+    if (btn) {
+      btn.innerText = "▲📁";
+      btn.style.opacity = "1.0";
     }
-  });
-
-  // ボタンの見た目を更新
-  if (btn) {
-    btn.innerText = isCurrentlyHidden ? "▲📁" : "▼📁";
-    btn.style.opacity = isCurrentlyHidden ? "1.0" : "0.6";
+  } else {
+    controls.style.display = "none";
+    studio.style.display = "none";
+    if (btn) {
+      btn.innerText = "▼📁";
+      btn.style.opacity = "0.6";
+    }
   }
 }
 
@@ -1371,7 +1646,19 @@ window.addEventListener('load', async () => {
 
       const startBtn = document.createElement("button");
       startBtn.innerText = "Click to Game Start / ゲーム開始";
-      
+
+      // スタイルを直接指定して「大きく、青く」する
+      startBtn.style.fontSize = "1.5em";           // 文字を大きく
+      startBtn.style.padding = "20px 40px";        // ボタンを分厚く
+      startBtn.style.backgroundColor = "#007bff";  // 鮮やかなブルー
+      startBtn.style.color = "#ffffff";            // 文字は白
+      startBtn.style.border = "none";              // 枠線を消してモダンに
+      startBtn.style.borderRadius = "8px";         // 角を丸く
+      startBtn.style.cursor = "pointer";
+      startBtn.style.fontWeight = "bold";
+      startBtn.style.width = "100%;"               // 横幅いっぱい（お好みで）
+      startBtn.style.boxShadow = "0 4px 15px rgba(0,123,255,0.4)"; // ふんわり光らせる
+
       startBtn.onclick = () => {
         // ★重要：開始ボタンが押されたとき、テキストエリアに全ソースを反映する
         textarea.value = ruleText + "\n\n" + scenarioText;
@@ -1402,80 +1689,63 @@ window.addEventListener('load', async () => {
 // ・そこから自動分離して解析する
 function importCSV() {
 
-  // BOMがあれば除去してからトリム
+  // 1. 入力欄からテキストを取得し、BOMを除去
   let raw = document.getElementById("csv-input").value.replace(/^\ufeff/, "").trim();
 
-  // ★共通バリデーションを実行
+  // 2. バリデーション
   if (!validateCSV(raw)) return;
 
-  // 改行分割
+  // 3. ルール(ttl,)とシナリオ(id,type)の位置を特定
   const lines = raw.split(/\r?\n/);
+  const ruleStart = lines.findIndex(line => line.trim().startsWith("ttl,"));
+  const scenarioStart = lines.findIndex(line => line.trim().startsWith("id,type"));
 
-  // ヘッダ位置検出（前後の空白無視）
-  const ruleStart = lines.findIndex(line =>
-    line.trim().startsWith("ttl,")
-  );
-
-  const scenarioStart = lines.findIndex(line =>
-    line.trim().startsWith("id,type")
-  );
-
-  if (ruleStart === -1) {
-    alert("Rule CSV (ttl,) not found. ルールCSV（ttl,）が見つかりません。");
+  if (ruleStart === -1 || scenarioStart === -1) {
+    alert("CSV形式が正しくありません。ttl, または id,type が見つかりません。");
     return;
   }
 
-  if (scenarioStart === -1) {
-    alert("Scenario CSV (id,type) not found. シナリオCSV（id,type）が見つかりません。");
-    return;
-  }
-
-  if (scenarioStart <= ruleStart) {
-    alert("The scenario CSV position is invalid. シナリオCSVの位置が不正です。");
-    return;
-  }
-
-  // -----------------------
-  // ルールCSV抽出
-  // ttl, から scenarioStart直前まで
-  // -----------------------
-  const ruleCSV = lines
-    .slice(ruleStart, scenarioStart)
-    .filter(line => isValidCSVLine(line))
-    .join("\n");
-
-  // -----------------------
-  // シナリオCSV抽出
-  // id,type から最後まで
-  // -----------------------
-  const scenarioCSV = lines
-    .slice(scenarioStart)
-    .filter(line => isValidCSVLine(line))
-    .join("\n");
+  // 4. それぞれを抽出
+  const ruleCSV = lines.slice(ruleStart, scenarioStart).filter(line => isValidCSVLine(line)).join("\n");
+  const scenarioCSV = lines.slice(scenarioStart).filter(line => isValidCSVLine(line)).join("\n");
 
   try {
-
+    // --- 【徹底リセット】古いゲームの残骸をすべて消去 ---
     scenarioData = [];
-    player = {};
+    player = {}; 
     maxHP = 0;
+    currentBGM = null;
+    if (bgmAudio) {
+      bgmAudio.pause();
+      bgmAudio.src = "";
+    }
+    // 画面のログとダイス表示もクリア
+    document.getElementById("log").innerText = "";
+    document.getElementById("dice-display").innerHTML = "";
 
+    // 5. ルールの解析と「初期ステータス」の適用
     ruleData = parseRuleCSV(ruleCSV);
-    applyRule(ruleData);
+    applyRule(ruleData); // ここでCSVに書かれたHPや技術点の初期値が一旦セットされる
 
-    startGame(parseCSV(scenarioCSV));
+    // 手動インポート時はURLのセーブデータを無視するため、URLを空にする
+    if (window.history.replaceState) {
+        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState(null, '', url);
+    }
 
-    console.log("Successful import with dust resistance ゴミ耐性付きインポート成功");
+    // 6. シナリオを解析して startGame へ
+    const parsedScenario = parseCSV(scenarioCSV);
+    
+    // ★重要：ここで startGame を呼ぶ。
+    // startGame 側で「URLに続きがあるか」を判定し、あれば上書き、なければ初期値で開始する。
+    startGame(parsedScenario);
+
+    console.log("Import successful: States initialized.");
 
   } catch (err) {
-
     console.error(err);
-    alert("CSV解析中にエラーが発生しました。形式を確認してください。");
-
+    alert("CSV解析エラーが発生しました。");
   }
-
-  // ★デバッグ用：常に指定したパラグラフIDからスタートさせる（確認が終わったら1に戻すか、コメントアウトしておくこと）
-  showParagraph(1);
-
 }
 
 
@@ -1501,24 +1771,26 @@ function isValidCSVLine(line) {
 // サンプルCSVをテキストエリアにセットする関数
 function setSampleCSV() {
   const textarea = document.getElementById("csv-input");
-  const sampleText = `ttl,bg,max_hp,init_skill,init_luck,init_food,theme
-The Sealed Warehouse 封印庫の冒険,picture_sealed.jpg,20,7,9,2,3
+  const sampleText = `ttl,bg,max_hp,init_skill,init_luck,init_food,theme,items
+The Sealed Warehouse 封印庫の冒険,bg.jpg,20,7,9,2,3,copper_sword:銅の剣|leather_armor:皮の鎧|silver_key:銀のカギ|herb:薬草
 
 id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
-1,normal,"You step into the Underground Sealed Warehouse. The passage splits into three paths: a paved road to the left, a dark path straight ahead, and a bright corridor to the right.　地下の封印庫に足を踏み入れた。通路は左、真ん中、右に分かれている。","Go left 左へ進む→2,Go straight 真ん中へ進む→11,Go right 右へ進む→3",,,,,bgm_title.mp3,bgi1.jpg,
+1,normal,"You step into the Underground Sealed Warehouse. The passage splits into three paths.　地下の封印庫に足を踏み入れた。通路は左、真ん中、右に分かれている。","Go left 左へ進む→2,Go straight 真ん中へ進む→11,Go right 右へ進む→3",,,,,bgm_title.mp3,bgi1.jpg,
 2,battle,"The floor collapses and automatic steel soldiers are activated.　床が崩れ、鉄製の自動兵が起動する。","Destroy and proceed 破壊して進む",Automaton オートマン,6,6,3,bgm_fog.mp3,bgi2.jpg,
-3,normal,"You found a storage box left on a shelf.　棚に残された保存箱を見つけた。","Open it 開ける→31,Ignore it 無視する→4",,,,,bgm2.mp3,bgi3.jpg,
-31,normal,"Inside is dried meat! You gain 1 Food.　中には干し肉が入っていた！(食料が1増えた)","Proceed ahead 先に進む→4",,,,,bgm2.mp3,bgi3.jpg,food+1
-4,normal,"A distorted sealing script is carved into the door ahead. This place seems relatively safe.　奥の扉には歪んだ封印文字が刻まれている。ここは少し安全そうだ。","Push with force 力で押す→5,Read the seal 封印を読む→5",,,,,bgm2.mp3,bgi4.jpg,eat
-5,normal,"You enter the central chamber of the Sealed Cave. At that moment, a massive shadow drops down from the ceiling.　封印庫の中央室に入った瞬間、巨大な影が天井から降り立つ。","Take a stance 構えを取る→6",,,,,bgm2.mp3,bgi5.jpg,
-6,battle,"The guardian of the seal blocks your path.　封印の番人が立ちはだかる。","Defeat the guardian 番人を倒す",Ogre Guardian 番人オーガ,7,7,7,bgm_fog.mp3,,
-7,normal,"The guardian collapses, and an altar appears beyond it. It seems you have a moment to catch your breath. You may eat as much as you like.　番人は崩れ落ち、奥に祭壇が現れた。一息つく暇がありそうだ。いっぱい食べても構わない。","Examine the altar 祭壇を調べる→8,Watch your surroundings 周囲を警戒する→9",,,,,bgm2.mp3,bgi6.jpg,!eat
-8,normal,"The orb upon the altar glows faintly.　祭壇の宝珠が淡く光る。","Touch it 触れる→10,Ignore it 無視する→10",,,,,,,bgi1.jpg,
-9,normal,"A remaining device suddenly activates behind you! Pale blue lightning races through the corridor.　背後から残存装置が作動した！青白い電光が通路を走る。","Attempt to dodge 回避を試みる→91,Attempt to force your way through 強行突破を試みる→92",,,,,bgm_story.mp3,bgi1.jpg,
-91,normal,"You slip beneath the lightning at the last moment! The device sparks and falls silent. 君は間一髪で電光を潜り抜けた！装置は火花を散らして沈黙した。","Proceed ahead 先へ進む→10",,,,,bgm_story.mp3,bgi1.jpg,
-92,normal,"You force your way through, but the lightning burns your shoulder! You grimace in pain.　無理やり突破したが、電光が肩を焼いた！君は苦痛に顔を歪める。","Endure the pain and proceed 痛みを堪えて進む→10",,,,,bgm_story.mp3,bgi1.jpg,hp-3
+3,normal,"You found a storage box. Inside are old gold coins!　棚に保存箱を見つけた。中には古い金貨が入っていた！","Take coins and look around 金貨を取って周囲を見回す→4",,,,,bgm2.mp3,bgi3.jpg,gold+500
+4,normal,"A mysterious merchant stands in the shadows. 'Want to buy a Silver Key for 300G?'　暗がりに謎の商人が立っている。「銀のカギを300Gで買わないか？」","Buy Silver Key (300G) 銀のカギを買う→41,Ignore him 無視する→5",,,,,bgm2.mp3,bgi4.jpg,
+41,normal,"You handed over 300G and obtained the Silver Key.　300Gを支払い、銀のカギを手に入れた。","Proceed ahead 先に進む→5",,,,,bgm2.mp3,bgi4.jpg,"gold-300,item+silver_key"
+5,normal,"A large iron door blocks your way. It is firmly locked with a silver lock.　大きな鉄の扉が道を塞いでいる。銀色の錠前で固く閉ざされている。","[silver_key] Unlock with the key カギで開ける→6,Try to push it force 力で押してみる→51",,,,,bgm2.mp3,bgi5.jpg,
+51,normal,"The door doesn't budge at all. You just hurt your shoulder.　扉はびくともしない。肩を痛めただけだった。","Back 戻る→4",,,,,,,!hp-1
+6,normal,"The door opened! Beyond it, a massive shadow drops down.　扉が開いた！その瞬間、巨大な影が天井から降り立つ。","Take a stance 構えを取る→61",,,,,bgm2.mp3,bgi5.jpg,
+61,battle,"The guardian of the seal blocks your path.　封印の番人が立ちはだかる。","Defeat the guardian 番人を倒す",Ogre Guardian 番人オーガ,7,7,7,bgm_fog.mp3,,
+7,normal,"The guardian collapses. You can rest here.　番人は崩れ落ちた。ここで一息つける。","Examine the altar 祭壇を調べる→8,Watch surroundings 周囲を警戒する→9",,,,,bgm2.mp3,bgi6.jpg,!eat
+8,normal,"The orb upon the altar glows.　祭壇の宝珠が光る。","Touch it 触れる→10,Ignore it 無視する→10",,,,,,,bgi1.jpg,
+9,normal,"Pale blue lightning races through the corridor!　青白い電光が通路を走る！","Dodge 回避→91,Force through 強行突破→92",,,,,bgm_story.mp3,bgi1.jpg,
+91,normal,"You slipped through!　間一髪で潜り抜けた！","Proceed ahead 先へ進む→10",,,,,bgm_story.mp3,bgi1.jpg,
+92,normal,"The lightning burns your shoulder!　電光が肩を焼いた！","Proceed ahead 痛みを堪えて進む→10",,,,,bgm_story.mp3,bgi1.jpg,hp-3
 10,end,"The Sealed Warehouse returns to silence.　封印庫は静寂を取り戻した。","おわり",,,,,bgm_title.mp3,bgi4.jpg,
-11,normal,"When you take the dark path in the middle, you arrive at a familiar place. Isn’t this the entrance where you started? Exhausted from the futile effort, you lose 5 Stamina.　真ん中の道を選んだ君は、そのまま闇の中を進むと、見覚えのある場所へ来た。最初の入り口ではないか！徒労のあまり、体力を5ポイント失う。","Look around あたりを見回す→1",,,,,bgm_title.mp3,bgi4.jpg,!hp-5
+11,normal,"You returned to the entrance. You lose 5 Stamina.　入り口に戻ってしまった。体力を5失う。","Look around あたりを見回す→1",,,,,bgm_title.mp3,bgi4.jpg,!hp-5
   `;
 
   // 入力欄が空でない場合は確認を出す
@@ -1673,6 +1945,98 @@ function applyStatusPosition() {
 
 // 初期設定としてクリックイベントを登録
 document.getElementById("status").onclick = rotateStatusPosition;
+
+/**
+ * 現在のゲーム状態をURLパラメータに反映させる関数
+ * 実行タイミング：パラグラフ移動時、ステータス更新時、バトル終了時
+ */
+function updateURLParameters() {
+  if (isRestarting) return; // リスタート用フラグ判定
+
+  const pMatch = document.querySelector(".paragraph-id")?.innerText.match(/\d+/);
+  const currentP = pMatch ? pMatch[0] : 1;
+
+  const params = new URLSearchParams();
+  params.set("p", currentP);        // 現在のパラグラフ
+  params.set("hp", player.hp);      // 現在のHP
+  params.set("mhp", maxHP);         // 最大HP
+  params.set("sk", player.skill);   // 技術点
+  params.set("lk", player.luck);    // 運点
+  params.set("fd", player.food);    // 食料数
+  params.set("gd", player.gold);    // 所持金
+  params.set("it", player.items.join(",")); // アイテム配列を文字列化
+
+  // フラグは f1:1,f2:1 の形式で保存
+  const flagStr = Object.entries(player.flags)
+    .map(([k, v]) => `${k}:${v}`).join(",");
+  params.set("fl", flagStr);
+
+  // 最後に一回だけ履歴を書き換える（ブラウザの履歴を汚さず、ページはリロードされない）
+  const newRelativePathQuery = window.location.pathname + '?' + params.toString();
+  window.history.replaceState(null, '', newRelativePathQuery);
+}
+
+// 既存の関数にフック（割り込み）を入れます
+// 1. ステータス更新時にURLも更新
+const originalUpdateStatus = updateStatus;
+updateStatus = function() {
+  originalUpdateStatus();
+  updateURLParameters();
+};
+
+// 2. パラグラフ表示完了時にURLも更新
+const originalShowParagraph = showParagraph;
+showParagraph = function(id) {
+  originalShowParagraph(id);
+  updateURLParameters();
+};
+
+// effect 列の解析ロジック追加
+// gold+100 や item+silver_key、フラグ操作 f_win:1 を解釈できるようにします
+function applyEffect(effectStr) {
+  if (!effectStr) return;
+  const effects = effectStr.split(",");
+
+  effects.forEach(eff => {
+    const t = eff.trim();
+
+    // --- 技術点(skill)の増減 ---
+    if (t.startsWith("skill")) {
+        player.skill += parseInt(t.replace("skill", ""));
+    } 
+    // --- 幸運(luck)の増減 ---
+    else if (t.startsWith("luck")) {
+        player.luck += parseInt(t.replace("luck", ""));
+    } 
+    // --- 所持金(gold) ---
+    else if (t.startsWith("gold")) {
+      player.gold += parseInt(t.replace("gold", ""));
+    } 
+    // --- アイテム入手 ---
+    else if (t.startsWith("item+")) {
+      const itemId = t.replace("item+", "");
+      if (!player.items.includes(itemId)) player.items.push(itemId);
+    } 
+    // --- フラグ操作 ---
+    else if (t.includes(":")) {
+      const [fName, fVal] = t.split(":");
+      player.flags[fName] = parseInt(fVal);
+    }
+    // --- HP/食料の処理 ---
+    else if (t.startsWith("hp")) {
+      const val = parseInt(t.replace("hp", ""));
+      if (val > 0) {
+        player.hp = Math.min(player.hp + val, maxHP);
+      } else {
+        player.hp += val;
+      }
+    } else if (t.startsWith("food")) {
+      player.food += parseInt(t.replace("food", ""));
+    }
+  });
+
+  updateStatus();
+}
 
 </script>
 </body>
