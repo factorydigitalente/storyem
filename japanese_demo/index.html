@@ -538,6 +538,139 @@ input:checked + .slider:before { transform: translateX(20px); }
   }
 }
 
+/* ツリー用 */
+/* ツリー全体のコンテナ：背景から浮き上がらせる */
+.tree-container {
+    max-height: 600px; /* 画面の半分くらいに固定 */
+    overflow: auto;    /* 縦横スクロールを有効に */
+    background-color: #ffffff; /* 完全に不透明な白 */
+    border: 1px solid #c0c0c0;
+    border-radius: 12px;
+    margin: 25px 0;
+    padding: 25px;
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo",
+    font-size: 13px;
+    line-height: 1.6;
+    color: #222;
+    overflow-x: auto;
+    /* 強めの影をつけて、背景から「浮いている」ように見せる */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 1px 8px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 100;
+    white-space: nowrap; /* 折り返さずに横スクロールさせる */
+}
+
+/* タイトル部分 */
+.tree-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #007bff;
+    border-bottom: 2px solid #eef;
+    padding-bottom: 10px;
+}
+
+/* 各行のまとまり：ホバー時に行を強調 */
+.tree-node-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+.tree-node-row:hover {
+    background-color: #fff9c4; /* 明るいレモンイエロー */
+    outline: 1px solid #fbc02d; /* 薄いオレンジの縁取りでさらに強調 */
+    cursor: pointer;
+}
+
+.tree-container p {
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+}
+
+/* アスキー罫線（│ ├ └）の色を少し薄くして、文字を立たせる */
+.tree-prefix {
+    color: #aaa;
+    letter-spacing: 0.1em;
+}
+
+/* IDバッジ：文字サイズを統一しつつ、立体感を出す */
+.node-info {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 15px; /* 丸みをつけてモダンに */
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 12px;
+    min-width: 85px;
+    justify-content: center;
+    box-shadow: inset 0 -1px 2px rgba(0,0,0,0.1);
+}
+
+/* タイプ別の配色（背景に負けないハッキリした色） */
+.type-normal { background: #e3f2fd; border: 1px solid #90caf9; color: #1565c0; }
+.type-battle { background: #ffebee; border: 1px solid #ef9a9a; color: #c62828; }
+.type-end    { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; }
+
+/* リンクテキスト */
+.link-text {
+    font-size: 13px;
+    color: #444;
+}
+
+/* 条件タグ：目立つオレンジ色 */
+.cond-tag {
+    color: #ffffff;
+    background: #ff9800; /* 塗りつぶしで視認性を上げる */
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* 合流済みジャンプ先を目立たせるアニメーション */
+@keyframes highlight-flash-strong {
+  0% { 
+    background-color: #fff176;    /* 鮮やかな黄色 */
+    box-shadow: 0 0 20px #fbc02d; /* 周囲に光が漏れる */
+    outline: 2px solid #fbc02d;   /* 枠線で囲む */
+    transform: scale(1.02);       /* ほんの少しだけ膨らむ */
+  }
+  20% {
+    transform: scale(1.0);        /* すぐ元のサイズに戻る */
+  }
+  100% { 
+    background-color: transparent; 
+    box-shadow: none;
+    outline: 2px solid transparent;
+  }
+}
+
+.flash-active {
+  /* 5秒かけてじっくり消えるように設定（最初は一瞬で光る） */
+  animation: highlight-flash-strong 5.0s cubic-bezier(0.215, 0.61, 0.355, 1);
+  position: relative;
+  z-index: 10; /* 他の行より手前に表示 */
+}
+.tree-prefix {
+  font-weight: 900;          /* 数字が大きいほど罫線が太くなります */
+  color: #555 !important;    /* 色も少し濃くするとより太く見えます */
+  letter-spacing: 1px;       /* 記号間の隙間を調整 */
+  text-shadow: 0 0 0.2px #555; /* わずかにぼかすことで太さを強調 */
+}
+.tree-node-row {
+  display: block;      /* 行として独立させる */
+  line-height: 1.0;    /* 行の高さを標準(1.5〜1.8)より低く設定 */
+  margin-bottom: 2px;  /* 行の下側の隙間を最小限に（0でもOK） */
+  white-space: nowrap; /* 折り返しを防いで1行に収める */
+  font-size: 13px;     /* 必要に応じて文字サイズも少し小さくするとより詰まって見えます */
+}
 </style>
 </head>
 <body>
@@ -633,7 +766,52 @@ input:checked + .slider:before { transform: translateX(20px); }
     </button>
   </div>
 
+  <div class="import-controls">
+    <button id="btn-tree" class="btn-tree" onclick="visualizeTree()" style="margin-top: 15px;">View Scenario Tree / 🌳シナリオ構造をツリー表示</button>
+  </div>
+
 </div>
+
+<!-- ツリー表示領域 -->
+<div id="tree-display" class="tree-container" style="display:none;">
+  <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+    Scenario Flow Tree (シナリオ構造ツリー)
+    <button onclick="copyTreeToClipboard()" title="Excel用にコピー / Cory for Excel" 
+      style="background: #eee; border: 1px solid #ccc; cursor: pointer; font-size: 14px; padding: 2px 8px; border-radius: 4px; transition: all 0.2s; display: flex; align-items: center; gap: 5px;">
+      📋 <span style="font-size: 11px; color: #555;">Copy</span>
+    </button>
+    <span id="copy-msg" style="font-size: 0.7em; color: #28a745; font-weight: bold; display: none; animation: fadeIn 0.3s;">
+      Done!
+    </span>
+  </h3>
+
+  <p style="margin-top:-10px; margin-bottom:20px; color:#666; font-size:0.85em; border-left:3px solid #007bff; padding-left:10px; line-height:1.8;">
+    ID:1から始まる物語の分岐構造です。マウスを重ねると<span style="background:#fff9c4; color:#000; padding:0 4px; border:1px solid #fbc02d; border-radius:3px;">黄色く強調</span>されます。<br>
+    凡例：
+    <span class="node-info type-normal" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">青：通常</span>
+    <span class="node-info type-battle" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">赤：戦闘</span>
+    <span class="node-info type-end" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">緑：結末</span>
+    <span class="cond-tag" style="font-size:10px; padding:1px 4px; margin-right:4px; background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;">橙：条件あり</span>
+    <span style="background:#e1f5fe; color:#01579b; border:1px solid #b3e5fc; padding:1px 4px; border-radius:3px; font-size:10px; font-family:monospace; margin-right:4px;">⚡水色：変化</span>
+    <br>
+    <span style="color:#d32f2f; font-weight:bold; background:#ffebee; padding:0 4px; font-size:11px;"> [ERROR] </span> が出ている箇所は、移動先のIDが存在しないか記述ミスがあります。修正してください。
+  </p>
+
+  <p style="margin-top:-10px; margin-bottom:20px; color:#666; font-size:0.85em; border-left:3px solid #007bff; padding-left:10px; line-height:1.8;">
+    This is the story's branching structure starting from ID:1. Hover over a node to <span style="background:#fff9c4; color:#000; padding:0 4px; border:1px solid #fbc02d; border-radius:3px;">highlight it in yellow</span>.<br>
+    Legend:
+    <span class="node-info type-normal" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">Blue: Normal</span>
+    <span class="node-info type-battle" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">Red: Battle</span>
+    <span class="node-info type-end" style="display:inline; padding:1px 6px; font-size:10px; min-width:auto; margin-right:4px;">Green: End</span>
+    <span class="cond-tag" style="font-size:10px; padding:1px 4px; margin-right:4px; background:#fff3e0; color:#e65100; border:1px solid #ffe0b2;">Orange: Conditional</span>
+    <span style="background:#e1f5fe; color:#01579b; border:1px solid #b3e5fc; padding:1px 4px; border-radius:3px; font-size:10px; font-family:monospace; margin-right:4px;">⚡Cyan: Effect/Change</span>
+    <br>
+    <span style="color:#d32f2f; font-weight:bold; background:#ffebee; padding:0 4px; font-size:11px;"> [ERROR] </span> indicates a missing ID or a typo. Please check your CSV.
+  </p>
+
+  <div id="tree-content"></div>
+</div>
+
 
 <div id="game-area">
   <div id="game-ui" style="display:none;">
@@ -887,10 +1065,7 @@ function startGame(paragraphs) {
   setUIMode('game');
   
   // メニューを閉じる
-  const controls = document.getElementById("file-controls");
-  const studio = document.getElementById("studio-import");
-  if (controls) controls.style.display = "none";
-  if (studio) studio.style.display = "none";
+  forceCloseMenu();
 
   const params = new URLSearchParams(window.location.search);
   
@@ -961,9 +1136,11 @@ function forceCloseMenu() {
   const controls = document.getElementById("file-controls");
   const studio = document.getElementById("studio-import");
   const btn = document.getElementById("menu-btn");
+  const tree = document.getElementById("tree-display");
 
   if (controls) controls.style.display = "none";
   if (studio) studio.style.display = "none";
+  if (tree) tree.style.display = "none";
 
   if (btn) {
     btn.innerText = "▼📁";
@@ -1598,6 +1775,7 @@ function toggleSelectors() {
   const controls = document.getElementById("file-controls");
   const studio = document.getElementById("studio-import");
   const btn = document.getElementById("menu-btn");
+  const tree = document.getElementById("tree-display");
 
   if (!controls || !studio) return;
 
@@ -1614,6 +1792,7 @@ function toggleSelectors() {
   } else {
     controls.style.display = "none";
     studio.style.display = "none";
+    if (tree) tree.style.display = "none";
     if (btn) {
       btn.innerText = "▼📁";
       btn.style.opacity = "0.6";
@@ -1668,6 +1847,8 @@ window.addEventListener('load', async () => {
         applyRule(ruleData);
         // シナリオをパースして startGame に渡す（これで showParagraph(1) が走る）
         const parsedScenario = parseCSV(scenarioText);
+        // ツリーなどのメニュー系を消してから開始
+        forceCloseMenu();
         startGame(parsedScenario);
       };
 
@@ -1701,7 +1882,7 @@ function importCSV() {
   const scenarioStart = lines.findIndex(line => line.trim().startsWith("id,type"));
 
   if (ruleStart === -1 || scenarioStart === -1) {
-    alert("CSV形式が正しくありません。ttl, または id,type が見つかりません。");
+    alert("CSV形式が正しくありません。ttl, または id,type が見つかりません。CSV format is incorrect. ttl, or id,type not found.");
     return;
   }
 
@@ -2038,6 +2219,158 @@ function applyEffect(effectStr) {
   updateStatus();
 }
 
+// ツリー表示
+function visualizeTree() {
+    const raw = document.getElementById("csv-input").value.replace(/^\ufeff/, "").trim();
+    const lines = raw.split(/\r?\n/);
+    const scenarioStart = lines.findIndex(line => line.trim().startsWith("id,type"));
+    
+    if (scenarioStart === -1) {
+        alert("CSV形式エラー: id,type で始まる行が見つかりません。CSV format error: Row starting with id,type not found.");
+        return;
+    }
+
+    const nodes = {};
+    const scenarioLines = lines.slice(scenarioStart + 1);
+
+    // 1. データの全パース（高速化のため最初に行う）
+    scenarioLines.forEach(line => {
+        if (!line.trim() || line.startsWith("ttl,")) return;
+        
+        const cols = [];
+        let cur = "";
+        let inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') { inQuote = !inQuote; }
+            else if (char === ',' && !inQuote) {
+                cols.push(cur.trim()); cur = "";
+            } else { cur += char; }
+        }
+        cols.push(cur.trim());
+
+        const id = cols[0];
+        if (!id || isNaN(id)) return;
+
+        const optsRaw = (cols[3] || "").replace(/"/g, "");
+        const links = optsRaw.split(",").map(opt => {
+            const match = opt.match(/(\[.*?\])?(.*?)→(\d+)/);
+            return match ? { cond: match[1] || "", label: match[2].trim(), to: match[3] } : null;
+        }).filter(l => l);
+
+        if (cols[1] === "battle" && cols[7]) {
+            const bNext = cols[7].trim();
+            if (bNext) links.push({ cond: "⚔️Win", label: "勝利", to: bNext });
+        }
+
+        nodes[id] = {
+            id: id,
+            type: cols[1],
+            text: (cols[2] || "").replace(/"/g, "").substring(0, 25),
+            links: links,
+            effect: cols[10] ? cols[10].replace(/"/g, "").trim() : ""
+        };
+    });
+
+    const treeContainer = document.getElementById("tree-display");
+    const treeContent = document.getElementById("tree-content");
+    treeContainer.style.display = "block";
+    
+    // すでに描画したIDを記録して重複計算を防ぐ（メモ化）
+    const memo = new Set();
+
+	function generateHtml(id, prefix = "") {
+        if (!nodes[id]) return "";
+        
+        const isRevisit = memo.has(id);
+        memo.add(id);
+
+        // 各行に一意のID（tree-node-ID）を付与
+        let html = `<div class="tree-node-row" id="tree-node-${id}">`;
+        html += `<span class="tree-prefix" style="color:#666; font-weight:bold;">${prefix}</span>`;
+        html += `<span class="node-info type-${nodes[id].type}">ID:${id}</span>`;
+        
+        if (nodes[id].effect) html += `<span class="effect-tag" style="background:#e1f5fe; color:#01579b; border:1px solid #b3e5fc; padding:0 4px; border-radius:3px; font-size:0.8em; margin:0 5px; font-family:monospace;">⚡[${nodes[id].effect}]</span>`;
+        html += `<span class="link-text" style="color:#666;">${nodes[id].text}...</span>`;
+        
+        if (isRevisit) {
+            // 合流済みリンク（点灯アニメーション付き）：クリック時にそのIDの場所までスムーズスクロールさせるリンク
+			html += ` <a href="javascript:void(0)" onclick="const t=document.getElementById('tree-node-${id}'); t.scrollIntoView({behavior:'smooth', block:'center'}); t.classList.remove('flash-active'); void t.offsetWidth; t.classList.add('flash-active');" style="color:#007bff; font-size:0.8em; text-decoration:underline;">(↑合流済みIDへ)</a></div>`;
+            return html;
+        }
+        html += `</div>`;
+
+        nodes[id].links.forEach((link, index) => {
+            const isLast = index === nodes[id].links.length - 1;
+            const connector = isLast ? "┗━ " : "┣━ ";
+            const nextPrefix = prefix.replace(/┗━ /g, "&nbsp;&nbsp;&nbsp;").replace(/┣━ /g, "┃&nbsp;&nbsp;");
+            const childPrefix = nextPrefix + (isLast ? "&nbsp;&nbsp;&nbsp;" : "┃&nbsp;&nbsp;");
+            
+            html += `<div class="tree-node-row">`;
+            html += `<span class="tree-prefix" style="color:#666; font-weight:bold;">${nextPrefix}${connector}</span>`;
+            if (link.cond) html += `<span class="cond-tag">${link.cond}</span>`;
+
+			// 行き先IDリンク（点灯アニメーション付き）
+			html += `<span class="link-text">${link.label} <a href="javascript:void(0)" onclick="const t=document.getElementById('tree-node-${link.to}'); if(t){ t.scrollIntoView({behavior:'smooth', block:'center'}); t.classList.remove('flash-active'); void t.offsetWidth; t.classList.add('flash-active'); }else{alert('ID:${link.to} はまだ描画されていません')}" style="color:#007bff; font-weight:bold; text-decoration:none;">➔ ID:${link.to}</a></span>`;
+            
+            if (nodes[link.to]) {
+                html += `</div>` + generateHtml(link.to, childPrefix);
+            } else {
+                html += `<span style="color:#d32f2f; font-weight:bold; background:#ffebee;"> [MISSING:${link.to}]</span></div>`;
+            }
+        });
+        return html;
+    }
+
+    treeContent.innerHTML = generateHtml("1");
+    treeContainer.scrollIntoView({ behavior: 'smooth' });
+}
+// ツリーをクリップボードへコピー
+function copyTreeToClipboard() {
+  const treeContent = document.getElementById("tree-content");
+  if (!treeContent) return;
+
+  // 1. ツリーの内容（HTML）を取得し、不要な「ジャンプ用リンク」だけ消去したクローンを作る
+  const clone = treeContent.cloneNode(true);
+  const links = clone.querySelectorAll("a");
+  links.forEach(a => a.remove()); // 「合流済みIDへ」等の文字を消す
+
+  // 2. Excelに認識させるためのスタイル調整（インラインCSSを強制適用）
+  const rows = clone.querySelectorAll(".tree-node-row");
+  rows.forEach(row => {
+    row.style.whiteSpace = "nowrap";
+    row.style.display = "block";
+    
+    // node-infoなどのクラスがついた要素に、直接色を指定（Excel用）
+    const infos = row.querySelectorAll(".node-info");
+    infos.forEach(el => {
+      if (el.classList.contains("type-battle")) el.style.color = "#d32f2f";
+      if (el.classList.contains("type-end")) el.style.color = "#2e7d32";
+      if (el.classList.contains("type-normal")) el.style.color = "#007bff";
+      el.style.fontWeight = "bold";
+    });
+    
+    const effects = row.querySelectorAll(".effect-tag");
+    effects.forEach(el => {
+      el.style.backgroundColor = "#e1f5fe";
+      el.style.color = "#01579b";
+      el.style.border = "1px solid #b3e5fc";
+    });
+  });
+
+  // 3. HTMLとしてクリップボードに書き込む
+  const blob = new Blob([clone.innerHTML], { type: "text/html" });
+  const data = [new ClipboardItem({ "text/html": blob, "text/plain": new Blob([clone.innerText], { type: "text/plain" }) })];
+
+  navigator.clipboard.write(data).then(() => {
+    const msg = document.getElementById("copy-msg");
+    msg.style.display = "inline";
+    setTimeout(() => { msg.style.display = "none"; }, 2000);
+  }).catch(err => {
+    console.error("HTML Copy failed", err);
+    alert("コピーに失敗しました。");
+  });
+}
 </script>
 </body>
 </html>
