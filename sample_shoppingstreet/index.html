@@ -2244,42 +2244,55 @@ function visualizeTree() {
     const nodes = {};
     const scenarioLines = lines.slice(scenarioStart + 1);
 
-    // 1. データの全パース（高速化のため最初に行う）
+    // 1. データの全パース（空行や不正な行を飛ばし、確実にパースする）
     scenarioLines.forEach(line => {
-        if (!line.trim() || line.startsWith("ttl,")) return;
+        const trimmedLine = line.trim();
+        if (!trimmedLine || trimmedLine.startsWith("ttl,")) return;
+
+        // --- 正規表現による厳密なCSV分割（ダブルクォーテーション内のカンマを保護） ---
+        const matches = trimmedLine.match(/(".*?"|[^",\s][^,]*|(?<=,)(?=,)|(?<=,)$)/g);
         
-        const cols = [];
-        let cur = "";
-        let inQuote = false;
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') { inQuote = !inQuote; }
-            else if (char === ',' && !inQuote) {
-                cols.push(cur.trim()); cur = "";
-            } else { cur += char; }
-        }
-        cols.push(cur.trim());
+        // matchesが取得できない、またはIDが数値でない場合はスキップ
+        if (!matches || isNaN(parseInt(matches[0]))) return;
+
+        const cols = matches.map(s => s.replace(/^"|"$/g, '').trim());
 
         const id = cols[0];
-        if (!id || isNaN(id)) return;
+        const type = cols[1];
+        // \n 文字列を実際の改行に置換せず、ツリー表示用にクリーニング
+        const text = (cols[2] || "").replace(/\\n/g, " ").substring(0, 50);
+        const optsRaw = cols[3] || "";
+        const effect = cols[10] || "";
 
-        const optsRaw = (cols[3] || "").replace(/"/g, "");
-        const links = optsRaw.split(",").map(opt => {
-            const match = opt.match(/(\[.*?\])?(.*?)→(\d+)/);
-            return match ? { cond: match[1] || "", label: match[2].trim(), to: match[3] } : null;
-        }).filter(l => l);
+        const links = [];
 
-        if (cols[1] === "battle" && cols[7]) {
+        // 選択肢の解析（トリムを徹底し、→記号で分割）
+        if (optsRaw) {
+            optsRaw.split(",").forEach(opt => {
+                const trimmedOpt = opt.trim();
+                const match = trimmedOpt.match(/(\[.*?\])?(.*?)(?:→|->)\s*(\d+)/);
+                if (match) {
+                    links.push({ 
+                        cond: match[1] || "", 
+                        label: match[2].trim(), 
+                        to: match[3].trim() 
+                    });
+                }
+            });
+        }
+
+        // バトル時の勝利次パラグラフ(index 7)をリンクに追加
+        if (type === "battle" && cols[7]) {
             const bNext = cols[7].trim();
             if (bNext) links.push({ cond: "⚔️Win", label: "勝利", to: bNext });
         }
 
         nodes[id] = {
             id: id,
-            type: cols[1],
-            text: (cols[2] || "").replace(/"/g, "").substring(0, 50),
+            type: type,
+            text: text,
             links: links,
-            effect: cols[10] ? cols[10].replace(/"/g, "").trim() : ""
+            effect: effect
         };
     });
 
