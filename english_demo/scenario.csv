@@ -1,15 +1,18 @@
 id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
-1,normal,"You step into the Underground Sealed Cave.\n\nThe passage splits into three paths: a paved road to the left, a dark path straight ahead, and a bright corridor to the right.","Go left → 2, Go straight → 11, Go right → 3",,,,,bgm/bgm1.mp3,img/bgi1.png,
-2,battle,"You proceed along the paved road to the left.\nPart of the floor turns out to be a switch, and when you accidentally step on it, an iron automaton embedded in the wall activates.",Break it and proceed,Automaton,6,6,3,bgm/bgm_battle.mp3,img/bgi2.png,
-3,normal,You proceed down the bright corridor to the right.\nYou find a storage box left on a shelf in the wall.,"Open it → 31, Ignore it → 4",,,,,bgm/bgm1.mp3,img/bgi3.png,
-31,normal,Inside is dried meat!\nYou gain 1 Food.,Proceed ahead → 4,,,,,bgm/bgm_peace.mp3,img/bgi31.png,food+1
-4,normal,A distorted sealing script is carved into the door ahead.\nThis place seems relatively safe.,"Push the sealing letters with force → 5, Read the seal → 5",,,,,bgm/bgm_peace.mp3,img/bgi4.png,eat
-5,normal,"You enter the central chamber of the Sealed Cave.\nAt that moment, a massive shadow drops down from the ceiling.",Take a stance → 6,,,,,bgm/bgm2.mp3,img/bgi5.png,
-6,battle,The guardian of the seal—an ogre nearly 3 meters tall—blocks your path.,Defeat the guardian,Ogre Guardian,7,7,7,bgm/bgm_battle.mp3,img/bgi6.png,
-7,normal,"The guardian collapses, and an altar appears beyond it.\nIt seems you have a moment to catch your breath. You may eat as much as you like.","Examine the altar → 8, Watch your surroundings → 9",,,,,bgm/bgm_peace.mp3,img/bgi7.png,!eat
-8,normal,The orb upon the altar glows faintly.,"Touch it → 10, Ignore it → 10",,,,,,img/bgi8.png,
-9,normal,A remaining device suddenly activates behind you!\nPale blue lightning races through the corridor.,"Attempt to dodge → 91, Attempt to force your way through → 92",,,,,bgm/bgm_battle.mp3,img/bgi9.png,
-91,normal,You slip beneath the lightning at the last moment!\nThe device sparks and falls silent.,Proceed ahead → 10,,,,,bgm/bgm_peace.mp3,img/bgi91.png,
-92,normal,"You force your way through, but the lightning burns your shoulder!\nYou grimace in pain.",Endure the pain and proceed → 10,,,,,bgm/bgm_battle.mp3,img/bgi92.png,hp-5
-10,end,"The Sealed Cave returns to silence.\n\nYou seal the cave once more and begin the journey home.\n\nAs long as you live, peace will likely endure.",The End,,,,,bgm/bgm_title.mp3,img/bgi10.png,
-11,normal,"When you take the dark path in the middle, you arrive at a familiar place.\nIsn’t this the entrance where you started?\nExhausted from the futile effort, you lose 4 Stamina.",Look around → 1,,,,,bgm/bgm2.mp3,img/bgi11.png,!hp-4
+1,normal,"You step into the Underground Sealed Cave.\n\nThe passage splits into three paths: a paved road to the left, a dark path straight ahead, and a bright corridor to the right.\n\n地下の封印洞窟に足を踏み入れた。\n\n通路は左の舗装された道・真ん中の闇の道・右の明るい廊下の３つに分かれている。","Go left 左へ進む→2,Go straight 真ん中へ進む→11,Go right 右へ進む→3",,,,,bgm/bgm1.mp3,img/bgi1.png,
+2,battle,"You proceed along the paved road to the left.\nPart of the floor turns out to be a switch, and when you accidentally step on it, an iron automaton embedded in the wall activates.\n\n左の舗装された道を進んだ。床の一部がスイッチだったようで、うっかり踏んだことにより、壁に埋め込まれていた鉄製の自動兵が起動する。","Destroy and proceed 破壊して進む",Automaton オートマン,6,6,3,bgm/bgm_battle.mp3,img/bgi2.png,
+3,normal,"You found a storage box. Inside are old gold coins!\n\n棚に保存箱を見つけた。中には古い金貨が入っていた！","Take coins and look around 金貨を取って周囲を見回す→4",,,,,bgm/bgm1.mp3,img/bgi3.png,gold+500
+4,normal,"A mysterious merchant stands in the shadows. 'Want to buy a Silver Key for 300G?'\n\n暗がりに謎の商人が立っている。「銀のカギを300Gで買わないか？」","Buy Silver Key (300G) 銀のカギを買う→41,Ignore him 無視する→5",,,,,bgm/bgm_peace.mp3,img/bgi4.png,
+41,normal,"You handed over 300G and obtained the Silver Key.\n\n300Gを支払い、銀のカギを手に入れた。","Proceed ahead 先に進む→5",,,,,bgm/bgm_peace.mp3,,"gold-300,item+silver_key"
+5,normal,"A large iron door blocks your way. It is firmly locked with a silver lock.\n\n大きな鉄の扉が道を塞いでいる。銀色の錠前で固く閉ざされている。","[silver_key] Unlock with the key カギで開ける→6,Try to push it force 力で押してみる→51",,,,,bgm/bgm1.mp3,img/bgi4.png,
+51,normal,"The door doesn't budge at all. You just hurt your shoulder.\n\n扉はびくともしない。肩を痛めただけだった。","Back 戻る→4",,,,,bgm/bgm_battle.mp3,img/bgi92.png,!hp-1
+6,normal,"The door opened! Beyond it, a massive shadow drops down.\n\n封印洞窟の中央室に入った。その瞬間、巨大な影が天井から降り立つ。","Take a stance 構えを取る→61",,,,,bgm/bgm_battle.mp3,img/bgi5.png,
+61,battle,"The guardian of the seal—an ogre nearly 3 meters tall—blocks your path.\n\n封印の番人である、身の丈３ｍのオーガが立ちはだかる。","Defeat the guardian 番人を倒す",Ogre Guardian 番人オーガ,7,7,7,bgm/bgm_battle.mp3,img/bgi6.png,
+7,normal,"The guardian collapses, and an altar appears beyond it.\nIt seems you have a moment to catch your breath. You may eat as much as you like.\n\n番人は崩れ落ち、奥に祭壇が現れた。\n一息つく暇がありそうだ。いっぱい食べても構わない。","Examine the altar 祭壇を調べる→8,Watch surroundings 周囲を警戒する→9",,,,,bgm/bgm_peace.mp3,,!eat
+8,normal,"The orb upon the altar glows.　祭壇の宝珠が淡く光る。","Touch it 触れる→10,Ignore it 無視する→10",,,,,bgm/bgm_peace.mp3,img/bgi8.png,
+9,normal,"Pale blue lightning races through the corridor!\n\n背後から残存装置が作動した！\n青白い電光が通路を走る。","Dodge 回避を試みる→91,Force through 強行突破を試みる→92",,,,,bgm/bgm_battle.mp3,img/bgi9.png,
+91,normal,"You slipped through!　君は間一髪で電光を潜り抜けた！\n装置は火花を散らして沈黙した。","Proceed ahead 先へ進む→10",,,,,bgm/bgm_peace.mp3,img/bgi91.png,
+92,normal,"The lightning burns your shoulder!　無理やり突破したが、電光が肩を焼いた！\n君は苦痛に顔を歪める。","Proceed ahead 痛みを堪えて進む→10",,,,,bgm/bgm_battle.mp3,img/bgi92.png,hp-3
+10,end,"The Sealed Cave returns to silence.\n\nYou seal the cave once more and begin the journey home.\n\nAs long as you live, peace will likely endure.\n\n封印洞窟は静寂を取り戻した。\n\n君は再び洞窟を封印し、家路についた。\n\n君の目の黒いうちは、平和は保たれるだろう。","おわり",,,,,bgm/bgm_title.mp3,img/bgi10.png,
+11,normal,"When you take the dark path in the middle, you arrive at a familiar place.\nIsn’t this the entrance where you started?\nExhausted from the futile effort, you lose 5 Stamina.\n\n真ん中の闇の道を進むと、見覚えのある場所へ来た。最初の入り口ではないか！徒労のあまり、体力を5ポイント失う。","Look around あたりを見回す→1",,,,,bgm/bgm2.mp3,img/bgi11.png,!hp-5
+  
