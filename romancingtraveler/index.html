@@ -6,17 +6,23 @@
 <title>源氏物語より The Romancing Traveler - Heian Lovers - Powered by STORYEM Style</title>
 <style>
 :root {
-    /* 深みのある紫から、やや明るい紫へのグラデーション */
-    --bg-gradient: linear-gradient(135deg, #2b1f31, #4a3457); 
-    --accent-color: #d1bada; /* 淡い藤色 */
-    --container-bg: rgba(255, 255, 255, 0.08);
+    /* グラデーションを少し透過させて、背景画像が見えるように調整 */
+    --bg-overlay: linear-gradient(135deg, rgba(43, 31, 49, 0.9), rgba(74, 52, 87, 0.8)); 
+    --accent-color: #d1bada;
+    /* --container-bg: rgba(255, 255, 255, 0.08); */
+    --container-bg: rgba(0, 0, 0, 0.4); /* コンテナの背景を少し暗くして文字を浮かせます */
     --border-color: rgba(209, 186, 218, 0.3);
 }
 
 body {
     font-family: "Hiragino Mincho ProN", "serif";
-    background: var(--bg-gradient);
-    background-attachment: fixed;
+    /* 背景画像の設定 */
+    background-image: var(--bg-overlay), url("./img/gatebg.jpg");
+    background-size: cover;          /* 画面いっぱいに広げる */
+    background-position: center;      /* 中央合わせ */
+    background-attachment: fixed;    /* スクロールしても背景を動かさない（高級感が出ます） */
+    background-repeat: no-repeat;
+    
     color: #eee;
     margin: 0;
     padding: 20px;
@@ -81,44 +87,52 @@ h1 {
 
 .chapter-link {
     display: flex;
-    align-items: center;
-    padding: 12px 18px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #555;
+    flex-direction: column; /* 英語タイトルを下に入れるために変更 */
+    padding: 15px 18px;
+    background: rgba(255, 255, 255, 0.03); /* さらに透過させて背景に馴染ませる */
+    
+    /* 仄かな金色の枠線 */
+    border: 1px solid rgba(212, 175, 55, 0.4); 
     border-radius: 6px;
     text-decoration: none;
     color: #fff;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .chapter-link:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--accent-color);
+    /* ホバー時に金色の輝きを強める */
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(255, 215, 0, 0.8); /* 鮮やかな金 */
     transform: translateX(5px);
-    box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    /* 仄かな金色の後光（グロウ効果） */
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
+/* 章番号の色を少し明るい金に */
 .chapter-num {
-    font-size: 0.8em;
-    color: var(--accent-color);
+    font-size: 1.2em;
+    color: #e6b422; /* 伝統色の「黄金」 */
     margin-right: 15px;
-    font-family: sans-serif;
+    font-family: 'Times New Roman', serif;
     font-weight: bold;
     min-width: 30px;
 }
 
+/* 英語タイトルも金色系に馴染ませる */
+.chapter-en {
+    font-size: 1.15em;
+    color: rgba(212, 175, 55, 0.7); /* 透かし彫りのような金 */
+    margin-left: 45px; /* 番号を避ける */
+    font-style: italic;
+    line-height: 1.2;
+}
 .chapter-title {
     font-size: 1.1em;
     font-weight: 500;
 }
-.chapter-en {
-    font-size: 1em;
-    color: #ffc;
-    margin-left: 37px;
-    font-style: italic;
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-}
+
 /* --- 追加：左上のロゴ設定 --- */
 .top-left-logo {
     position: absolute;
@@ -257,7 +271,7 @@ footer p {
 </div>
 
 <div class="header-main-logo">
-    <img src="./img/title.png" alt="源氏物語 タイトルロゴ">
+    <img src="./img/title.jpg" alt="源氏物語 タイトルロゴ">
 </div>
 
 <div class="toc-container">
@@ -274,7 +288,7 @@ footer p {
                 <span class="spec-jp">（総パラグラフ数：約1,000）</span>
             </div>
             <div class="spec-item">
-                <span class="spec-label">Estimated Play Time</span>
+                <span class="spec-label">Total Play Time</span>
                 <span class="spec-value">4–6 hrs.</span><br>
                 <span class="spec-jp">（総プレイ時間：約4～6時間）</span>
             </div>
@@ -285,7 +299,7 @@ footer p {
         </div>
 
         <div class="ai-credit-minimal">
-            <p class="ai-jp">本作の開発過程において、文章および画像の制作に生成AIツールを使用しました。生成された内容はすべて制作者によって確認・修正・最終調整されています。</p>
+            <p class="ai-jp">文章および画像の制作に生成AIツールを使用しました。内容は制作者によって確認・修正・最終調整されています。</p>
             <p class="ai-en">Generative AI tools were utilized in the creation of the text and images for this work. All AI-generated content has been meticulously reviewed, edited, and finalized by the creator.</p>
         </div>
     </div>
