@@ -10,12 +10,13 @@
     --bg-overlay: linear-gradient(135deg, rgba(43, 31, 49, 0.9), rgba(74, 52, 87, 0.8)); 
     --accent-color: #d1bada;
     /* --container-bg: rgba(255, 255, 255, 0.08); */
-    --container-bg: rgba(0, 0, 0, 0.4); /* コンテナの背景を少し暗くして文字を浮かせます */
+    --container-bg: rgba(0, 0, 0, 0.5); /* コンテナの背景を少し暗くして文字を浮かせます */
     --border-color: rgba(209, 186, 218, 0.3);
 }
 
 body {
-    font-family: "Hiragino Mincho ProN", "serif";
+	font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    -webkit-font-smoothing: antialiased; /* 文字を滑らかに */
     /* 背景画像の設定 */
     background-image: var(--bg-overlay), url("./img/gatebg.jpg");
     background-size: cover;          /* 画面いっぱいに広げる */
@@ -56,8 +57,12 @@ body {
     height: auto;
     filter: drop-shadow(0 0 20px rgba(0,0,0,0.9));
 }
-
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 .toc-container {
+	animation: fadeIn 1.2s ease-out;
     width: 100%;
     max-width: 800px;
     background: var(--container-bg);
@@ -99,8 +104,8 @@ h1 {
     transition: all 0.4s ease;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s, box-shadow 0.3s;
 }
-
 .chapter-link:hover {
     /* ホバー時に金色の輝きを強める */
     background: rgba(212, 175, 55, 0.1);
@@ -108,6 +113,9 @@ h1 {
     transform: translateX(5px);
     /* 仄かな金色の後光（グロウ効果） */
     box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+.chapter-link:hover .chapter-en {
+    color: rgba(212, 175, 55, 1);
 }
 
 /* 章番号の色を少し明るい金に */
