@@ -200,36 +200,57 @@ footer p {
         padding: 15px;
     }
 }
-/* AIクレジットのスタイリング */
-.ai-credit {
-    width: 100%;
-    max-width: 800px;
-    margin: 40px 0 20px 0;
-    text-align: center;
+/* 作品スペックのスタイリング */
+.work-spec {
+    margin: 30px auto;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    max-width: 600px;
+    font-family: sans-serif; /* 数字を見やすくするため */
 }
 
-.ai-credit-content {
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.03); /* 非常に薄い背景 */
-    border: 1px dashed rgba(209, 186, 218, 0.2); /* 繊細な点線 */
-    border-radius: 8px;
+.spec-item {
+    margin-bottom: 10px;
 }
 
-.ai-jp {
+.spec-label {
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+
+.spec-value {
+    font-size: 1.1em;
+    color: #fff;
+}
+
+.spec-jp {
     font-size: 0.85em;
-    margin-bottom: 8px;
     color: #ccc;
-    letter-spacing: 0.05em;
+    margin-left: 5px;
+}
+
+.spec-detail {
+    font-size: 0.85em;
+    color: #aaa;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+/* AIクレジット（title-area内に入れるための調整） */
+.ai-credit-minimal {
+    margin-top: 20px;
+    font-size: 0.75em;
+    opacity: 0.7;
+    line-height: 1.5;
 }
 
 .ai-en {
-    font-size: 0.75em;
     font-style: italic;
     color: var(--accent-color);
-    opacity: 0.8;
-    margin: 0;
 }
-    </style>
+</style>
 </head>
 <body>
 <div class="header-brand">
@@ -246,6 +267,28 @@ footer p {
         <h1>The Romancing Traveler<br>- Heian Lovers -</h1>
         <h2>Inspired by Murasaki Shikibu's 'The Tale of Genji'</h2>
         <h2>夢の旅路 平安の恋人たち ～紫式部「源氏物語」より～</h2>
+
+        <div class="work-spec">
+            <div class="spec-item">
+                <span class="spec-label">Total Paragraphs</span>
+                <span class="spec-value">Approx. 1,000</span>
+                <span class="spec-jp">（総パラグラフ数：約1,000）</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Estimated Play Time</span>
+                <span class="spec-value">4–6 Hours</span>
+                <span class="spec-jp">（総プレイ時間予想：約4～6時間）</span>
+            </div>
+            <div class="spec-detail">
+                Average 20 paragraphs / 5 mins per chapter<br>
+                <span>1チャプター平均：約20パラグラフ / 5分</span>
+            </div>
+        </div>
+
+        <div class="ai-credit-minimal">
+            <p class="ai-jp">本作の開発過程において、文章および画像の制作に生成AIツールを使用しました。生成された内容はすべて制作者によって確認・修正・最終調整されています。</p>
+            <p class="ai-en">Generative AI tools were utilized in the creation of the text and images for this work. All AI-generated content has been meticulously reviewed, edited, and finalized by the creator.</p>
+        </div>
     </div>
 
 	<section class="part-section">
@@ -321,13 +364,6 @@ footer p {
         </nav>
     </section>
 
-</div>
-
-<div class="ai-credit">
-    <div class="ai-credit-content">
-		<p class="ai-jp">本作の開発過程において、文章および画像の制作に生成AIツールを使用しました。生成された内容はすべて制作者によって確認・修正・最終調整されています。</p>
-		<p class="ai-en">Generative AI tools were utilized in the creation of the text and images for this work. All AI-generated content has been meticulously reviewed, edited, and finalized by the creator.</p>
-    </div>
 </div>
 
 <footer>
