@@ -92,19 +92,17 @@ h1 {
 
 .chapter-link {
     display: flex;
-    flex-direction: column; /* 英語タイトルを下に入れるために変更 */
-    padding: 15px 18px;
-    background: rgba(255, 255, 255, 0.03); /* さらに透過させて背景に馴染ませる */
-    
-    /* 仄かな金色の枠線 */
-    border: 1px solid rgba(212, 175, 55, 0.4); 
+    flex-direction: column;
+    padding: 0; /* paddingを内部のcontentに移動 */
+    position: relative; /* 画像を配置する基準 */
+    min-height: 85px; /* 高さを一定に保つと綺麗です */
+    background: rgba(0, 0, 0, 0.4); 
+    border: 1px solid rgba(212, 175, 55, 0.4);
     border-radius: 6px;
     text-decoration: none;
     color: #fff;
+    overflow: hidden; /* 画像のはみ出しをカット */
     transition: all 0.4s ease;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s, box-shadow 0.3s;
 }
 .chapter-link:hover {
     /* ホバー時に金色の輝きを強める */
@@ -114,8 +112,15 @@ h1 {
     /* 仄かな金色の後光（グロウ効果） */
     box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
-.chapter-link:hover .chapter-en {
-    color: rgba(212, 175, 55, 1);
+/* ホバー演出 */
+.chapter-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.chapter-link:hover .chapter-bg-image {
+    transform: scale(1.1); /* 画像だけ少し動かす */
+    transition: transform 0.6s ease;
 }
 
 /* 章番号の色を少し明るい金に */
@@ -123,22 +128,58 @@ h1 {
     font-size: 1.2em;
     color: #e6b422; /* 伝統色の「黄金」 */
     margin-right: 15px;
+    margin-left: 10px;
     font-family: 'Times New Roman', serif;
     font-weight: bold;
     min-width: 30px;
+    position: relative;
+    z-index: 3;
+}
+/* 1. テキスト部分の重なりを最優先にする */
+.chapter-main, .chapter-en {
+    position: relative;
+    z-index: 5; /* 画像(z-index: 1)よりも圧倒的に手前に配置 */
 }
 
-/* 英語タイトルも金色系に馴染ませる */
+/* 2. 英語タイトルの不透明度を100%にし、影を強化してくっきりさせる */
 .chapter-en {
     font-size: 1.15em;
-    color: rgba(212, 175, 55, 0.7); /* 透かし彫りのような金 */
-    margin-left: 45px; /* 番号を避ける */
+    color: rgb(212, 175, 55); /* 透過させず100%の金色 */
+    margin-left: 45px;
     font-style: italic;
     line-height: 1.2;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 1); /* 強い影で背景から浮かせる */
+    font-weight: 500;
+}
+
+/* 3. 画像のグラデーション（マスク）設定 */
+.chapter-bg-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1; /* 文字より奥に配置 */
+    filter: brightness(0.8); /* 画像を暗く */
+    
+    /* 画像の左側を消すグラデーション（維持） */
+    mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0));
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0));
 }
 .chapter-title {
     font-size: 1.1em;
     font-weight: 500;
+}
+/* テキスト部分：画像の上に重なるようにする */
+.chapter-content {
+    position: relative;
+    z-index: 2; /* 画像より前面へ */
+    padding: 15px 18px 15px 25px; /* 上 右 下 左 の順 */
+    flex: 1;
+    /* 背景が明るい画像でも文字が読めるよう、テキストに少し影を入れる */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
 }
 
 /* --- 追加：タイトルエリアの装飾 --- */
@@ -300,73 +341,73 @@ footer p {
 	<section class="part-section">
         <h3 class="part-title">第一部：青年編（光源氏の栄華） <br><span style="color: #ffc;">Part 1 : The Shining Prince</span></h3>
         <nav class="chapter-grid">
-            <a href="./chapter/chapter01/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">1</span><span class="chapter-title">桐壺</span> Kiritsubo</div><span class="chapter-en">The Garden of Life</span></a>
-            <a href="./chapter/chapter02/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">2</span><span class="chapter-title">帚木</span> Hahakigi</div><span class="chapter-en">The Heat Shimmer</span></a>
-            <a href="./chapter/chapter03/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">3</span><span class="chapter-title">空蝉</span> Utsusemi</div><span class="chapter-en">Feeling of Emptiness</span></a>
-            <a href="./chapter/chapter04/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">4</span><span class="chapter-title">夕顔</span> Yuugao</div><span class="chapter-en">Bottle Gourd</span></a>
-            <a href="./chapter/chapter05/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">5</span><span class="chapter-title">若紫</span> Waka Murasaki</div><span class="chapter-en">Lavender</span></a>
-            <a href="./chapter/chapter06/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">6</span><span class="chapter-title">末摘花</span> Suetsumuhana</div><span class="chapter-en">The Red-Nosed</span></a>
-            <a href="./chapter/chapter07/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">7</span><span class="chapter-title">紅葉賀</span> Momiji no Ga</div><span class="chapter-en">Sin and Blessing</span></a>
-            <a href="./chapter/chapter08/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">8</span><span class="chapter-title">花宴</span> Hana no En</div><span class="chapter-en">The Eye-Catching Flower</span></a>
-            <a href="./chapter/chapter09/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">9</span><span class="chapter-title">葵</span> Aoi</div><span class="chapter-en">Possession</span></a>
-            <a href="./chapter/chapter10/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">10</span><span class="chapter-title">賢木</span> Sakaki</div><span class="chapter-en">Sacred Leaves</span></a>
-            <a href="./chapter/chapter11/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">11</span><span class="chapter-title">花散里</span> Hana Chiru Sato</div><span class="chapter-en">Flowers Falling</span></a>
-            <a href="./chapter/chapter12/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">12</span><span class="chapter-title">須磨</span> Suma</div><span class="chapter-en">Hiding in Suma</span></a>
-            <a href="./chapter/chapter13/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">13</span><span class="chapter-title">明石</span> Akashi</div><span class="chapter-en">Evacuation to Akashi</span></a>
-            <a href="./chapter/chapter14/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">14</span><span class="chapter-title">澪標</span> Miotsukushi</div><span class="chapter-en">Self-destructive passion</span></a>
-            <a href="./chapter/chapter15/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">15</span><span class="chapter-title">蓬生</span> Yomogiu</div><span class="chapter-en">Wilted-Nose</span></a>
-            <a href="./chapter/chapter16/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">16</span><span class="chapter-title">関屋</span> Sekiya</div><span class="chapter-en">A Point in Fate</span></a>
-            <a href="./chapter/chapter17/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">17</span><span class="chapter-title">絵合</span> Eawase</div><span class="chapter-en">The Story competition</span></a>
-            <a href="./chapter/chapter18/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">18</span><span class="chapter-title">松風</span> Matsukaze</div><span class="chapter-en">The Wind While Waiting</span></a>
-            <a href="./chapter/chapter19/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">19</span><span class="chapter-title">薄雲</span> Usugumo</div><span class="chapter-en">Mother's Shadow</span></a>
-            <a href="./chapter/chapter20/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">20</span><span class="chapter-title">朝顔</span> Asagao</div><span class="chapter-en">The Dreaming Flower</span></a>
-            <a href="./chapter/chapter21/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">21</span><span class="chapter-title">乙女</span> Otome</div><span class="chapter-en">Traditional Performance</span></a>
-            <a href="./chapter/chapter22/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">22</span><span class="chapter-title">玉鬘</span> Tamakazura</div><span class="chapter-en">The Destiny</span></a>
-            <a href="./chapter/chapter23/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">23</span><span class="chapter-title">初音</span> Hatsune</div><span class="chapter-en">Long Separation</span></a>
-            <a href="./chapter/chapter24/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">24</span><span class="chapter-title">胡蝶</span> Kochou</div><span class="chapter-en">Butterfly Dream</span></a>
-            <a href="./chapter/chapter25/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">25</span><span class="chapter-title">蛍</span> Hotaru</div><span class="chapter-en">Burning Heart</span></a>
-            <a href="./chapter/chapter26/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">26</span><span class="chapter-title">常夏</span> Tokonatsu</div><span class="chapter-en">The Pink Flower</span></a>
-            <a href="./chapter/chapter27/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">27</span><span class="chapter-title">篝火</span> Kagaribi</div><span class="chapter-en">Illuminated</span></a>
-            <a href="./chapter/chapter28/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">28</span><span class="chapter-title">野分</span> Nowaki</div><span class="chapter-en">An Appearance</span></a>
-            <a href="./chapter/chapter29/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">29</span><span class="chapter-title">行幸</span> Miyuki</div><span class="chapter-en">The Identity</span></a>
-            <a href="./chapter/chapter30/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">30</span><span class="chapter-title">藤袴</span> Fujibakama</div><span class="chapter-en">Thoroughwort Flowers</span></a>
-            <a href="./chapter/chapter31/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">31</span><span class="chapter-title">真木柱</span> Makibashira</div><span class="chapter-en">The Cypress Pillar</span></a>
-            <a href="./chapter/chapter32/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">32</span><span class="chapter-title">梅枝</span> Umegae</div><span class="chapter-en">True Charm</span></a>
-            <a href="./chapter/chapter33/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">33</span><span class="chapter-title">藤裏葉</span> Fuji no Uraba</div><span class="chapter-en">Wisteria Leaves</span></a>
+            <a href="./chapter/chapter01/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">1</span><span class="chapter-title">桐壺</span> Kiritsubo</div><span class="chapter-en">The Garden of Life</span><div class="chapter-bg-image" style="background-image: url('./img/ch01.jpg');"></div></a>
+            <a href="./chapter/chapter02/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">2</span><span class="chapter-title">帚木</span> Hahakigi</div><span class="chapter-en">The Heat Shimmer</span><div class="chapter-bg-image" style="background-image: url('./img/ch02.jpg');"></div></a>
+            <a href="./chapter/chapter03/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">3</span><span class="chapter-title">空蝉</span> Utsusemi</div><span class="chapter-en">Feeling of Emptiness</span><div class="chapter-bg-image" style="background-image: url('./img/ch03.jpg');"></div></a>
+            <a href="./chapter/chapter04/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">4</span><span class="chapter-title">夕顔</span> Yuugao</div><span class="chapter-en">Bottle Gourd</span><div class="chapter-bg-image" style="background-image: url('./img/ch04.jpg');"></div></a>
+            <a href="./chapter/chapter05/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">5</span><span class="chapter-title">若紫</span> Waka Murasaki</div><span class="chapter-en">Lavender</span><div class="chapter-bg-image" style="background-image: url('./img/ch05.jpg');"></div></a>
+            <a href="./chapter/chapter06/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">6</span><span class="chapter-title">末摘花</span> Suetsumuhana</div><span class="chapter-en">The Red-Nosed</span><div class="chapter-bg-image" style="background-image: url('./img/ch06.jpg');"></div></a>
+            <a href="./chapter/chapter07/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">7</span><span class="chapter-title">紅葉賀</span> Momiji no Ga</div><span class="chapter-en">Sin and Blessing</span><div class="chapter-bg-image" style="background-image: url('./img/ch07.jpg');"></div></a>
+            <a href="./chapter/chapter08/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">8</span><span class="chapter-title">花宴</span> Hana no En</div><span class="chapter-en">The Eye-Catching Flower</span><div class="chapter-bg-image" style="background-image: url('./img/ch08.jpg');"></div></a>
+            <a href="./chapter/chapter09/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">9</span><span class="chapter-title">葵</span> Aoi</div><span class="chapter-en">Possession</span><div class="chapter-bg-image" style="background-image: url('./img/ch09.jpg');"></div></a>
+            <a href="./chapter/chapter10/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">10</span><span class="chapter-title">賢木</span> Sakaki</div><span class="chapter-en">Sacred Leaves</span><div class="chapter-bg-image" style="background-image: url('./img/ch10.jpg');"></div></a>
+            <a href="./chapter/chapter11/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">11</span><span class="chapter-title">花散里</span> Hana Chiru Sato</div><span class="chapter-en">Flowers Falling</span><div class="chapter-bg-image" style="background-image: url('./img/ch11.jpg');"></div></a>
+            <a href="./chapter/chapter12/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">12</span><span class="chapter-title">須磨</span> Suma</div><span class="chapter-en">Hiding in Suma</span><div class="chapter-bg-image" style="background-image: url('./img/ch12.jpg');"></div></a>
+            <a href="./chapter/chapter13/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">13</span><span class="chapter-title">明石</span> Akashi</div><span class="chapter-en">Evacuation to Akashi</span><div class="chapter-bg-image" style="background-image: url('./img/ch13.jpg');"></div></a>
+            <a href="./chapter/chapter14/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">14</span><span class="chapter-title">澪標</span> Miotsukushi</div><span class="chapter-en">Self-destructive passion</span><div class="chapter-bg-image" style="background-image: url('./img/ch14.jpg');"></div></a>
+            <a href="./chapter/chapter15/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">15</span><span class="chapter-title">蓬生</span> Yomogiu</div><span class="chapter-en">Wilted-Nose</span><div class="chapter-bg-image" style="background-image: url('./img/ch15.jpg');"></div></a>
+            <a href="./chapter/chapter16/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">16</span><span class="chapter-title">関屋</span> Sekiya</div><span class="chapter-en">A Point in Fate</span><div class="chapter-bg-image" style="background-image: url('./img/ch16.jpg');"></div></a>
+            <a href="./chapter/chapter17/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">17</span><span class="chapter-title">絵合</span> Eawase</div><span class="chapter-en">The Story competition</span><div class="chapter-bg-image" style="background-image: url('./img/ch17.jpg');"></div></a>
+            <a href="./chapter/chapter18/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">18</span><span class="chapter-title">松風</span> Matsukaze</div><span class="chapter-en">The Wind While Waiting</span><div class="chapter-bg-image" style="background-image: url('./img/ch18.jpg');"></div></a>
+            <a href="./chapter/chapter19/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">19</span><span class="chapter-title">薄雲</span> Usugumo</div><span class="chapter-en">Mother's Shadow</span><div class="chapter-bg-image" style="background-image: url('./img/ch19.jpg');"></div></a>
+            <a href="./chapter/chapter20/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">20</span><span class="chapter-title">朝顔</span> Asagao</div><span class="chapter-en">The Dreaming Flower</span><div class="chapter-bg-image" style="background-image: url('./img/ch20.jpg');"></div></a>
+            <a href="./chapter/chapter21/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">21</span><span class="chapter-title">乙女</span> Otome</div><span class="chapter-en">Traditional Performance</span><div class="chapter-bg-image" style="background-image: url('./img/ch21.jpg');"></div></a>
+            <a href="./chapter/chapter22/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">22</span><span class="chapter-title">玉鬘</span> Tamakazura</div><span class="chapter-en">The Destiny</span><div class="chapter-bg-image" style="background-image: url('./img/ch22.jpg');"></div></a>
+            <a href="./chapter/chapter23/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">23</span><span class="chapter-title">初音</span> Hatsune</div><span class="chapter-en">Long Separation</span><div class="chapter-bg-image" style="background-image: url('./img/ch23.jpg');"></div></a>
+            <a href="./chapter/chapter24/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">24</span><span class="chapter-title">胡蝶</span> Kochou</div><span class="chapter-en">Butterfly Dream</span><div class="chapter-bg-image" style="background-image: url('./img/ch24.jpg');"></div></a>
+            <a href="./chapter/chapter25/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">25</span><span class="chapter-title">蛍</span> Hotaru</div><span class="chapter-en">Burning Heart</span><div class="chapter-bg-image" style="background-image: url('./img/ch25.jpg');"></div></a>
+            <a href="./chapter/chapter26/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">26</span><span class="chapter-title">常夏</span> Tokonatsu</div><span class="chapter-en">The Pink Flower</span><div class="chapter-bg-image" style="background-image: url('./img/ch26.jpg');"></div></a>
+            <a href="./chapter/chapter27/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">27</span><span class="chapter-title">篝火</span> Kagaribi</div><span class="chapter-en">Illuminated</span><div class="chapter-bg-image" style="background-image: url('./img/ch27.jpg');"></div></a>
+            <a href="./chapter/chapter28/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">28</span><span class="chapter-title">野分</span> Nowaki</div><span class="chapter-en">An Appearance</span><div class="chapter-bg-image" style="background-image: url('./img/ch28.jpg');"></div></a>
+            <a href="./chapter/chapter29/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">29</span><span class="chapter-title">行幸</span> Miyuki</div><span class="chapter-en">The Identity</span><div class="chapter-bg-image" style="background-image: url('./img/ch29.jpg');"></div></a>
+            <a href="./chapter/chapter30/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">30</span><span class="chapter-title">藤袴</span> Fujibakama</div><span class="chapter-en">Thoroughwort Flowers</span><div class="chapter-bg-image" style="background-image: url('./img/ch30.jpg');"></div></a>
+            <a href="./chapter/chapter31/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">31</span><span class="chapter-title">真木柱</span> Makibashira</div><span class="chapter-en">The Cypress Pillar</span><div class="chapter-bg-image" style="background-image: url('./img/ch31.jpg');"></div></a>
+            <a href="./chapter/chapter32/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">32</span><span class="chapter-title">梅枝</span> Umegae</div><span class="chapter-en">True Charm</span><div class="chapter-bg-image" style="background-image: url('./img/ch32.jpg');"></div></a>
+            <a href="./chapter/chapter33/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">33</span><span class="chapter-title">藤裏葉</span> Fuji no Uraba</div><span class="chapter-en">Wisteria Leaves</span><div class="chapter-bg-image" style="background-image: url('./img/ch33.jpg');"></div></a>
         </nav>
     </section>
 
     <section class="part-section">
         <h3 class="part-title">第二部：壮年編（因果の苦悩）<br><span style="color: #ffc;">Part 2 : The Cycle of Fate</span></h3>
         <nav class="chapter-grid">
-            <a href="./chapter/chapter34_1/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">34-1</span><span class="chapter-title">若菜 上</span> Wakana Jou</div><span class="chapter-en">Spring Shoots I</span></a>
-            <a href="./chapter/chapter34_2/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">34-2</span><span class="chapter-title">若菜 下</span> Wakana Ge</div><span class="chapter-en">Spring Shoots II</span></a>
-            <a href="./chapter/chapter35/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">35</span><span class="chapter-title">柏木</span> Kashiwagi</div><span class="chapter-en">The Guardian</span></a>
-            <a href="./chapter/chapter36/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">36</span><span class="chapter-title">横笛</span> Yokobue</div><span class="chapter-en">The Flute of Circle</span></a>
-            <a href="./chapter/chapter37/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">37</span><span class="chapter-title">鈴虫</span> Suzumusi</div><span class="chapter-en">The Pine Beetle</span></a>
-            <a href="./chapter/chapter38/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">38</span><span class="chapter-title">夕霧</span> Yuugiri</div><span class="chapter-en">Second Generation</span></a>
-            <a href="./chapter/chapter39/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">39</span><span class="chapter-title">御法</span> Minori</div><span class="chapter-en">The Final Rite</span></a>
-            <a href="./chapter/chapter40/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">40</span><span class="chapter-title">幻</span> Maboroshi</div><span class="chapter-en">Free Wings</span></a>
-            <a href="./chapter/chapter41/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">41</span><span class="chapter-title">雲隠</span> Kumogakure</div><span class="chapter-en">Vanished</span></a>
+            <a href="./chapter/chapter34_1/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">34-1</span><span class="chapter-title">若菜 上</span> Wakana Jou</div><span class="chapter-en">Spring Shoots I</span><div class="chapter-bg-image" style="background-image: url('./img/ch34_1.jpg');"></div></a>
+            <a href="./chapter/chapter34_2/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">34-2</span><span class="chapter-title">若菜 下</span> Wakana Ge</div><span class="chapter-en">Spring Shoots II</span><div class="chapter-bg-image" style="background-image: url('./img/ch34_2.jpg');"></div></a>
+            <a href="./chapter/chapter35/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">35</span><span class="chapter-title">柏木</span> Kashiwagi</div><span class="chapter-en">The Guardian</span><div class="chapter-bg-image" style="background-image: url('./img/ch35.jpg');"></div></a>
+            <a href="./chapter/chapter36/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">36</span><span class="chapter-title">横笛</span> Yokobue</div><span class="chapter-en">The Flute of Circle</span><div class="chapter-bg-image" style="background-image: url('./img/ch36.jpg');"></div></a>
+            <a href="./chapter/chapter37/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">37</span><span class="chapter-title">鈴虫</span> Suzumusi</div><span class="chapter-en">The Pine Beetle</span><div class="chapter-bg-image" style="background-image: url('./img/ch37.jpg');"></div></a>
+            <a href="./chapter/chapter38/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">38</span><span class="chapter-title">夕霧</span> Yuugiri</div><span class="chapter-en">Second Generation</span><div class="chapter-bg-image" style="background-image: url('./img/ch38.jpg');"></div></a>
+            <a href="./chapter/chapter39/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">39</span><span class="chapter-title">御法</span> Minori</div><span class="chapter-en">The Final Rite</span><div class="chapter-bg-image" style="background-image: url('./img/ch39.jpg');"></div></a>
+            <a href="./chapter/chapter40/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">40</span><span class="chapter-title">幻</span> Maboroshi</div><span class="chapter-en">Free Wings</span><div class="chapter-bg-image" style="background-image: url('./img/ch40.jpg');"></div></a>
+            <a href="./chapter/chapter41/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">41</span><span class="chapter-title">雲隠</span> Kumogakure</div><span class="chapter-en">Vanished</span><div class="chapter-bg-image" style="background-image: url('./img/ch41.jpg');"></div></a>
         </nav>
     </section>
 
     <section class="part-section">
         <h3 class="part-title">第三部：後日編（匂宮三帖 ＋ 宇治十帖） <br><span style="color: #ffc;">Part 3 : Beyond the Legacy</span></h3>
         <nav class="chapter-grid">
-            <a href="./chapter/chapter42/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">42</span><span class="chapter-title">匂宮</span> Niou no Miya</div><span class="chapter-en">The Perfumed</span></a>
-            <a href="./chapter/chapter43/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">43</span><span class="chapter-title">紅梅</span> Koubai</div><span class="chapter-en">The Secret Love</span></a>
-            <a href="./chapter/chapter44/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">44</span><span class="chapter-title">竹河</span> Takekawa</div><span class="chapter-en">Bamboo River</span></a>
-            <a href="./chapter/chapter45/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">45</span><span class="chapter-title">橋姫</span> Hashihime</div><span class="chapter-en">Noble Princess</span></a>
-            <a href="./chapter/chapter46/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">46</span><span class="chapter-title">椎本</span> Shii ga Moto</div><span class="chapter-en">Days of Glory</span></a>
-            <a href="./chapter/chapter47/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">47</span><span class="chapter-title">総角</span> Agemaki</div><span class="chapter-en">An Elegant and Strong Knot</span></a>
-            <a href="./chapter/chapter48/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">48</span><span class="chapter-title">早蕨</span> Sawarabi</div><span class="chapter-en">At the Spring Ferns</span></a>
-            <a href="./chapter/chapter49/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">49</span><span class="chapter-title">宿木</span> Yadorigi</div><span class="chapter-en">Resemblance</span></a>
-            <a href="./chapter/chapter50/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">50</span><span class="chapter-title">東屋</span> Azumaya</div><span class="chapter-en">The Pavilion</span></a>
-            <a href="./chapter/chapter51/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">51</span><span class="chapter-title">浮舟</span> Ukifune</div><span class="chapter-en">A Drifting Boat</span></a>
-            <a href="./chapter/chapter52/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">52</span><span class="chapter-title">蜻蛉</span> Kagerou</div><span class="chapter-en">The Mayfly</span></a>
-            <a href="./chapter/chapter53/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">53</span><span class="chapter-title">手習</span> Tenarai</div><span class="chapter-en">Writing Practice</span></a>
-            <a href="./chapter/chapter54/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">54</span><span class="chapter-title">夢浮橋</span> Yume no Ukihashi</div><span class="chapter-en">Fade into a Dream</span></a>
+            <a href="./chapter/chapter42/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">42</span><span class="chapter-title">匂宮</span> Niou no Miya</div><span class="chapter-en">The Perfumed</span><div class="chapter-bg-image" style="background-image: url('./img/ch42.jpg');"></div></a>
+            <a href="./chapter/chapter43/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">43</span><span class="chapter-title">紅梅</span> Koubai</div><span class="chapter-en">The Secret Love</span><div class="chapter-bg-image" style="background-image: url('./img/ch43.jpg');"></div></a>
+            <a href="./chapter/chapter44/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">44</span><span class="chapter-title">竹河</span> Takekawa</div><span class="chapter-en">Bamboo River</span><div class="chapter-bg-image" style="background-image: url('./img/ch44.jpg');"></div></a>
+            <a href="./chapter/chapter45/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">45</span><span class="chapter-title">橋姫</span> Hashihime</div><span class="chapter-en">Noble Princess</span><div class="chapter-bg-image" style="background-image: url('./img/ch45.jpg');"></div></a>
+            <a href="./chapter/chapter46/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">46</span><span class="chapter-title">椎本</span> Shii ga Moto</div><span class="chapter-en">Days of Glory</span><div class="chapter-bg-image" style="background-image: url('./img/ch46.jpg');"></div></a>
+            <a href="./chapter/chapter47/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">47</span><span class="chapter-title">総角</span> Agemaki</div><span class="chapter-en">An Elegant and Strong Knot</span><div class="chapter-bg-image" style="background-image: url('./img/ch47.jpg');"></div></a>
+            <a href="./chapter/chapter48/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">48</span><span class="chapter-title">早蕨</span> Sawarabi</div><span class="chapter-en">At the Spring Ferns</span><div class="chapter-bg-image" style="background-image: url('./img/ch48.jpg');"></div></a>
+            <a href="./chapter/chapter49/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">49</span><span class="chapter-title">宿木</span> Yadorigi</div><span class="chapter-en">Resemblance</span><div class="chapter-bg-image" style="background-image: url('./img/ch49.jpg');"></div></a>
+            <a href="./chapter/chapter50/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">50</span><span class="chapter-title">東屋</span> Azumaya</div><span class="chapter-en">The Pavilion</span><div class="chapter-bg-image" style="background-image: url('./img/ch50.jpg');"></div></a>
+            <a href="./chapter/chapter51/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">51</span><span class="chapter-title">浮舟</span> Ukifune</div><span class="chapter-en">A Drifting Boat</span><div class="chapter-bg-image" style="background-image: url('./img/ch51.jpg');"></div></a>
+            <a href="./chapter/chapter52/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">52</span><span class="chapter-title">蜻蛉</span> Kagerou</div><span class="chapter-en">The Mayfly</span><div class="chapter-bg-image" style="background-image: url('./img/ch52.jpg');"></div></a>
+            <a href="./chapter/chapter53/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">53</span><span class="chapter-title">手習</span> Tenarai</div><span class="chapter-en">Writing Practice</span><div class="chapter-bg-image" style="background-image: url('./img/ch53.jpg');"></div></a>
+            <a href="./chapter/chapter54/index_custom.html" target="_blank" class="chapter-link"><div class="chapter-main"><span class="chapter-num">54</span><span class="chapter-title">夢浮橋</span> Yume no Ukihashi</div><span class="chapter-en">Fade into a Dream</span><div class="chapter-bg-image" style="background-image: url('./img/ch54.jpg');"></div></a>
         </nav>
     </section>
 
