@@ -1,31 +1,31 @@
 id,type,text,options,e_name,e_skill,e_hp,next,bgm,bgi,effect
-1,normal,"こんにちは！今日はアインシュタインが見つけた「相対性理論」について、冒険しながら学ぼう。準備はいい？","すすむ→2",,,,,bgm_main.mp3,bgi_start.jpg,
-2,normal,"相対性理論には「特殊（とくしゅ）」と「一般（いっぱん）」の2つがあるんだ。まずは「特殊」から見ていこう。","すすむ→3,もどる→1",,,,,bgm_main.mp3,bgi_labo.jpg,!hp-1
-3,normal,"【特殊相対性理論】のルールその1。光の速さは、だれが見ても、どんなに速く動いていても「同じ」なんだ。","すすむ→4,もどる→2",,,,,bgm_main.mp3,bgi_light.jpg,!hp-1
-4,normal,"ふつうは、走っている車からボールを投げると、ボールはもっと速く見えるよね？でも、光だけは別なんだ。","すすむ→5,もどる→3",,,,,bgm_main.mp3,bgi_car.jpg,!hp-1
-5,normal,"光の速さが変わらないせいで、ふしぎなことが起きるよ。なんと「動いているものは、時間がゆっくり流れる」んだ。","すすむ→6,もどる→4",,,,,bgm_main.mp3,bgi_clock.jpg,!hp-1
-6,normal,"きみが超特急のロケットに乗って宇宙を旅して地球に戻ると、地球の友だちの方が年をとっているかもしれないよ。","すすむ→7,もどる→5",,,,,bgm_main.mp3,bgi_rocket.jpg,!hp-1
-7,normal,"さらに「動いているものは、進行方向にちぢむ」というルールもあるんだ。ものすごく速いと、形が変わるんだね。","すすむ→8,もどる→6",,,,,bgm_main.mp3,bgi_shrink.jpg,!hp-1
-8,normal,"そして有名な「E=mc²」。これは「エネルギーと重さは同じもの」っていう意味。重いものはすごいパワーを秘めているんだ。","すすむ→9,もどる→7",,,,,bgm_main.mp3,bgi_energy.jpg,!hp-1
-9,normal,"ここまでが「特殊相対性理論」のお話。次は「一般相対性理論」の世界へ行ってみよう。少し休憩する？","すすむ→10,もどる→8",,,,,bgm_main.mp3,bgi_rest.jpg,!eat
-10,normal,"【一般相対性理論】は「重力（じゅうりょく）」のお話だよ。重力って、地面にひっぱられる力のことだね。","すすむ→11,もどる→9",,,,,bgm_gravity.mp3,bgi_earth.jpg,!hp-1
-11,normal,"アインシュタインは考えた。「重力がある場所」と「加速している場所」は、区別がつかないんじゃないかって。","すすむ→12,もどる→10",,,,,bgm_gravity.mp3,bgi_elev.jpg,!hp-1
-12,normal,"エレベーターが急に上に動くとき、体が重く感じるよね？あれと重力は同じ種類の力なんだ。","すすむ→13,もどる→11",,,,,bgm_gravity.mp3,bgi_elev2.jpg,!hp-1
-13,normal,"ここからが驚き。重いものがあると、その周りの「時間と空間」がぐにゃりとゆがんでしまうんだ。","すすむ→14,もどる→12",,,,,bgm_gravity.mp3,bgi_warp.jpg,!hp-1
-14,normal,"トランポリンの上に重いボールを置くと、布がへこむよね？宇宙の空間も、あんな風にへこんでいるんだよ。","すすむ→15,もどる→13",,,,,bgm_gravity.mp3,bgi_tramp.jpg,!hp-1
-15,normal,"この「ゆがみ」が重力の正体なんだ。地球が太陽の周りを回るのは、太陽が作ったへこみを転がっているからなんだね。","すすむ→16,もどる→14",,,,,bgm_gravity.mp3,bgi_solar.jpg,!hp-1
-16,normal,"空間がゆがむと、まっすぐ進むはずの「光」も曲がってしまうんだ。星の光が太陽のそばで曲がるのが観察されているよ。","すすむ→17,もどる→15",,,,,bgm_gravity.mp3,bgi_star.jpg,!hp-1
-17,normal,"そして、ゆがみが強い場所、つまり重力が強い場所では「時間」もゆっくり流れるようになるんだ。","すすむ→18,もどる→16",,,,,bgm_gravity.mp3,bgi_blackhole.jpg,!hp-1
-18,normal,"ブラックホールみたいなものすごく重い場所の近くだと、時間は外の世界よりずっとゆっくり進むんだよ。","すすむ→19,もどる→17",,,,,bgm_gravity.mp3,bgi_bh2.jpg,!hp-1
-19,normal,"これって、実はみんなが使っているスマホのGPS（地図アプリ）でも計算に入れている、身近な魔法なんだ。","すすむ→20,もどる→18",,,,,bgm_main.mp3,bgi_gps.jpg,!hp-1
-20,normal,"さて、これでお話は終盤だよ。2つの理論をもう一度整理してみようか。","すすむ→21,もどる→19",,,,,bgm_main.mp3,bgi_summary.jpg,!hp-1
-21,normal,"「特殊」は、光の速さと、動くものの時間の遅れの話だったね。キーワードは「スピード」だ！","すすむ→22,もどる→20",,,,,bgm_main.mp3,bgi_spec.jpg,!hp-1
-22,normal,"「一般」は、重力と空間のゆがみの話。キーワードは「重さ」によるゆがみだね！","すすむ→23,もどる→21",,,,,bgm_main.mp3,bgi_gen.jpg,!hp-1
-23,normal,"アインシュタインは、自分たちの常識が、宇宙の大きな視点では通用しないことを教えてくれたんだ。","すすむ→24,もどる→22",,,,,bgm_main.mp3,bgi_think.jpg,!hp-1
-24,normal,"「時間はだれにでも平等に流れる」という考えを捨てたのは、本当にすごい大発見だったんだよ。","すすむ→25,もどる→23",,,,,bgm_main.mp3,bgi_great.jpg,!hp-1
-25,normal,"きみがもし光の速さで走れたら、どんな景色が見えるかな？宇宙は不思議でいっぱいだね。","すすむ→26,もどる→24",,,,,bgm_main.mp3,bgi_vision.jpg,!hp-1
-26,normal,"この理論のおかげで、私たちは宇宙の始まり（ビッグバン）についても調べることができるようになったんだ。","すすむ→27,もどる→25",,,,,bgm_main.mp3,bgi_bigbang.jpg,!hp-1
-27,normal,"難しい話だったかもしれないけど、最後まで聞いてくれてありがとう！少しは賢くなったかな？","すすむ→28,もどる→26",,,,,bgm_main.mp3,bgi_thanks.jpg,!hp-1
-28,normal,"お腹がすいたなら、ここでご飯を食べて冒険を締めくくろう。","すすむ→29,もどる→27",,,,,bgm_main.mp3,bgi_food.jpg,!eat,!hp-1
-29,normal,"アインシュタインの言葉に「想像力は知識よりも大切だ」というのがある。きみの想像力で新しい発見をしてね！","すすむ→30,もどる→28",,,,,bgm_main.mp3,bgi_quote.jpg,!hp-1
-30,end,"相対性理論マスターになったね！おめでとう！","おわり",,,,,bgm_title.mp3,bgi_end.jpg,
+1,normal,"こんにちは！今日はアインシュタインが見つけた「相対性理論」について、冒険しながら学ぼう。準備はいい？\n\nHello! Today, let's learn about Einstein's 'Theory of Relativity' through an adventure. Ready?\n\n你好！今天，让我们通过冒险来学习爱因斯坦发现的“相对论”。准备好了吗？","すすむ / Next / 下一步 →2",,,,,bgm_main.mp3,bgi_start.jpg,
+2,normal,"相対性理論には「特殊（とくしゅ）」と「一般（いっぱん）」の2つがあるんだ。まずは「特殊」から見ていこう。\n\nRelativity consists of 'Special' and 'General'. Let's look at 'Special' first.\n\n相对论分为“狭义”和“广义”两种。首先来看看“狭义”吧。","すすむ / Next / 下一步 →3,もどる / Back / 返回 →1",,,,,bgm_main.mp3,bgi_labo.jpg,"!hp-1"
+3,normal,"【特殊相対性理論】のルールその1。光の速さは、だれが見ても、どんなに速く動いていても「同じ」なんだ。\n\n[Special Relativity] Rule #1: The speed of light is 'the same' for everyone, no matter how fast they move.\n\n【狭义相对论】规则1。无论谁看，无论移动得有多快，光速都是“相同”的。","すすむ / Next / 下一步 →4,もどる / Back / 返回 →2",,,,,bgm_main.mp3,bgi_light.jpg,"!hp-1"
+4,normal,"ふつうは、走っている車からボールを投げると、ボールはもっと速く見えるよね？でも、光だけは別なんだ。\n\nNormally, a ball thrown from a moving car looks faster. But light is different.\n\n通常情况下，从行驶的车中扔出的球看起来会更快，对吧？但唯独光是不同的。","すすむ / Next / 下一步 →5,もどる / Back / 返回 →3",,,,,bgm_main.mp3,bgi_car.jpg,"!hp-1"
+5,normal,"光の速さが変わらないせいで、ふしぎなことが起きるよ。なんと「動いているものは、時間がゆっくり流れる」んだ。\n\nBecause light speed is constant, something strange happens: 'Time flows slower for moving objects.'\n\n正因为光速不变，才会发生奇怪的事情。竟然是“运动物体的流逝时间会变慢”。","すすむ / Next / 下一步 →6,もどる / Back / 返回 →4",,,,,bgm_main.mp3,bgi_clock.jpg,"!hp-1"
+6,normal,"きみが超特急のロケットに乗って宇宙を旅して地球に戻ると、地球の友だちの方が年をとっているかもしれないよ。\n\nIf you travel space in a super-fast rocket and return, your friends on Earth might be older than you.\n\n如果你乘坐超特快火箭去宇宙旅行后回到地球，地球上的朋友可能会比你老得多。","すすむ / Next / 下一步 →7,もどる / Back / 返回 →5",,,,,bgm_main.mp3,bgi_rocket.jpg,"!hp-1"
+7,normal,"さらに「動いているものは、進行方向にちぢむ」というルールもあるんだ。ものすごく速いと、形が変わるんだね。\n\nAlso, 'Moving objects shrink in the direction of motion.' At extreme speeds, shapes change!\n\n此外还有“运动物体会在运动方向上收缩”的规则。如果速度极快，形状会发生变化呢。","すすむ / Next / 下一步 →8,もどる / Back / 返回 →6",,,,,bgm_main.mp3,bgi_shrink.jpg,"!hp-1"
+8,normal,"そして有名な「E=mc²」。これは「エネルギーと重さは同じもの」っていう意味。重いものはすごいパワーを秘めているんだ。\n\nAnd the famous 'E=mc²'. It means 'Energy and mass are the same thing.' Heavy things hide immense power.\n\n还有著名的“E=mc²”。这意味着“能量和质量是相同的东西”。沉重的东西隐藏着巨大的能量。","すすむ / Next / 下一步 →9,もどる / Back / 返回 →7",,,,,bgm_main.mp3,bgi_energy.jpg,"!hp-1"
+9,normal,"ここまでが「特殊相対性理論」のお話。次は「一般相対性理論」の世界へ行ってみよう。少し休憩する？\n\nThat's Special Relativity. Next, let's go to General Relativity. Want a short break?\n\n以上就是“狭义相对论”的故事。接下来让我们去“广义相对论”的世界吧。要休息一下吗？","すすむ / Next / 下一步 →10,もどる / Back / 返回 →8",,,,,bgm_main.mp3,bgi_rest.jpg,"!eat"
+10,normal,"【一般相対性理論】は「重力（じゅうりょく）」のお話だよ。重力って、地面にひっぱられる力のことだね。\n\n[General Relativity] is about 'Gravity'. Gravity is the force that pulls you toward the ground.\n\n【广义相对论】是关于“引力”的故事。引力就是被地面吸引的力量。","すすむ / Next / 下一步 →11,もどる / Back / 返回 →9",,,,,bgm_gravity.mp3,bgi_earth.jpg,"!hp-1"
+11,normal,"アインシュタインは考えた。「重力がある場所」と「加速している場所」は、区別がつかないんじゃないかって。\n\nEinstein thought that 'a place with gravity' and 'an accelerating place' are indistinguishable.\n\n爱因斯坦认为，“有引力的地方”和“正在加速的地方”是无法区分的。","すすむ / Next / 下一步 →12,もどる / Back / 返回 →10",,,,,bgm_gravity.mp3,bgi_elev.jpg,"!hp-1"
+12,normal,"エレベーターが急に上に動くとき、体が重く感じるよね？あれと重力は同じ種類の力なんだ。\n\nWhen an elevator suddenly moves up, you feel heavier, right? That's the same kind of force as gravity.\n\n电梯突然向上移动时，你会感觉身体变重了吧？那和引力是同一种力量。","すすむ / Next / 下一步 →13,もどる / Back / 返回 →11",,,,,bgm_gravity.mp3,bgi_elev2.jpg,"!hp-1"
+13,normal,"ここからが驚き。重いものがあると、その周りの「時間と空間」がぐにゃりとゆがんでしまうんだ。\n\nHere's the surprise: Heavy objects warp the 'Time and Space' around them.\n\n接下来是令人惊讶的地方。由于沉重物体的存在，其周围的“时间和空间”会发生扭曲。","すすむ / Next / 下一步 →14,もどる / Back / 返回 →12",,,,,bgm_gravity.mp3,bgi_warp.jpg,"!hp-1"
+14,normal,"トランポリンの上に重いボールを置くと、布がへこむよね？宇宙の空間も、あんな風にへこんでいるんだよ。\n\nWhen you place a heavy ball on a trampoline, the fabric sinks, right? Space curves just like that.\n\n在蹦床放上重球的话，布会凹陷下去吧？宇宙空间也是那样凹陷着的。","すすむ / Next / 下一步 →15,もどる / Back / 返回 →13",,,,,bgm_gravity.mp3,bgi_tramp.jpg,"!hp-1"
+15,normal,"この「ゆがみ」が重力の正体なんだ。地球が太陽の周りを回るのは、太陽が作ったへこみを転がっているからなんだね。\n\nThis 'warp' is gravity. Earth orbits the Sun because it's rolling in the dent made by the Sun.\n\n这种“扭曲”就是引力的真相。地球绕着太阳转，是因为它在太阳制造的凹陷中滚动。","すすむ / Next / 下一步 →16,もどる / Back / 返回 →14",,,,,bgm_gravity.mp3,bgi_solar.jpg,"!hp-1"
+16,normal,"空間がゆがむと、まっすぐ進むはずの「光」も曲がってしまうんだ。星の光が太陽のそばで曲がるのが観察されているよ。\n\nWhen space warps, even 'Light' bends. We've observed starlight bending near the Sun.\n\n当空间扭曲时，原本应该直进的“光”也会弯曲。已经观察到星光在太阳附近发生弯曲。","すすむ / Next / 下一步 →17,もどる / Back / 返回 →15",,,,,bgm_gravity.mp3,bgi_star.jpg,"!hp-1"
+17,normal,"そして、ゆがみが強い場所、つまり重力が強い場所では「時間」もゆっくり流れるようになるんだ。\n\nIn places with strong warping—meaning strong gravity—'Time' also flows slower.\n\n而且，在扭曲严重的地方，也就是引力强大的地方，“时间”也会流逝得更慢。","すすむ / Next / 下一步 →18,もどる / Back / 返回 →16",,,,,bgm_gravity.mp3,bgi_blackhole.jpg,"!hp-1"
+18,normal,"ブラックホールみたいなものすごく重い場所の近くだと、時間は外の世界よりずっとゆっくり進むんだよ。\n\nNear incredibly heavy places like black holes, time moves much slower than in the outside world.\n\n在像黑洞这样极重的地方附近，时间比外部世界运行得慢得多。","すすむ / Next / 下一步 →19,もどる / Back / 返回 →17",,,,,bgm_gravity.mp3,bgi_bh2.jpg,"!hp-1"
+19,normal,"これって、実はみんなが使っているスマホのGPS（地図アプリ）でも計算に入れている、身近な魔法なんだ。\n\nThis is a real-world magic that's even used in the GPS calculations on your smartphone.\n\n这其实是大家使用的手机GPS（地图应用）中也在计算的、身边的魔法。","すすむ / Next / 下一步 →20,もどる / Back / 返回 →18",,,,,bgm_main.mp3,bgi_gps.jpg,"!hp-1"
+20,normal,"さて、これでお話は終盤だよ。2つの理論をもう一度整理してみようか。\n\nNow, the story is near its end. Let's summarize the two theories once more.\n\n好了，故事到这里就要结束了。让我们再次整理一下这两个理论吧。","すすむ / Next / 下一步 →21,もどる / Back / 返回 →19",,,,,bgm_main.mp3,bgi_summary.jpg,"!hp-1"
+21,normal,"「特殊」は、光の速さと、動くものの時間の遅れの話だったね。キーワードは「スピード」だ！\n\n'Special' was about light speed and time dilation for moving things. The keyword is 'Speed'!\n\n“狭义”是关于光速和运动物体时间延迟的故事。关键词是“速度”！","すすむ / Next / 下一步 →22,もどる / Back / 返回 →20",,,,,bgm_main.mp3,bgi_spec.jpg,"!hp-1"
+22,normal,"「一般」は、重力と空間のゆがみの話。キーワードは「重さ」によるゆがみだね！\n\n'General' is about gravity and space warping. The keyword is warping due to 'Mass'!\n\n“广义”是关于引力和空间扭曲的故事。关键词是“质量”引起的扭曲！","すすむ / Next / 下一步 →23,もどる / Back / 返回 →21",,,,,bgm_main.mp3,bgi_gen.jpg,"!hp-1"
+23,normal,"アインシュタインは、自分たちの常識が、宇宙の大きな視点では通用しないことを教えてくれたんだ。\n\nEinstein taught us that our common sense doesn't apply from a cosmic perspective.\n\n爱因斯坦告诉我们，我们的常识在宇宙的宏大视角下是不通用的。","すすむ / Next / 下一步 →24,もどる / Back / 返回 →22",,,,,bgm_main.mp3,bgi_think.jpg,"!hp-1"
+24,normal,"「時間はだれにでも平等に流れる」という考えを捨てたのは、本当にすごい大発見だったんだよ。\n\nDiscarding the idea that 'Time flows equally for everyone' was a truly great discovery.\n\n摒弃“时间对每个人都是平等的”这一想法，真是一个伟大的发现。","すすむ / Next / 下一步 →25,もどる / Back / 返回 →23",,,,,bgm_main.mp3,bgi_great.jpg,"!hp-1"
+25,normal,"きみがもし光の速さで走れたら、どんな景色が見えるかな？宇宙は不思議でいっぱいだね。\n\nIf you could run at the speed of light, what would you see? The universe is full of wonders.\n\n如果你能以光速奔跑，会看到怎样的景象呢？宇宙充满了不可思议。","すすむ / Next / 下一步 →26,もどる / Back / 返回 →24",,,,,bgm_main.mp3,bgi_vision.jpg,"!hp-1"
+26,normal,"この理論のおかげで、私たちは宇宙の始まり（ビッグバン）についても調べることができるようになったんだ。\n\nThanks to this theory, we can even investigate the beginning of the universe (the Big Bang).\n\n感谢这个理论，我们现在甚至能够研究宇宙的起源（大爆炸）。","すすむ / Next / 下一步 →27,もどる / Back / 返回 →25",,,,,bgm_main.mp3,bgi_bigbang.jpg,"!hp-1"
+27,normal,"難しい話だったかもしれないけど、最後まで聞いてくれてありがとう！少しは賢くなったかな？\n\nIt might have been difficult, but thank you for listening! Do you feel a bit smarter?\n\n虽然可能是个深奥的话题，但感谢你听到最后！有没有变得聪明一点？","すすむ / Next / 下一步 →28,もどる / Back / 返回 →26",,,,,bgm_main.mp3,bgi_thanks.jpg,"!hp-1"
+28,normal,"お腹がすいたなら、ここでご飯を食べて冒険を締めくくろう。\n\nIf you're hungry, let's eat here and wrap up the adventure.\n\n如果肚子饿了，就在这里吃饭，结束这次冒险吧。","すすむ / Next / 下一步 →29,もどる / Back / 返回 →27",,,,,bgm_main.mp3,bgi_food.jpg,"!eat,!hp-1"
+29,normal,"アインシュタインの言葉に「想像力は知識よりも大切だ」というのがある。きみの想像力で新しい発見をしてね！\n\nEinstein said, 'Imagination is more important than knowledge.' Discover something new with yours!\n\n爱因斯坦曾说：“想象力比知识更重要。”用你的想象力去发现新事物吧！","すすむ / Next / 下一步 →30,もどる / Back / 返回 →28",,,,,bgm_main.mp3,bgi_quote.jpg,"!hp-1"
+30,end,"相対性理論マスターになったね！おめでとう！\n\nYou've become a Relativity Master! Congratulations!\n\n你已经成为相对论大师了！恭喜！","おわり / End / 结束 →",,,,,bgm_title.mp3,bgi_end.jpg,
